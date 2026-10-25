@@ -5,5 +5,5 @@ import Testing
 
 @MainActor
 @Test func appLinksCoreModule() {
-    #expect(HibimachiCore.rulesVersion > 0)
+    #expect(IslandFactory.makeWorld().objects.count == 6)
 }
