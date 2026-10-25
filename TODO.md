@@ -14,7 +14,7 @@
 - [ ] デザイン方向性 A中心+Bの不思議/Cの読みやすさを仕様化（資料で暫定整理済、実画像と実機UI未検証）。
 
 ## 完了（P0実装、2026-10-25、PR #1）
-- [x] CI整備を単独コミット（`e1c70ea`）: Xcode/shared scheme、format/lint/core test/iOS build/unit・UI test。macOS CI success。
+- [x] CI整備を単独コミット（`e1c70ea`）: Xcode/shared scheme、format/lint/core test/iOS build/unit・UI test。最終head `24b2288` で全CI success。
 - [x] P0タイルマップ（16x16、草地/小道/水）と配置・移動・撤去・Undo（20段）。
 - [x] 生き物1匹の状態機械と4反応（ベンチ休憩・花ベンチ・木かげ昼寝・池のぞき）。
 - [x] 保存/復元（JSON schema v1、原子的書き込み、破損/新版は退避して通知）。
