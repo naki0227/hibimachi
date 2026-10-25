@@ -101,7 +101,9 @@ struct GameStoreTests {
 
         store.beginMovingSelection()
         #expect(store.mode == .moving(bench.id, origin: bench.origin))
+        #expect(store.previewIssue == nil)  // Staying in place is a valid move.
         store.setPreviewOrigin(TileCoord(x: 4, y: 4))
+        #expect(store.previewIssue == nil)
         #expect(store.confirmPreview())
         #expect(store.world.object(withID: bench.id)?.origin == TileCoord(x: 4, y: 4))
 
@@ -109,6 +111,19 @@ struct GameStoreTests {
         #expect(store.world.objects.isEmpty)
         store.undo()
         #expect(store.world.object(withID: bench.id)?.origin == TileCoord(x: 4, y: 4))
+    }
+
+    @Test func movePreviewReportsOverlapAndMissingObject() throws {
+        let bench = TestWorlds.object(.bench, 1, 1)
+        let tree = TestWorlds.object(.roundTree, 3, 3)
+        let store = GameStore(
+            repository: FakeRepository(.loaded(try TestWorlds.grass(objects: [bench, tree]))), seed: 1)
+        store.select(bench.id)
+        store.beginMovingSelection()
+        store.setPreviewOrigin(tree.origin)
+        #expect(store.previewIssue == .overlapsObject(tree.id))
+        #expect(!store.confirmPreview())
+        #expect(store.world.object(withID: bench.id)?.origin == bench.origin)
     }
 
     @Test func cancelLeavesTheIslandUntouched() throws {

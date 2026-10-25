@@ -80,8 +80,11 @@ public final class GameStore {
         case .browse: nil
         case .placing(let kind, let origin): world.placementIssue(for: kind, at: origin)
         case .moving(let id, let origin):
-            world.object(withID: id).flatMap { world.placementIssue(for: $0.kind, at: origin, ignoring: id) }
-                ?? .unknownObject(id)
+            if let object = world.object(withID: id) {
+                world.placementIssue(for: object.kind, at: origin, ignoring: id)
+            } else {
+                .unknownObject(id)
+            }
         }
     }
 

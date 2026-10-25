@@ -73,11 +73,9 @@ final class IslandUITests: XCTestCase {
         let status = app.descendants(matching: .any)["placement-status"]
         XCTAssertTrue(status.waitForExistence(timeout: 5))
         screenshot(app, "05-moving-bench")
-        if app.buttons["confirm-edit"].isEnabled {
-            app.buttons["confirm-edit"].tap()
-        } else {
-            app.buttons["cancel-edit"].tap()
-        }
+        XCTAssertTrue(app.buttons["confirm-edit"].isEnabled, "moving the bench one tile right is valid")
+        app.buttons["confirm-edit"].tap()
+        XCTAssertEqual(app.staticTexts["selection-name"].label, "ベンチ")
 
         app.buttons["remove-selection"].tap()
         XCTAssertEqual(objectCount(app), "置いたもの 5こ")

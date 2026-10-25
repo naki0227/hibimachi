@@ -73,6 +73,26 @@ struct IslandSceneTests {
     }
 }
 
+@MainActor
+@Suite("Creature rendering")
+struct CreatureNodeTests {
+    @Test func moveActionIsStartedOncePerNewTile() throws {
+        let world = IslandFactory.makeWorld()
+        let geometry = GridGeometry(tileSize: 32, columns: world.width, rows: world.height)
+        let node = CreatureNode()
+        node.show(world.creature, in: world, geometry: geometry, animated: false, reduceMotion: true)
+        #expect(node.action(forKey: "move") == nil)
+
+        var moved = world
+        moved.creature.position = moved.creature.position.offset(dx: 1, dy: 0)
+        node.show(moved.creature, in: moved, geometry: geometry, animated: true, reduceMotion: true)
+        let firstAction = try #require(node.action(forKey: "move"))
+        // Rendering the same state again (next frame) must not restart the running move.
+        node.show(moved.creature, in: moved, geometry: geometry, animated: true, reduceMotion: true)
+        #expect(node.action(forKey: "move") === firstAction)
+    }
+}
+
 @Suite("Player-facing text")
 struct GameTextTests {
     @Test func everyKindAndReactionHasCopy() {

@@ -74,18 +74,21 @@ struct EditBar: View {
             .accessibilityElement(children: .combine)
             .accessibilityIdentifier("placement-status")
 
-            HStack(spacing: 6) {
+            HStack(alignment: .center, spacing: 12) {
                 NudgePad(store: store)
-                Spacer(minLength: 4)
-                Button("やめる", role: .cancel) { store.cancelEdit() }
-                    .buttonStyle(.bordered)
-                    .frame(minHeight: 44)
-                    .accessibilityIdentifier("cancel-edit")
-                Button(isMoving ? "ここへ動かす" : "ここに置く") { store.confirmPreview() }
-                    .buttonStyle(.borderedProminent)
-                    .frame(minHeight: 44)
-                    .disabled(issue != nil)
-                    .accessibilityIdentifier("confirm-edit")
+                VStack(spacing: 8) {
+                    Button(isMoving ? "ここへ動かす" : "ここに置く") { store.confirmPreview() }
+                        .buttonStyle(.borderedProminent)
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .disabled(issue != nil)
+                        .accessibilityIdentifier("confirm-edit")
+                    Button("やめる", role: .cancel) { store.cancelEdit() }
+                        .buttonStyle(.bordered)
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .accessibilityIdentifier("cancel-edit")
+                }
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
             }
         }
         .padding(12)
@@ -112,9 +115,12 @@ struct NudgePad: View {
         Button {
             store.nudgePreview(dx: dx, dy: dy)
         } label: {
-            Image(systemName: symbol).frame(width: 44, height: dy == 0 ? 60 : 29)
+            Image(systemName: symbol)
+                .font(.body.weight(.semibold))
+                .frame(width: 44, height: 44)
+                .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 10))
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(.plain)
         .accessibilityLabel(label)
     }
 }

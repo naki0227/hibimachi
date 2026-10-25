@@ -7,6 +7,9 @@ final class CreatureNode: SKNode {
     private let body = IslandArt.creatureBody()
     private let emote = SKLabelNode(fontNamed: "HiraginoSans-W6")
     private var shownActivityKey = ""
+    /// Last position we started moving to. Starting a new move only when it changes matters:
+    /// restarting the action every frame means SpriteKit never advances it and the creature looks frozen.
+    private(set) var movingTarget: CGPoint?
 
     override init() {
         super.init()
@@ -34,12 +37,15 @@ final class CreatureNode: SKNode {
             target.x += (objectCenter.x - target.x) * 0.3
             target.y += (objectCenter.y - target.y) * 0.2
         }
-        if animated && position != target {
+        if target != movingTarget {
+            movingTarget = target
             removeAction(forKey: "move")
-            run(.move(to: target, duration: 0.4), withKey: "move")
-            if !reduceMotion && creature.activity.reaction == nil { hop(height: 3) }
-        } else if !animated {
-            position = target
+            if animated {
+                run(.move(to: target, duration: 0.4), withKey: "move")
+                if !reduceMotion && creature.activity.reaction == nil { hop(height: 3) }
+            } else {
+                position = target
+            }
         }
         showPose(for: creature.activity, reduceMotion: reduceMotion)
     }
