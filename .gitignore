@@ -9,3 +9,6 @@ DerivedData/
 *.p12
 *.mobileprovision
 *.ipa
+.swiftpm/
+/build/
+*.xcresult

@@ -32,7 +32,8 @@
 これは独立した新規プロジェクト。既存の `mikka_bouzu` とは関連するが、**そのリポジトリを置き換えたり、既存コードを流用したとみなさない**。使う場合はコードとライセンス、テストを確認する。
 
 ## 品質ゲート
-この資料にはドキュメント構造検査CIを含める。Xcodeプロジェクト未作成のため **Swiftのformat/lint/typecheck/test/buildは未実施**。Claudeは機能追加前にアプリ雛形を作成し、macOS Runnerでこれらを実行するCIを別コミットで整えること。
+- Docs CI（`.github/workflows/docs-ci.yml`）と Swift CI（`.github/workflows/swift-ci.yml`: format / lint / core test / iOS build / unit・UI test）。
+- ローカル実行コマンドは [docs/QUALITY-CI.md](docs/QUALITY-CI.md)、構成判断は [ADR-0002](docs/adr/0002-project-layout-and-ci-tooling.md)。
 
 ## 参考情報
 - [Apple SpriteKit](https://developer.apple.com/documentation/spritekit)
