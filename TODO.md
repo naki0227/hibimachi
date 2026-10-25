@@ -2,7 +2,7 @@
 
 ## 未着手
 - [x] 新規Private GitHub実作業リポジトリ `naki0227/hibimachi` を作成（2026-10-25）。
-- [ ] 仕様・設計・CIのドキュメント一式を実作業リポジトリに反映し、GitHub上で確認する。
+- [x] 仕様・設計・docs CIのドキュメント一式18ファイルをmainへ反映し、GitHub上で確認（2026-10-25）。
 - [ ] 最低iOS、Xcode、Swiftのバージョン確定・App Store ID仮値。
 - [ ] CI整備を単独コミット: Xcode/shared scheme、format/lint/test/typecheck/build。
 - [ ] P0ゲームのタイルマップと配置・移動・撤去・undo。
@@ -12,6 +12,7 @@
 - [ ] 実機・ユーザーでP0ゲーム性を検証。
 
 ## 進行中
+- [ ] GitHub Actionsのdocs CI実行結果を確認する（ローカルのdocs検査はPASS、GitHub側CIの結果は未確認）。
 - [ ] デザイン方向性 A中心+Bの不思議/Cの読みやすさを仕様化（資料で暫定整理済、実画像と実機UI未検証）。
 
 ## 完了（企画段階）
