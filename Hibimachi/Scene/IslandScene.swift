@@ -12,7 +12,7 @@ final class IslandScene: SKScene {
 
     let store: GameStore
     let geometry: GridGeometry
-    let bounds: CameraBounds
+    let cameraBounds: CameraBounds
     let cameraNode = SKCameraNode()
     let creatureNode = CreatureNode()
 
@@ -40,7 +40,7 @@ final class IslandScene: SKScene {
     init(store: GameStore) {
         self.store = store
         geometry = GridGeometry(tileSize: Self.tileSize, columns: store.world.width, rows: store.world.height)
-        bounds = CameraBounds(mapSize: geometry.mapSize)
+        cameraBounds = CameraBounds(mapSize: geometry.mapSize)
         super.init(size: CGSize(width: 390, height: 844))
         scaleMode = .resizeFill
         anchorPoint = .zero
@@ -144,7 +144,7 @@ final class IslandScene: SKScene {
         }
         for object in objects {
             let node = objectNodes[object.id] ?? makeObjectNode(object)
-            let target = position(for: object.kind, at: object.origin)
+            let target = scenePosition(for: object.kind, at: object.origin)
             if node.position != target {
                 node.position = target
                 if !reduceMotion {
@@ -165,7 +165,7 @@ final class IslandScene: SKScene {
         return node
     }
 
-    private func position(for kind: ObjectKind, at origin: TileCoord) -> CGPoint {
+    private func scenePosition(for kind: ObjectKind, at origin: TileCoord) -> CGPoint {
         CGPoint(x: Double(origin.x) * Self.tileSize, y: Double(origin.y) * Self.tileSize)
     }
 
@@ -177,7 +177,7 @@ final class IslandScene: SKScene {
         let valid = store.previewIssue == nil
         let container = SKNode()
         container.name = "preview"
-        container.position = position(for: kind, at: origin)
+        container.position = scenePosition(for: kind, at: origin)
         let footprint = CGSize(
             width: Double(kind.footprint.width) * Self.tileSize, height: Double(kind.footprint.height) * Self.tileSize)
         let tint = SKShapeNode(rect: CGRect(origin: .zero, size: footprint), cornerRadius: 4)
@@ -209,7 +209,7 @@ final class IslandScene: SKScene {
         let outline = SKShapeNode(rect: CGRect(origin: .zero, size: size).insetBy(dx: -2, dy: -2), cornerRadius: 5)
         outline.strokeColor = IslandArt.Palette.cream
         outline.lineWidth = 3
-        outline.position = position(for: object.kind, at: object.origin)
+        outline.position = scenePosition(for: object.kind, at: object.origin)
         outline.name = "selection"
         if !reduceMotion {
             outline.run(

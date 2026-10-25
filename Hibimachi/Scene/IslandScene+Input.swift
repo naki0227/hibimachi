@@ -85,7 +85,7 @@ extension IslandScene: UIGestureRecognizerDelegate {
 
     @objc private func handlePinch(_ recognizer: UIPinchGestureRecognizer) {
         guard recognizer.state == .changed, recognizer.scale > 0 else { return }
-        let scale = bounds.clampScale(Double(cameraNode.xScale) / Double(recognizer.scale))
+        let scale = cameraBounds.clampScale(Double(cameraNode.xScale) / Double(recognizer.scale))
         cameraNode.setScale(CGFloat(scale))
         recognizer.scale = 1
         clampCamera()
@@ -100,13 +100,13 @@ extension IslandScene: UIGestureRecognizerDelegate {
 
     /// Fits the whole island on screen, centered.
     func resetCamera() {
-        cameraNode.setScale(CGFloat(bounds.fittingScale(for: viewportSize)))
+        cameraNode.setScale(CGFloat(cameraBounds.fittingScale(for: viewportSize)))
         cameraNode.position = CGPoint(x: geometry.mapSize.width / 2, y: geometry.mapSize.height / 2)
         clampCamera()
     }
 
     func clampCamera() {
-        let clamped = bounds.clampPosition(
+        let clamped = cameraBounds.clampPosition(
             cameraNode.position.scenePoint, viewport: viewportSize, scale: Double(cameraNode.xScale))
         cameraNode.position = clamped.cgPoint
     }

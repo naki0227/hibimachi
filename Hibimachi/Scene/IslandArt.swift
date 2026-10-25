@@ -3,6 +3,7 @@ import SpriteKit
 
 /// Placeholder "soft pixel" art built from colored rectangles (docs/VISUAL-DIRECTION.md, direction A palette).
 /// Each tile is a 16×16 grid of 2pt "pixels". Replace with original sprite assets later; node names stay stable.
+@MainActor
 enum IslandArt {
     static let pixel: CGFloat = 2
 
