@@ -3,17 +3,22 @@
 ## 未着手
 - [x] 新規Private GitHub実作業リポジトリ `naki0227/hibimachi` を作成（2026-10-25）。
 - [x] 仕様・設計・docs CIのドキュメント一式18ファイルをmainへ反映し、GitHub上で確認（2026-10-25）。
-- [ ] 最低iOS、Xcode、Swiftのバージョン確定・App Store ID仮値。
-- [ ] CI整備を単独コミット: Xcode/shared scheme、format/lint/test/typecheck/build。
-- [ ] P0ゲームのタイルマップと配置・移動・撤去・undo。
-- [ ] ペット1匹の状態機械と3つの配置反応。
-- [ ] Worldの保存/読み込みとデータ破損時fallback。
-- [ ] プレースホルダー画像→独自ピクセルアセット作成。
-- [ ] 実機・ユーザーでP0ゲーム性を検証。
+- [ ] プレースホルダー（色ブロック）→独自ピクセルアセット作成。ノード名・`ObjectKind` の rawValue をアセット名に使う。
+- [ ] 実機・ユーザー（2〜5人）でP0ゲーム性を検証。観察項目は docs/GAME-DESIGN.md「7日間ユーザーテスト」。
+- [ ] 最小チュートリアル（最初の配置と図鑑への導線）。
+- [ ] VoiceOver / Dynamic Type / Reduce Motion を実機で確認。
+- [ ] 実機で fps・メモリ・起動時間を計測。
 
 ## 進行中
 - [x] GitHub ActionsのDocs qualityでドキュメント検査・テストが成功したことを確認（2026-10-25、commit `7e7b283`）。
 - [ ] デザイン方向性 A中心+Bの不思議/Cの読みやすさを仕様化（資料で暫定整理済、実画像と実機UI未検証）。
+
+## 完了（P0実装、2026-10-25、PR #1）
+- [x] CI整備を単独コミット（`e1c70ea`）: Xcode/shared scheme、format/lint/core test/iOS build/unit・UI test。macOS CI success。
+- [x] P0タイルマップ（16x16、草地/小道/水）と配置・移動・撤去・Undo（20段）。
+- [x] 生き物1匹の状態機械と4反応（ベンチ休憩・花ベンチ・木かげ昼寝・池のぞき）。
+- [x] 保存/復元（JSON schema v1、原子的書き込み、破損/新版は退避して通知）。
+- [x] 最低iOS 17.0、Xcode 26.5（CI固定）、Swift 6、Bundle ID仮値 `dev.naki0227.hibimachi` を決定（ADR-0002）。
 
 ## 完了（企画段階）
 - [x] AIなしで楽しめる箱庭をコアとする方針を決めた。
@@ -22,6 +27,9 @@
 - [x] 企画・技術・画風・テスト・AI/プライバシーの引き継ぎ資料を作成。
 
 ## 保留・要確認
+- [ ] 反応の頻度（10分あたり約39回）が多すぎないか、プレイテストで `ReactionRule` を調整。
+- [ ] 配置物の回転（DATA-MODELの rotation）はP0では未実装。必要性をアート制作時に判断。
+- [ ] 退避した `world.unreadable-*.json` の扱い（自動削除しない現仕様でよいか）。
 - [ ] 正式名称/ロゴ/IPと商標調査。
 - [ ] 初期画面向き（縦が第一候補）、画素密度とマップサイズの実機調整。
 - [ ] 最初の建物/生き物の具体的なアート制作。
