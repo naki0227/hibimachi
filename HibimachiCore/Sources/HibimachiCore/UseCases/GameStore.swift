@@ -193,7 +193,7 @@ public final class GameStore {
                     case .success = progress.purchase(kind, at: now(), transactionID: makeID())
                 else { return false }
             }
-            result = editor.place(kind, at: origin, id: makeID())
+            result = editor.place(kind, at: origin, id: makeID(), placedAt: now())
         case .moving(let id, let origin): result = editor.move(id, to: origin)
         }
         switch result {

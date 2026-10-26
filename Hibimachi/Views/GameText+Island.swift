@@ -114,3 +114,45 @@ extension Species {
         }
     }
 }
+
+extension ReactionKind {
+    /// A soft hint that points at a reaction without spelling it out (shown after finishing a quest).
+    var hint: String {
+        switch self {
+        case .benchRest: "ベンチのまわりをあけておくと、だれかが座りにくるかも"
+        case .bloomBench: "ベンチのとなりに花があったら…？"
+        case .treeNap: "木のそばは、ひなたぼっこにちょうどよさそう"
+        case .pondVisit: "池のまわりを歩きやすくしてみたら…？"
+        case .sakuraViewing: "さくらの木の下で、だれかが上を見ているかも"
+        case .swingPlay: "ブランコ、だれか乗りにこないかな"
+        case .campfireWarm: "たき火のそばは、あたたかそう"
+        case .gardenTend: "はたけの葉っぱ、だれか気にしているみたい"
+        case .fountainSplash: "ふんすいのしぶき、気になる子がいるかも"
+        case .cafeVisit: "カフェから、いいにおいがしてきそう"
+        case .cafeTerrace: "カフェの前に、すわれる場所があったら…？"
+        case .picnic: "ピクニックシートは、日なたより木かげが好きみたい"
+        case .birdWatch: "巣箱は、木のそばにあると落ち着くみたい"
+        case .mailWait: "ポストの前で、だれかが待っているかも"
+        case .wellPeek: "井戸の中から、何か聞こえるかも"
+        }
+    }
+}
+
+extension NextStep {
+    var message: String {
+        switch self {
+        case .canBuild(let kind): "\(kind.displayName)を置いてみると、だれかが寄ってくるかも"
+        case .tryReaction(let reaction): reaction.hint
+        case .unlocksSoon(let kind, let requirement):
+            "Lv\(requirement.level)か、発見\(requirement.discoveries)つで\(kind.displayName)が置けるように"
+        }
+    }
+
+    var symbolName: String {
+        switch self {
+        case .canBuild: "hammer.fill"
+        case .tryReaction: "sparkle.magnifyingglass"
+        case .unlocksSoon: "lock.open.fill"
+        }
+    }
+}

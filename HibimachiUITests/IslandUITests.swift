@@ -210,4 +210,25 @@ final class IslandUITests: XCTestCase {
         app.buttons["本当にこの記録をけす"].tap()
         XCTAssertFalse(row.waitForExistence(timeout: 2))
     }
+
+    @MainActor
+    func testPlacedObjectOpensTheMemoryOfItsDayAndQuestsSuggestANextStep() {
+        let app = launch()
+        app.buttons["quests"].tap()
+        app.buttons["goal-category-tidy"].tap()
+        app.buttons["create-goal"].tap()
+        XCTAssertTrue(app.buttons["quest-done-0"].waitForExistence(timeout: 5))
+        app.buttons["quest-done-0"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["next-step"].waitForExistence(timeout: 5))
+        app.buttons["閉じる"].tap()
+
+        app.buttons["tab-nature"].tap()
+        app.buttons["palette-flower"].tap()
+        app.buttons["confirm-edit"].tap()
+        let memory = app.buttons["selection-memory"]
+        XCTAssertTrue(memory.waitForExistence(timeout: 5))
+        memory.tap()
+        XCTAssertTrue(app.descendants(matching: .any)["memory-panel"].waitForExistence(timeout: 5))
+        screenshot(app, "15-memory")
+    }
 }

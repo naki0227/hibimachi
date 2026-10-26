@@ -15,6 +15,14 @@ struct QuestPanel: View {
                 ProgressSummary(progress: store.progress)
                 if let last = store.lastCompletion {
                     RewardBanner(reward: last.reward, undo: { store.undoLastCompletion() })
+                    if let step = store.nextStep {
+                        Label(step.message, systemImage: step.symbolName)
+                            .font(GameFont.body(13, weight: .bold))
+                            .foregroundStyle(GameColor.wood)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .accessibilityIdentifier("next-step")
+                    }
                 }
                 if let error = store.lastProgressError {
                     Label(error.message, systemImage: "exclamationmark.bubble.fill")

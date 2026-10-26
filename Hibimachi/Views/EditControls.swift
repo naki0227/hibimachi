@@ -127,16 +127,32 @@ struct NudgePad: View {
 struct SelectionBar: View {
     let store: GameStore
     let object: WorldObject
+    /// Opens the memory of the day this object was placed.
+    let openMemory: () -> Void
 
     var body: some View {
         HStack(spacing: 6) {
-            Text(object.kind.displayName)
-                .font(GameFont.body(17, weight: .heavy))
-                .foregroundStyle(GameColor.ink)
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
-                .layoutPriority(1)
-                .accessibilityIdentifier("selection-name")
+            VStack(alignment: .leading, spacing: 2) {
+                Text(object.kind.displayName)
+                    .font(GameFont.body(17, weight: .heavy))
+                    .foregroundStyle(GameColor.ink)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+                    .accessibilityIdentifier("selection-name")
+                if let day = store.placedDay(of: object) {
+                    Button(action: openMemory) {
+                        Label("\(day.month)/\(day.day)に迎えた", systemImage: "book.pages")
+                            .font(GameFont.body(11, weight: .bold))
+                            .foregroundStyle(GameColor.leafDark)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("\(day.month)月\(day.day)日に迎えた。その日の思い出を見る")
+                    .accessibilityIdentifier("selection-memory")
+                } else {
+                    Text("はじめからある").font(GameFont.caption(11)).foregroundStyle(GameColor.inkSoft)
+                }
+            }
+            .layoutPriority(1)
             Spacer(minLength: 4)
             action("動かす", "arrow.up.and.down.and.arrow.left.and.right", "move-selection") {
                 store.beginMovingSelection()

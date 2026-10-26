@@ -135,6 +135,12 @@ struct JSONFileWorldRepositoryTests {
         #expect(loaded.world.residents.map(\.species) == [.mochi, .kotori])
         #expect(loaded.world.residents.map(\.position) == world.residents.map(\.position))
 
+        var placed = world
+        _ = placed.place(.swing, at: TileCoord(x: 6, y: 6), id: UUID(), placedAt: Date(timeIntervalSince1970: 1_000))
+        try repository().save(game(placed))
+        #expect(repository().peek()?.world.objects.last?.placedAt == Date(timeIntervalSince1970: 1_000))
+        try repository().save(game(world))
+
         let text = try String(contentsOf: repository().fileURL, encoding: .utf8)
         var object = try #require(try JSONSerialization.jsonObject(with: Data(text.utf8)) as? [String: Any])
         object["residents"] = nil

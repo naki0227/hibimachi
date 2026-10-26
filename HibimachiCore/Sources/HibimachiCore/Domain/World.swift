@@ -99,11 +99,11 @@ public struct World: Equatable, Sendable {
 
     // MARK: Mutations (validated)
 
-    public mutating func place(_ kind: ObjectKind, at origin: TileCoord, id: UUID) -> Result<
-        WorldObject, PlacementError
-    > {
+    public mutating func place(_ kind: ObjectKind, at origin: TileCoord, id: UUID, placedAt: Date? = nil)
+        -> Result<WorldObject, PlacementError>
+    {
         if let issue = placementIssue(for: kind, at: origin) { return .failure(issue) }
-        let object = WorldObject(id: id, kind: kind, origin: origin)
+        let object = WorldObject(id: id, kind: kind, origin: origin, placedAt: placedAt)
         objects.append(object)
         relocateCreatureIfBlocked()
         return .success(object)

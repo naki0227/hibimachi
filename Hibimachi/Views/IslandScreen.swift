@@ -141,6 +141,8 @@ struct IslandScreen: View {
             ObjectListPanel(store: store, close: close)
         case .album:
             AlbumPanel(store: store, close: close)
+        case .memory(let objectID):
+            BuildingMemoryPanel(store: store, objectID: objectID, close: close)
         case .resetConfirm:
             GameDialog(
                 symbol: "arrow.counterclockwise", title: "島をはじめからにしますか？",
@@ -188,7 +190,7 @@ struct IslandScreen: View {
             PathBar(store: store)
         case .browse:
             if let selected = store.selectedObject {
-                SelectionBar(store: store, object: selected)
+                SelectionBar(store: store, object: selected) { overlay = .memory(selected.id) }
             } else {
                 BuildPalette(store: store, tab: $tab)
             }

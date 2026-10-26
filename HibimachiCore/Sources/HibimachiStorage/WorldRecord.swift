@@ -14,6 +14,8 @@ struct WorldRecord: Codable, Equatable {
         var kind: String
         var x: Int
         var y: Int
+        /// When it was placed (v4); absent for starting objects and older saves.
+        var placedAt: Date?
     }
 
     struct CreatureRecord: Codable, Equatable {
@@ -87,7 +89,9 @@ extension WorldRecord {
         width = world.width
         height = world.height
         terrain = String(world.terrain.map(\.rawValue))
-        objects = world.objects.map { ObjectRecord(id: $0.id, kind: $0.kind.rawValue, x: $0.origin.x, y: $0.origin.y) }
+        objects = world.objects.map {
+            ObjectRecord(id: $0.id, kind: $0.kind.rawValue, x: $0.origin.x, y: $0.origin.y, placedAt: $0.placedAt)
+        }
         creature = CreatureRecord(world.creature)
         residents = world.residents.dropFirst().map(CreatureRecord.init)
         // Sorted so identical worlds produce identical files.
@@ -108,7 +112,8 @@ extension WorldRecord {
             guard let kind = ObjectKind(rawValue: record.kind) else {
                 throw WorldRecordError.unknownObjectKind(record.kind)
             }
-            return WorldObject(id: record.id, kind: kind, origin: TileCoord(x: record.x, y: record.y))
+            return WorldObject(
+                id: record.id, kind: kind, origin: TileCoord(x: record.x, y: record.y), placedAt: record.placedAt)
         }
         // Unknown discovery IDs (e.g. from a removed reaction) are dropped rather than failing the whole save.
         let known = Set(discoveries.compactMap(ReactionKind.init(rawValue:)))

@@ -129,7 +129,7 @@ private struct MemoryComposer: View {
     }
 }
 
-private struct AlbumDayCard: View {
+struct AlbumDayCard: View {
     let day: AlbumDay
     let store: GameStore
 
@@ -207,7 +207,7 @@ private struct MemoryRow: View {
 
 extension LocalDay {
     /// "1月15日（金）"
-    fileprivate var japaneseTitle: String {
+    var japaneseTitle: String {
         var calendar = Calendar(identifier: .gregorian)
         calendar.locale = Locale(identifier: "ja_JP")
         guard let date = calendar.date(from: DateComponents(year: year, month: month, day: day)) else {

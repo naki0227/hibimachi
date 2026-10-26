@@ -8,6 +8,8 @@ enum IslandOverlay: Hashable {
     case fieldGuide
     case objectList
     case album
+    /// The day a selected object was placed.
+    case memory(UUID)
     case resetConfirm
     case startupNotice
     /// Debug builds only: the home-screen widget with live data.
