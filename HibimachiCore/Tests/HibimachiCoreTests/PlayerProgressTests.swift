@@ -82,6 +82,38 @@ struct PlayerProgressTests {
         #expect(progress.totalXP == RewardRule.questXP * 2)
     }
 
+    @Test func longerQuestsEarnALittleMoreWithinBounds() {
+        let bands: [(minutes: Int, xp: Int, sparkles: Int)] = [
+            (1, 15, 4), (4, 15, 4), (5, 20, 5), (14, 20, 5), (15, 25, 6), (29, 25, 6), (30, 30, 8), (60, 30, 8),
+        ]
+        for band in bands {
+            let reward = RewardRule.questReward(minutes: band.minutes)
+            #expect(reward.xp == band.xp && reward.sparkles == band.sparkles, "\(band.minutes) min")
+        }
+        for minutes in QuestTemplate.minutesRange {
+            let reward = RewardRule.questReward(minutes: minutes)
+            #expect(reward.xp * 2 <= RewardRule.questXP * 3, "never more than 1.5x the standard")
+            #expect(reward.xp * 4 >= RewardRule.questXP * 3, "a short quest still earns most of it")
+        }
+        for preset in GoalCategory.allCases.flatMap({ QuestPresets.quests(for: $0) }) {
+            #expect(RewardRule.questReward(minutes: preset.minutes).xp == RewardRule.questXP)
+        }
+    }
+
+    @Test func aLongQuestIsRewardedByItsLengthAndUndoTakesBackExactlyThat() throws {
+        var progress = try started()
+        let goal = try progress.addGoal(title: "走る", category: .move, at: date, makeID: UUID.init).get()
+        let quest = try progress.addQuest(to: goal.id, title: "30分走る", minutes: 30, id: UUID()).get()
+        let completionID = UUID()
+        let reward = try progress.complete(
+            quest.id, on: day, at: date, completionID: completionID, transactionID: UUID()
+        ).get()
+        #expect(reward.xpDelta == 30 && reward.sparkleDelta == 8 && reward.ruleVersion == RewardRule.version)
+        _ = try progress.undoCompletion(completionID, today: day, at: date, transactionID: UUID()).get()
+        #expect(progress.totalXP == 0)
+        #expect(progress.sparkles == RewardRule.welcomeSparkles)
+    }
+
     @Test func rewardsAreTheSameForEveryCategory() throws {
         for category in GoalCategory.allCases {
             var progress = try started()

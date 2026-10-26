@@ -138,9 +138,10 @@ public struct PlayerProgress: Equatable, Sendable {
         }
         let completion = QuestCompletion(
             id: completionID, questID: questID, goalID: quest.goalID, day: day, completedAt: date)
+        let amount = RewardRule.questReward(minutes: quest.minutes)
         let reward = RewardTransaction(
-            id: transactionID, reason: .questCompleted(completionID: completionID), xpDelta: RewardRule.questXP,
-            sparkleDelta: RewardRule.questSparkles, ruleVersion: RewardRule.version, date: date)
+            id: transactionID, reason: .questCompleted(completionID: completionID), xpDelta: amount.xp,
+            sparkleDelta: amount.sparkles, ruleVersion: RewardRule.version, date: date)
         completions.append(completion)
         ledger.append(reward)
         return .success(reward)

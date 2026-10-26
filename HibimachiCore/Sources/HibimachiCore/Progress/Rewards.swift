@@ -3,7 +3,10 @@ import Foundation
 /// Reward and price table. One common currency ("きらめき") for every activity (user decision 2026-10-26).
 /// Values are provisional (GAME-DESIGN "初期XPの例") and versioned so old transactions keep their meaning.
 public enum RewardRule {
-    public static let version = 1
+    /// v1: every quest 20 XP / 5. v2 (2026-10-26): gently scaled by the quest's length (see `questReward`).
+    /// Ledger lines keep the amounts they were granted, so old completions are not re-valued.
+    public static let version = 2
+    /// The standard reward, for 5–14 minute quests (every preset).
     public static let questXP = 20
     public static let questSparkles = 5
     /// Given once when progress starts (new island or migrated save) so building is possible from day one.
@@ -24,6 +27,17 @@ public enum RewardRule {
     }
 
     public static func level(forXP xp: Int) -> Int { 1 + max(xp, 0) / xpPerLevel }
+
+    /// Longer quests earn a little more, but never more than 1.5x the standard: a short quest done is still
+    /// worth most of the reward, and long ones are not the only way forward (GAME-DESIGN: 小さな一歩を評価する).
+    public static func questReward(minutes: Int) -> (xp: Int, sparkles: Int) {
+        switch minutes {
+        case ..<5: (15, 4)
+        case 5..<15: (questXP, questSparkles)
+        case 15..<30: (25, 6)
+        default: (30, 8)
+        }
+    }
 }
 
 /// One immutable ledger line. Balances are always derived from the ledger, never stored separately.
