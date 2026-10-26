@@ -56,6 +56,20 @@ extension GameStore {
         return ok
     }
 
+    /// Picks up quests completed outside the island screen (the widget) when the app comes back.
+    /// Skipped while a save is failing, so progress that only exists in memory is never replaced.
+    @discardableResult
+    public func reloadProgressFromStorage() -> Bool {
+        guard saveErrorMessage == nil, let stored = repository.peek()?.progress, stored != progress else {
+            return false
+        }
+        updateProgress { $0 = stored }
+        if let last = lastCompletion, !progress.completions.contains(where: { $0.id == last.completionID }) {
+            setLastCompletion(nil)
+        }
+        return true
+    }
+
     public func dismissLastCompletion() {
         setLastCompletion(nil)
     }

@@ -26,4 +26,13 @@ public enum WorldLoadOutcome: Equatable, Sendable {
 public protocol WorldRepository: Sendable {
     func load() -> WorldLoadOutcome
     func save(_ snapshot: GameSnapshot) throws
+    /// Reads the save without side effects (no quarantine, no new island). For readers outside the game screen
+    /// such as the widget, which must never move the app's file aside.
+    func peek() -> GameSnapshot?
+}
+
+extension WorldRepository {
+    public func peek() -> GameSnapshot? {
+        if case .loaded(let snapshot) = load() { snapshot } else { nil }
+    }
 }

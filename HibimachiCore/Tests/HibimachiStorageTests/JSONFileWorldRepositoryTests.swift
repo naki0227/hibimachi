@@ -123,6 +123,19 @@ struct JSONFileWorldRepositoryTests {
         #expect(preserved == Data(contents.utf8))
     }
 
+    @Test func peekReadsWithoutTouchingUnreadableFiles() throws {
+        #expect(repository().peek() == nil)
+        let saved = game(sampleWorld())
+        try repository().save(saved)
+        #expect(repository().peek() == saved)
+        try write("{ not json")
+        #expect(repository().peek() == nil)
+        // The widget only peeks: the app's file stays where it is for the app to recover.
+        #expect(FileManager.default.fileExists(atPath: repository().fileURL.path))
+        let names = try FileManager.default.contentsOfDirectory(atPath: directory.path)
+        #expect(names == [JSONFileWorldRepository.fileName])
+    }
+
     @Test func progressRoundTripsWithGoalsRewardsAndPurchases() throws {
         let world = sampleWorld()
         var progress = PlayerProgress.starting(for: world, at: Date(timeIntervalSince1970: 0), id: UUID())

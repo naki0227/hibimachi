@@ -27,17 +27,26 @@ public struct JSONFileWorldRepository: WorldRepository {
     public func load() -> WorldLoadOutcome {
         guard FileManager.default.fileExists(atPath: fileURL.path) else { return .notFound }
         do {
-            let data = try Data(contentsOf: fileURL)
-            let header = try JSONDecoder().decode(SchemaHeader.self, from: data)
-            guard WorldRecord.supportedSchemaVersions.contains(header.schemaVersion) else {
-                // Newer files are never overwritten: they are moved aside like corrupt ones.
-                throw WorldRecordError.unsupportedSchemaVersion(header.schemaVersion)
-            }
-            let record = try Self.decoder.decode(WorldRecord.self, from: data)
-            return .loaded(try record.makeSnapshot(migrationDate: now(), makeID: UUID.init))
+            return .loaded(try read())
         } catch {
             return .unreadable(reason: String(describing: error), backupFileName: quarantine())
         }
+    }
+
+    public func peek() -> GameSnapshot? {
+        guard FileManager.default.fileExists(atPath: fileURL.path) else { return nil }
+        return try? read()
+    }
+
+    private func read() throws -> GameSnapshot {
+        let data = try Data(contentsOf: fileURL)
+        let header = try JSONDecoder().decode(SchemaHeader.self, from: data)
+        guard WorldRecord.supportedSchemaVersions.contains(header.schemaVersion) else {
+            // Newer files are never overwritten: they are moved aside like corrupt ones.
+            throw WorldRecordError.unsupportedSchemaVersion(header.schemaVersion)
+        }
+        let record = try Self.decoder.decode(WorldRecord.self, from: data)
+        return try record.makeSnapshot(migrationDate: now(), makeID: UUID.init)
     }
 
     public func save(_ snapshot: GameSnapshot) throws {

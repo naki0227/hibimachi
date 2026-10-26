@@ -42,7 +42,7 @@ public final class GameStore {
     /// Why the last goal/quest/purchase action was refused (shown in the quest sheet).
     public private(set) var lastProgressError: ProgressError?
 
-    @ObservationIgnored private let repository: any WorldRepository
+    @ObservationIgnored let repository: any WorldRepository
     @ObservationIgnored private var rng: SeededRandom
     @ObservationIgnored private let makeID: () -> UUID
     @ObservationIgnored private let now: () -> Date
