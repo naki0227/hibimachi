@@ -62,7 +62,8 @@ jobs:
           xcodebuild test-without-building \
             -project Hibimachi.xcodeproj -scheme Hibimachi \
             -destination "$DESTINATION" -derivedDataPath build/DerivedData \
-            -resultBundlePath build/Hibimachi.xcresult
+            -resultBundlePath build/Hibimachi.xcresult \
+            -skip-testing:HibimachiUITests/DemoUITests
       - name: Export UI test screenshots
         if: always()
         run: |

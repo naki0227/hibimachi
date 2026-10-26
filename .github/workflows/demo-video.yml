@@ -1,0 +1,62 @@
+name: Demo video
+# Records a scripted play-through on the Simulator. Runs only on PRs labelled "demo-video" (or manually),
+# because macOS minutes are expensive on private repos.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  workflow_dispatch:
+
+concurrency:
+  group: demo-video-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  record:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.labels.*.name, 'demo-video')
+    runs-on: macos-26
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.5.app/Contents/Developer
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Boot Simulator
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          print(next(d["udid"] for runtime, ds in devices.items() if runtime.endswith("iOS-26-5") for d in ds if d["name"] == "iPhone 17e"))')
+          echo "UDID=$UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+      - name: Build for testing
+        run: |
+          set -o pipefail
+          xcodebuild build-for-testing -project Hibimachi.xcodeproj -scheme Hibimachi \
+            -destination "id=$UDID" -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO
+      - name: Record demo
+        run: |
+          mkdir -p build/demo
+          xcrun simctl io "$UDID" recordVideo --codec h264 --force build/demo/hibimachi-demo.mp4 &
+          RECORDER=$!
+          sleep 3
+          set +e
+          xcodebuild test-without-building -project Hibimachi.xcodeproj -scheme Hibimachi \
+            -destination "id=$UDID" -derivedDataPath build/DerivedData \
+            -only-testing:HibimachiUITests/DemoUITests
+          STATUS=$?
+          kill -INT "$RECORDER"
+          wait "$RECORDER"
+          ls -la build/demo
+          exit $STATUS
+      - name: Upload video
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: demo-video
+          path: build/demo
+          retention-days: 14
+          if-no-files-found: warn
