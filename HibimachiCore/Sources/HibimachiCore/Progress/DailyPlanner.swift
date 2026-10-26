@@ -9,7 +9,7 @@ public enum DailyPlanner {
         var rng = SeededRandom(seed: day.seed)
         let goals = progress.activeGoals.sorted { $0.createdAt < $1.createdAt }
         var pools: [[QuestTemplate]] = goals.map { goal in
-            progress.quests(of: goal.id)
+            progress.activeQuests(of: goal.id)
                 .filter { !progress.isCompleted($0.id, on: day) && !progress.isSkipped($0.id, on: day) }
                 .shuffled(using: &rng)
         }

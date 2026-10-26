@@ -114,6 +114,28 @@ final class IslandUITests: XCTestCase {
     }
 
     @MainActor
+    func testGoalsAndQuestsCanBeEdited() {
+        let app = launch()
+        openQuests(app)
+        app.buttons["goal-category-tidy"].tap()
+        app.buttons["create-goal"].tap()
+        let row = app.buttons["goal-row"].firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 5))
+        row.tap()
+        XCTAssertEqual(app.buttons.matching(identifier: "edit-quest").count, 3)
+        app.buttons.matching(identifier: "edit-quest").firstMatch.tap()
+        app.buttons["remove-quest"].tap()
+        XCTAssertEqual(app.buttons.matching(identifier: "edit-quest").count, 2, "a never-done quest is removed")
+        app.buttons["rename-goal"].tap()
+        let field = app.descendants(matching: .any)["rename-goal-field"].firstMatch
+        field.tap()
+        field.typeText("!")
+        app.buttons["rename-goal-save"].tap()
+        XCTAssertTrue(app.buttons["goal-row"].label.contains("部屋を心地よくする!"))
+        screenshot(app, "17-goal-editing")
+    }
+
+    @MainActor
     func testQuestCompletionRewardsAndCanBeUndone() {
         let app = launch()
         XCTAssertEqual(sparkles(app), "きらめき 30")

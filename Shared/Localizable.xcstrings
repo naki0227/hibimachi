@@ -61,6 +61,16 @@
         }
       }
     },
+    "%@を編集": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit %@"
+          }
+        }
+      }
+    },
     "%@を置いてみると、だれかが寄ってくるかも": {
       "localizations": {
         "en": {
@@ -237,6 +247,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Waiting for a letter"
+          }
+        }
+      }
+    },
+    "おやすみ中の目標": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resting goals"
           }
         }
       }
@@ -1141,6 +1161,16 @@
         }
       }
     },
+    "もう出さない": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop showing"
+          }
+        }
+      }
+    },
     "もち": {
       "localizations": {
         "en": {
@@ -1307,6 +1337,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Quest"
+          }
+        }
+      }
+    },
+    "クエストの名前": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quest name"
           }
         }
       }
@@ -1691,6 +1731,16 @@
         }
       }
     },
+    "保存": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save"
+          }
+        }
+      }
+    },
     "保存できませんでした。島はこのまま残っています。": {
       "localizations": {
         "en": {
@@ -1717,6 +1767,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Retry"
+          }
+        }
+      }
+    },
+    "再開": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume"
           }
         }
       }
@@ -1867,6 +1927,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Enter a name"
+          }
+        }
+      }
+    },
+    "名前を変える": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rename"
           }
         }
       }

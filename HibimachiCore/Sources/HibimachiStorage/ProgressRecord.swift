@@ -16,6 +16,8 @@ struct ProgressRecord: Codable, Equatable {
         var goalID: UUID
         var title: String
         var minutes: Int
+        /// Absent in older saves: still suggested.
+        var retired: Bool?
     }
 
     struct CompletionRecord: Codable, Equatable {
@@ -74,7 +76,10 @@ extension ProgressRecord {
                 id: $0.id, title: $0.title, category: $0.category.rawValue, createdAt: $0.createdAt,
                 archived: $0.isArchived)
         }
-        quests = progress.quests.map { QuestRecord(id: $0.id, goalID: $0.goalID, title: $0.title, minutes: $0.minutes) }
+        quests = progress.quests.map {
+            QuestRecord(
+                id: $0.id, goalID: $0.goalID, title: $0.title, minutes: $0.minutes, retired: $0.isRetired ? true : nil)
+        }
         completions = progress.completions.map {
             CompletionRecord(
                 id: $0.id, questID: $0.questID, goalID: $0.goalID, day: $0.day.description, completedAt: $0.completedAt)
@@ -105,7 +110,10 @@ extension ProgressRecord {
                 id: record.id, title: record.title, category: category, createdAt: record.createdAt,
                 isArchived: record.archived)
         }
-        let quests = quests.map { QuestTemplate(id: $0.id, goalID: $0.goalID, title: $0.title, minutes: $0.minutes) }
+        let quests = quests.map {
+            QuestTemplate(
+                id: $0.id, goalID: $0.goalID, title: $0.title, minutes: $0.minutes, isRetired: $0.retired ?? false)
+        }
         let completions = try completions.map { record in
             guard let day = LocalDay(string: record.day) else { throw ProgressRecordError.badDay(record.day) }
             return QuestCompletion(

@@ -114,10 +114,7 @@ struct QuestPanel: View {
         Text("目標").gameSectionTitle()
         VStack(spacing: 8) {
             ForEach(store.progress.activeGoals) { goal in
-                GoalRow(
-                    goal: goal, quests: store.progress.quests(of: goal.id),
-                    addQuest: { title, minutes in store.addQuest(to: goal.id, title: title, minutes: minutes) },
-                    rest: { store.archiveGoal(goal.id) })
+                GoalRow(goal: goal, quests: store.progress.activeQuests(of: goal.id), actions: actions(for: goal))
             }
             if store.progress.activeGoals.count < PlayerProgress.activeGoalLimit {
                 Button {
@@ -128,7 +125,38 @@ struct QuestPanel: View {
                 .buttonStyle(.game(.secondary))
                 .accessibilityIdentifier("add-goal")
             }
+            restingGoals
         }
+    }
+
+    /// Goals put to rest can come back (within the limit of active goals).
+    @ViewBuilder
+    private var restingGoals: some View {
+        let resting = store.progress.goals.filter(\.isArchived)
+        if !resting.isEmpty {
+            Text("おやすみ中の目標").gameSectionTitle()
+            ForEach(resting) { goal in
+                HStack {
+                    Label(goal.title, systemImage: goal.category.symbolName)
+                        .font(GameFont.body(14, weight: .bold))
+                        .foregroundStyle(GameColor.inkSoft)
+                    Spacer()
+                    Button("再開") { store.resumeGoal(goal.id) }
+                        .buttonStyle(.game(.secondary, compact: true))
+                        .accessibilityIdentifier("resume-goal")
+                }
+                .gameCard()
+            }
+        }
+    }
+
+    private func actions(for goal: Goal) -> GoalActions {
+        GoalActions(
+            addQuest: { title, minutes in store.addQuest(to: goal.id, title: title, minutes: minutes) },
+            editQuest: { id, title, minutes in store.editQuest(id, title: title, minutes: minutes) },
+            removeQuest: { id in store.removeQuest(id) },
+            rename: { title in store.renameGoal(goal.id, to: title) },
+            rest: { store.archiveGoal(goal.id) })
     }
 }
 
