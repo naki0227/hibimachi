@@ -229,12 +229,12 @@ struct SelectionBar: View {
     let object: WorldObject
 
     var body: some View {
-        HStack(spacing: 8) {
-            Image(decorative: IslandArt.sprite(for: object.kind).image, scale: 1)
-                .interpolation(.none).resizable().scaledToFit().frame(width: 40, height: 40)
+        HStack(spacing: 6) {
             Text(object.kind.displayName)
                 .font(.system(.headline, design: .rounded))
                 .lineLimit(1)
+                .minimumScaleFactor(0.6)
+                .layoutPriority(1)
                 .accessibilityIdentifier("selection-name")
             Spacer(minLength: 4)
             action("動かす", "arrow.up.and.down.and.arrow.left.and.right", "move-selection") {
@@ -253,7 +253,7 @@ struct SelectionBar: View {
                 Image(systemName: symbol).font(.body.weight(.semibold))
                 Text(title).font(.system(.caption2, design: .rounded)).lineLimit(1).fixedSize()
             }
-            .frame(width: 52, height: 52)
+            .frame(width: 48, height: 52)
             .background(Color.white.opacity(0.85), in: RoundedRectangle(cornerRadius: 14))
         }
         .buttonStyle(.plain)

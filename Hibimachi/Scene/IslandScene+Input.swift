@@ -9,6 +9,8 @@ import UIKit
 /// - Pinch: zoom, clamped so the island stays visible.
 /// Committing always requires the explicit SwiftUI "ここに置く" button.
 extension IslandScene: UIGestureRecognizerDelegate {
+    static let initialZoom = 0.72
+
     enum PanMode {
         case none
         case camera
@@ -103,9 +105,11 @@ extension IslandScene: UIGestureRecognizerDelegate {
         return kind.footprint.tiles(at: origin).contains { $0.chebyshevDistance(to: tile) <= 1 }
     }
 
-    /// Fits the whole island on screen, centered.
+    /// Frames the island so it fills the width of a phone (the thin left/right tips may be cut), centered.
+    /// UI tests mirror this formula (HibimachiUITests/DemoUITests.swift).
     func resetCamera() {
-        cameraNode.setScale(CGFloat(cameraBounds.fittingScale(for: viewportSize)))
+        let scale = cameraBounds.clampScale(cameraBounds.fittingScale(for: viewportSize) * Self.initialZoom)
+        cameraNode.setScale(CGFloat(scale))
         cameraNode.position = CGPoint(x: grid.mapSize.width / 2, y: grid.mapSize.height / 2)
         clampCamera()
     }

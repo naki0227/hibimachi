@@ -56,8 +56,8 @@ enum PaletteTab: String, CaseIterable, Identifiable {
 
     var kinds: [ObjectKind] {
         switch self {
-        case .build: [.house]
-        case .decor: [.bench, .lamp]
+        case .build: [.house, .bench]
+        case .decor: [.lamp, .flower]
         case .path: []
         case .nature: [.roundTree, .pineTree, .flower, .pond]
         }

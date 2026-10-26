@@ -25,6 +25,8 @@ final class IslandScene: SKScene {
     var dayPhaseApplied = false
 
     private let terrainNode = SKSpriteNode()
+    /// Everything that is part of the island picture (used for discovery snapshots), excluding UI overlays.
+    let worldLayer = SKNode()
     let backdropLayer = SKNode()
     private let objectLayer = SKNode()
     private let overlayLayer = SKNode()
@@ -71,7 +73,8 @@ final class IslandScene: SKScene {
         tint.zPosition = 800
         glowLayer.zPosition = 850
         overlayLayer.zPosition = 900
-        [backdropLayer, terrainNode, gridOverlay, objectLayer, glowLayer, overlayLayer].forEach(addChild)
+        [backdropLayer, terrainNode, objectLayer, glowLayer].forEach(worldLayer.addChild)
+        [worldLayer, gridOverlay, overlayLayer].forEach(addChild)
         cameraNode.addChild(tint)
         objectLayer.addChild(creatureNode)
         buildBackdrop()

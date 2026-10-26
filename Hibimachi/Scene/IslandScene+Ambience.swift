@@ -57,8 +57,8 @@ extension IslandScene {
             switch phase {
             case .morning: (SKColor(hex: 0xFFC48A), 0.12)
             case .day: (.clear, 0)
-            case .evening: (SKColor(hex: 0xFF8A5B), 0.22)
-            case .night: (SKColor(hex: 0x16245A), 0.5)
+            case .evening: (SKColor(hex: 0xFF8A5B), 0.18)
+            case .night: (SKColor(hex: 0x1E2F6B), 0.36)
             }
         tint.color = color
         tint.run(.fadeAlpha(to: alpha, duration: reduceMotion ? 0 : 1.2))
@@ -83,7 +83,7 @@ extension IslandScene {
                 glow.size = CGSize(width: 170, height: 120)
                 glow.position = CGPoint(x: front.x, y: front.y + 34)
             }
-            glow.alpha = 0.75
+            glow.alpha = 0.5
             glowLayer.addChild(glow)
         }
     }
@@ -120,10 +120,18 @@ extension IslandScene {
         Task { @MainActor [weak self] in
             // Wait for the creature to settle into its pose before taking the picture.
             try? await Task.sleep(for: .milliseconds(800))
-            guard let self, let view = self.view else { return }
+            guard let self, let view = self.view,
+                let full = view.texture(from: self.worldLayer)?.cgImage()
+            else { return }
+            // Render the island layer (no tint/UI overlays) and crop around the creature ourselves:
+            // the rendered image covers the layer's accumulated frame, top-left origin.
+            let frame = self.worldLayer.calculateAccumulatedFrame()
+            let scale = Double(full.width) / frame.width
             let center = self.creatureNode.position
-            let crop = CGRect(x: center.x - 110, y: center.y - 60, width: 220, height: 180)
-            guard let image = view.texture(from: self, crop: crop)?.cgImage() else { return }
+            let crop = CGRect(
+                x: (center.x - 90 - frame.minX) * scale, y: (frame.maxY - (center.y + 110)) * scale,
+                width: 180 * scale, height: 150 * scale)
+            guard let image = full.cropping(to: crop) else { return }
             self.onDiscoverySnapshot?(kind, image)
         }
     }

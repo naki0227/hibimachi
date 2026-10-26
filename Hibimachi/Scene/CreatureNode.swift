@@ -15,11 +15,12 @@ final class CreatureNode: SKNode {
         super.init()
         name = "creature"
         body.anchorPoint = CGPoint(x: 0.5, y: 0.1)
-        body.size = CGSize(width: 22 * IslandArt.pixel, height: 20 * IslandArt.pixel)
+        // Drawn 1.5x so the creature reads at the default zoom (its art pixels are slightly larger than the world's).
+        body.size = CGSize(width: 22 * IslandArt.pixel * 1.5, height: 20 * IslandArt.pixel * 1.5)
         addChild(body)
         emote.fontSize = 18
         emote.fontColor = IslandArt.Palette.ink
-        emote.position = CGPoint(x: 6, y: 44)
+        emote.position = CGPoint(x: 8, y: 62)
         emote.alpha = 0
         addChild(emote)
     }

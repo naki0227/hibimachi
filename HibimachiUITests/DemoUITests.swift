@@ -8,6 +8,7 @@ final class DemoUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchEnvironment["HIBIMACHI_STORAGE_NAME"] = "demo-\(UUID().uuidString)"
         app.launchEnvironment["HIBIMACHI_SEED"] = "2026"
+        app.launchEnvironment["HIBIMACHI_DAY_PHASE"] = "day"
         app.launch()
         XCTAssertTrue(app.descendants(matching: .any)["island-view"].waitForExistence(timeout: 15))
 
@@ -90,12 +91,13 @@ final class DemoUITests: XCTestCase {
     }
 
     /// Screen point of a tile's center. Mirrors IslandScene.resetCamera + IsoGrid (64x32 tiles, 48pt base,
-    /// camera margin 24): the whole island is fitted to the window and centered.
+    /// camera margin 24, initial zoom 0.72), centered on the map.
     @MainActor
     private func tile(_ app: XCUIApplication, x: Int, y: Int) -> XCUICoordinate {
         let frame = app.windows.firstMatch.frame
         let map = CGSize(width: 1024, height: 560)
-        let scale = min(max((map.width + 48) / frame.width, (map.height + 48) / frame.height), 3.2)
+        let fitting = min(max((map.width + 48) / frame.width, (map.height + 48) / frame.height), 3.2)
+        let scale = min(max(fitting * 0.72, 0.6), 3.2)
         let sceneX = (CGFloat(x) + 0.5 - (CGFloat(y) + 0.5) + 16) * 32
         let sceneY = (CGFloat(x) + 0.5 + CGFloat(y) + 0.5) * 16 + 48
         let point = CGVector(

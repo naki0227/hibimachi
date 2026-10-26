@@ -21,9 +21,11 @@ struct IslandScreen: View {
     @State private var showsObjectList = false
     @State private var confirmsReset = false
 
-    init(store: GameStore) {
+    init(store: GameStore, initialPhase: DayPhase? = nil) {
         self.store = store
         let scene = IslandScene(store: store)
+        scene.dayPhaseOverride = initialPhase
+        _phaseOverride = State(initialValue: initialPhase)
         let album = DiscoveryAlbum()
         scene.onDiscoverySnapshot = { kind, image in album.images[kind] = image }
         _scene = State(initialValue: scene)

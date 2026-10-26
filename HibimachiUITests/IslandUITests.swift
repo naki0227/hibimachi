@@ -14,6 +14,7 @@ final class IslandUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchEnvironment["HIBIMACHI_STORAGE_NAME"] = storageName
         app.launchEnvironment["HIBIMACHI_SEED"] = "2026"
+        app.launchEnvironment["HIBIMACHI_DAY_PHASE"] = "day"
         app.launch()
         XCTAssertTrue(app.descendants(matching: .any)["island-view"].waitForExistence(timeout: 15))
         return app
