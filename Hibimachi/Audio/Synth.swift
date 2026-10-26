@@ -61,7 +61,8 @@ final class Synth: Sendable {
 
     /// Fills `frames` samples (mono) and drops finished voices. Output is soft-clipped to -1...1.
     func render(into buffer: UnsafeMutableBufferPointer<Float>, frames: Int) {
-        voices.withLock { current in
+        // Unchecked: the buffer pointer is not Sendable, but it is only used inside the lock on this audio thread.
+        voices.withLockUnchecked { current in
             for frame in 0..<min(frames, buffer.count) {
                 var sample = 0.0
                 for index in current.indices { sample += current[index].nextSample(sampleRate: sampleRate) }
