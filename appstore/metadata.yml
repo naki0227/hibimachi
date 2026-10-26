@@ -1,0 +1,109 @@
+# App Store / TestFlight に出す内容。ここを書き換えて Actions の「App Store metadata」を実行すると反映される。
+# - キー名の右側コメントは App Store Connect での項目名。
+# - ${NAME} は GitHub Secrets から読む（電話番号やメールをリポジトリに置かないため）。
+# - "TODO" が残っていると plan / apply は止まる（validate は警告だけ）。
+# - 「App のプライバシー」（栄養ラベル）と価格・配信国は API で設定できないため、本ファイル末尾の手順で一度だけ手で入れる。
+
+app:
+  bundle_id: com.enludus.hibimachi
+  primary_locale: ja
+  content_rights: DOES_NOT_USE_THIRD_PARTY_CONTENT   # コンテンツ配信権: 第三者のコンテンツを使っていない
+  categories:                                        # カテゴリ（ID は App Store Connect API の appCategories）
+    primary: GAMES
+    primary_subcategories: [GAMES_SIMULATION, GAMES_CASUAL]
+    secondary: LIFESTYLE
+
+version:
+  version_string: "0.1.0"        # アプリの MARKETING_VERSION と同じにする（validate が確認する）
+  copyright: "2026 enludus"    # 著作権
+  release_type: MANUAL           # 審査通過後: MANUAL=自分で公開 / AFTER_APPROVAL=自動で公開
+
+localizations:
+  ja:
+    name: ひびまち                               # App 名（30字）
+    subtitle: 小さな島に、日々が育つ               # サブタイトル（30字）
+    privacy_policy_url: https://enludus.com/products/hibimachi-privacy   # プライバシーポリシー URL（必須）
+    support_url: https://enludus.com/products/hibimachi                 # サポート URL（必須）
+    # marketing_url: https://...               # マーケティング URL（任意）
+    keywords: 箱庭,島,街づくり,ドット絵,癒し,習慣,目標,ToDo,ウィジェット,アルバム,のんびり   # キーワード（100字、カンマ区切り）
+    promotional_text: >-                       # プロモーションテキスト（170字、審査なしでいつでも変更可）
+      今日の小さな「やった！」が、島の家やベンチになる。生き物がのんびり暮らす、自分だけの箱庭をつくろう。
+    description: |                             # 説明（4000字）
+      小さな島に、日々が育つ。
+
+      「ひびまち」は、ドット絵の小さな島を自由に作る箱庭ゲームです。家やベンチ、木や花、小道を置くと、島の生き物がのんびり歩きまわり、置いたものに反応してくれます。ベンチでひとやすみしたり、木かげでうたた寝したり。置き方しだいで見られる姿が変わり、見つけた姿は図鑑に記録されます。
+
+      ■ 自由に置ける箱庭
+      ・タップとドラッグで、家・ベンチ・ランプ・木・花・池を配置
+      ・地面をなぞって小道をひく。まちがえても「もどす」で戻せます
+      ・朝・昼・夕方・夜で島の色が変わり、夜にはランプが灯ります
+
+      ■ 現実の「小さなやった！」が島の資源に
+      ・片付け、勉強、休息、創作、からだ…育てたいことを選ぶと、今日の小さなクエストが3つ届きます
+      ・できたらタップするだけで、XP と「きらめき」がもらえます
+      ・きらめきで新しい建物を迎えられます。できなかった日も、島は何も失いません
+
+      ■ ホーム画面ウィジェット
+      ・大きなウィジェットには、左に島のようす、右に今日のクエスト
+      ・ウィジェットから直接「やった！」にできます
+
+      ■ 成長アルバム
+      ・ひとことと写真1枚で、その日の記録を残せます（もちろん残さなくても遊べます）
+      ・やったクエストや迎えた建物が日付ごとに並び、島の歴史になります
+
+      ■ 安心して使える
+      ・アカウント登録なし、広告なし、通信なし。データはすべて端末の中に保存されます
+      ・写真は縮小し、位置情報を取り除いてから端末内に保存します
+    whats_new: 新しい島と生き物、今日のクエスト、ウィジェット、アルバムを追加しました。   # 新機能（初回バージョンでは送られない）
+
+age_rating:      # 年齢制限指定の回答（API の属性名そのまま）。新しい質問が増えたらキーを足す
+  alcoholTobaccoOrDrugUseOrReferences: NONE
+  contests: NONE
+  gamblingSimulated: NONE
+  horrorOrFearThemes: NONE
+  matureOrSuggestiveThemes: NONE
+  medicalOrTreatmentInformation: NONE
+  profanityOrCrudeHumor: NONE
+  sexualContentGraphicAndNudity: NONE
+  sexualContentOrNudity: NONE
+  violenceCartoonOrFantasy: NONE
+  violenceRealistic: NONE
+  violenceRealisticProlongedGraphicOrSadistic: NONE
+  gunsOrOtherWeapons: NONE
+  gambling: false
+  unrestrictedWebAccess: false
+  lootBox: false
+
+review:          # App Review に関する情報
+  contact_first_name: ${ASC_REVIEW_FIRST_NAME}
+  contact_last_name: ${ASC_REVIEW_LAST_NAME}
+  contact_phone: ${ASC_REVIEW_PHONE}          # 例: +81 90-1234-5678
+  contact_email: ${ASC_REVIEW_EMAIL}
+  demo_account_required: false                # ログインがないのでデモアカウント不要
+  notes: |
+    ログインや通信はありません。起動するとすぐに島が表示されます。
+    ・下のパレットから建物を選び、島をタップして「ここに置く」で配置できます。
+    ・右の ✓ ボタンから目標を選ぶと、今日の小さなクエストが表示されます（自己申告でタップするだけです）。
+    ・ホーム画面ウィジェット（小・中・大）から、今日のクエストを完了にできます。
+    ・アルバムの写真はシステムの写真ピッカーで選ぶため、写真ライブラリへのアクセス許可は求めません。
+
+screenshots:     # スクリーンショット（フォルダ内の PNG をファイル名順に最大10枚）
+  ja:
+    APP_IPHONE_67: appstore/screenshots/ja/iphone69   # 6.9インチ（1320x2868 / 1290x2796）。Actions で自動撮影
+
+testflight:      # TestFlight（外部テスト時に必要。内部テストだけなら無くても良い）
+  localizations:
+    ja:
+      description: 小さな島を作る箱庭ゲームです。置いたものに生き物が反応します。今日のクエストを「やった！」にすると、島の資源がもらえます。
+      feedback_email: ${ASC_REVIEW_EMAIL}
+      privacy_policy_url: https://enludus.com/products/hibimachi-privacy
+  review:
+    contact_first_name: ${ASC_REVIEW_FIRST_NAME}
+    contact_last_name: ${ASC_REVIEW_LAST_NAME}
+    contact_phone: ${ASC_REVIEW_PHONE}
+    contact_email: ${ASC_REVIEW_EMAIL}
+    demo_account_required: false
+
+# --- API で設定できない項目（App Store Connect で一度だけ手で入れる） ---
+# App のプライバシー: 「データを収集していません」を選ぶ（解析・広告・通信なし、写真や記録は端末内のみ）
+# 価格および配信状況: 無料、配信国は日本（ほかの国は英語版を用意してから）

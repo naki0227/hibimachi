@@ -1,0 +1,84 @@
+name: Swift CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: swift-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  core:
+    name: Format / Lint / Core tests (Linux)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    # Pinned toolchain: swift-format output depends on its version, so this job is the format/lint authority.
+    container:
+      image: swift:6.3.3-noble@sha256:c2f3ac2eb806ce43f68859c3d52bd3bb1cfc88672fb3a948b76e136d98e39278
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Format check
+        run: scripts/ci/swift-quality.sh format-check
+      - name: Lint
+        run: scripts/ci/swift-quality.sh lint
+      - name: Build (typecheck) core package
+        run: swift build --package-path HibimachiCore -Xswiftc -warnings-as-errors
+      - name: Unit tests (core package)
+        run: swift test --package-path HibimachiCore -Xswiftc -warnings-as-errors
+
+  ios:
+    name: iOS build / test (Simulator)
+    needs: core
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.5.app/Contents/Developer
+      DESTINATION: platform=iOS Simulator,name=iPhone 17e,OS=26.5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Toolchain versions
+        run: |
+          xcodebuild -version
+          swift --version
+      - name: Unit tests (core package on Apple platform)
+        run: swift test --package-path HibimachiCore
+      - name: Build for testing (app + tests, typecheck)
+        run: |
+          set -o pipefail
+          xcodebuild build-for-testing \
+            -project Hibimachi.xcodeproj -scheme Hibimachi \
+            -destination "$DESTINATION" -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO
+      - name: Test (app unit tests + UI tests on Simulator)
+        run: |
+          set -o pipefail
+          xcodebuild test-without-building \
+            -project Hibimachi.xcodeproj -scheme Hibimachi \
+            -destination "$DESTINATION" -derivedDataPath build/DerivedData \
+            -resultBundlePath build/Hibimachi.xcresult \
+            -skip-testing:HibimachiUITests/DemoUITests \
+            -skip-testing:HibimachiUITests/AppStoreScreenshotTests
+      - name: Export UI test screenshots
+        if: always()
+        run: |
+          if [ -d build/Hibimachi.xcresult ]; then
+            mkdir -p build/screenshots
+            xcrun xcresulttool export attachments --path build/Hibimachi.xcresult --output-path build/screenshots || true
+          fi
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ios-test-results
+          path: |
+            build/Hibimachi.xcresult
+            build/screenshots
+          retention-days: 14
+          if-no-files-found: ignore

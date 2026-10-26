@@ -1,7 +1,20 @@
 # Quality / CI — 実装前の品質基盤
 
-## 現状
-このパックはドキュメントと構造検査スクリプトのみ。Xcodeプロジェクト、Swiftコード、macOS Runnerでのビルドは**まだ存在しない**ため、Swift checksは未実施。
+## 現状（2026-10-25 更新）
+- `Hibimachi.xcodeproj`（app / HibimachiTests / HibimachiUITests）と `HibimachiCore/`（ローカルSwift Package）を作成済み。構成理由は [ADR-0002](adr/0002-project-layout-and-ci-tooling.md)。
+- `.github/workflows/swift-ci.yml`: Linuxで format-check / lint / core build / core test、通過後にmacOSでアプリbuild・unit test・UI test（Simulator）。
+- `.github/workflows/docs-ci.yml`: ドキュメント構造検査（従来どおり）。
+
+## ローカル実行コマンド
+```
+scripts/ci/swift-quality.sh format-check   # 整形差分があれば失敗
+scripts/ci/swift-quality.sh lint           # swift format lint --strict
+scripts/ci/swift-quality.sh format         # 整形を適用
+swift test --package-path HibimachiCore    # Domain/UseCase/Storage のunit test（Linux/macOS）
+xcodebuild test -project Hibimachi.xcodeproj -scheme Hibimachi \
+  -destination 'platform=iOS Simulator,name=iPhone 17e,OS=26.5'   # macOSのみ
+python3 scripts/verify_docs.py
+```
 
 ## ブートストラップ最初のコミットで行うこと
 1. iOS Xcode projectを作成し、shared scheme、Deployment Target、Swiftツールチェーンのバージョン、Bundle ID仮値を定義。
@@ -26,9 +39,10 @@
 - 写真なし、写真消去、許可拒否、書き込み失敗、プライバシー同意撤回。
 
 ## CI段階
-- **現時点**: `.github/workflows/docs-ci.yml` はPython標準ライブラリでドキュメントリンク/必須ファイル/機密文字列の基本確認（セキュリティ保証ではない）。
-- **Xcode初期化後**: 署名不要のSimulator向け `xcodebuild build/test`、format/lint、検証専用schemeを追加。
+- **docs**: `.github/workflows/docs-ci.yml` はPython標準ライブラリでドキュメントリンク/必須ファイル/機密文字列の基本確認（セキュリティ保証ではない）。
+- **Swift（導入済み）**: `.github/workflows/swift-ci.yml`。署名不要のSimulator向け `xcodebuild build-for-testing / test-without-building`、format/lint、core package test。UI testのスクリーンショットはartifact `ios-test-results` に保存。
 - **リリース前**: Simulator UI test、実機アクセシビリティ、パフォーマンス、TestFlight配信の手動jobを追加。
+- **TestFlight（手動、2026-10-26追加・未実行）**: `.github/workflows/testflight.yml`。Actions タブから「Run workflow」で起動。Release を archive し、App Store Connect API キーによる自動署名で書き出してアップロードする。ビルド番号は `run_number` の10倍（手動アップロードより必ず大きくするため）。必要な Secrets: `ASC_KEY_ID`、`ASC_ISSUER_ID`、`ASC_KEY_P8`（.p8 の中身）、`APPLE_TEAM_ID`。足りないと最初の手順で名前を出して止まる。PR からは起動できない（`workflow_dispatch` のみ）。
 
 ## セキュリティ・プライバシー
 - 写真・目標・家の中が写るデータをCI成果物やクラッシュログに含めない。

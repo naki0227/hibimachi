@@ -1,6 +1,6 @@
 # HIBIMACHI — 生活と一緒に育つ、小さな箱庭（仮称）
 
-> **ステータス**: 企画・実装引き継ぎ用。プロジェクト名、画風の詳細と数値は仮定。アプリ実装・ビルド・TestFlight配信は未実施。
+> **ステータス**: P0（箱庭単体のVertical Slice）実装済み・CIでSimulator検証済み。実機プレイテスト・TestFlight配信は未実施。プロジェクト名、画風の詳細と数値は仮定。
 > **作成**: 2026-10-25 / **対象**: iOS / **方針**: Swift + SwiftUI + SpriteKit、AI任意、ローカルファースト。
 
 ## ビジョン
@@ -25,14 +25,24 @@
 7. [docs/QUALITY-CI.md](docs/QUALITY-CI.md) — 最初のCI整備とテスト計画
 8. [docs/ROADMAP.md](docs/ROADMAP.md) — 段階的実装・検証指標
 9. [docs/PRIVACY-AI.md](docs/PRIVACY-AI.md) — 個人情報、任意AIと画像取り扱い
-10. [docs/adr/0001-ios-native-spritekit.md](docs/adr/0001-ios-native-spritekit.md) — 暫定技術判断
-11. [TODO.md](TODO.md) / [reports/2026-10-25-planning.md](reports/2026-10-25-planning.md) — 引き継ぎ管理
+10. [docs/adr/](docs/adr/0001-ios-native-spritekit.md) — 技術判断（0001 SpriteKit、[0002 構成とCI](docs/adr/0002-project-layout-and-ci-tooling.md)、[0003 ゲーム状態と保存](docs/adr/0003-p0-game-state-and-persistence.md)）
+11. [TODO.md](TODO.md) / [reports/](reports/2026-10-25-p0-vertical-slice.md) — 引き継ぎ管理
+
+## コード構成
+```
+Hibimachi/            SwiftUI画面（Views/）とSpriteKit描画・入力（Scene/）。ルールは持たない
+HibimachiCore/        ローカルSwift Package
+  Sources/HibimachiCore     Domain・Simulation（生き物）・Geometry・UseCases（GameStore）
+  Sources/HibimachiStorage  JSONファイル保存（schema v1）
+HibimachiTests/       描画同期のunit test   HibimachiUITests/  Simulator UI test
+```
 
 ## 企画の境界
 これは独立した新規プロジェクト。既存の `mikka_bouzu` とは関連するが、**そのリポジトリを置き換えたり、既存コードを流用したとみなさない**。使う場合はコードとライセンス、テストを確認する。
 
 ## 品質ゲート
-この資料にはドキュメント構造検査CIを含める。Xcodeプロジェクト未作成のため **Swiftのformat/lint/typecheck/test/buildは未実施**。Claudeは機能追加前にアプリ雛形を作成し、macOS Runnerでこれらを実行するCIを別コミットで整えること。
+- Docs CI（`.github/workflows/docs-ci.yml`）と Swift CI（`.github/workflows/swift-ci.yml`: format / lint / core test / iOS build / unit・UI test）。
+- ローカル実行コマンドは [docs/QUALITY-CI.md](docs/QUALITY-CI.md)、構成判断は [ADR-0002](docs/adr/0002-project-layout-and-ci-tooling.md)。
 
 ## 参考情報
 - [Apple SpriteKit](https://developer.apple.com/documentation/spritekit)

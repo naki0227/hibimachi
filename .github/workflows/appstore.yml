@@ -1,0 +1,130 @@
+name: App Store metadata
+# appstore/metadata.yml -> App Store Connect.
+# - Pull requests: offline validation and unit tests only (no secrets).
+# - Manual run: optional screenshots on a 6.9-inch simulator, then `plan` (show changes) or `apply`.
+#   Submitting for review happens only with mode=apply and submit=true.
+on:
+  pull_request:
+    paths:
+      - appstore/**
+      - scripts/appstore/**
+      - .github/workflows/appstore.yml
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "plan = show what would change, apply = change App Store Connect"
+        type: choice
+        options: [plan, apply]
+        default: plan
+      screenshots:
+        description: "Take new screenshots and upload them"
+        type: boolean
+        default: false
+      build:
+        description: "Build number to attach to the version (optional)"
+        required: false
+        default: ""
+      submit:
+        description: "Submit for App Review (apply only)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: appstore-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate metadata
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Install pinned tools
+        run: python3 -m pip install --user -r scripts/appstore/requirements.txt
+      - name: Unit tests
+        run: python3 -m unittest discover -s scripts/appstore/tests
+      - name: Validate metadata.yml (TODOs and secrets only warn here)
+        run: python3 scripts/appstore/asc.py validate
+
+  screenshots:
+    name: Screenshots (iPhone 17 Pro Max)
+    if: github.event_name == 'workflow_dispatch' && inputs.screenshots
+    needs: validate
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.5.app/Contents/Developer
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Boot Simulator
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          print(next(d["udid"] for runtime, ds in devices.items() if runtime.endswith("iOS-26-5") for d in ds if d["name"] == "iPhone 17 Pro Max"))')
+          echo "UDID=$UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl status_bar "$UDID" override --time 9:41 --dataNetwork wifi --wifiBars 3 \
+            --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100
+      - name: Take screenshots
+        run: |
+          set -o pipefail
+          xcodebuild build-for-testing -project Hibimachi.xcodeproj -scheme Hibimachi \
+            -destination "id=$UDID" -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO
+          xcodebuild test-without-building -project Hibimachi.xcodeproj -scheme Hibimachi \
+            -destination "id=$UDID" -derivedDataPath build/DerivedData -resultBundlePath build/Shots.xcresult \
+            -only-testing:HibimachiUITests/AppStoreScreenshotTests
+          xcrun xcresulttool export attachments --path build/Shots.xcresult --output-path build/attachments
+          python3 scripts/appstore/collect_screenshots.py build/attachments appstore/screenshots/ja/iphone69
+      - name: Upload screenshots
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: appstore-screenshots
+          path: appstore/screenshots
+
+  sync:
+    name: ${{ inputs.mode }} App Store Connect
+    if: github.event_name == 'workflow_dispatch' && !cancelled() && needs.validate.result == 'success' && needs.screenshots.result != 'failure'
+    needs: [validate, screenshots]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Download screenshots
+        if: inputs.screenshots
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: appstore-screenshots
+          path: appstore/screenshots
+      - name: Install pinned tools
+        run: python3 -m pip install --user -r scripts/appstore/requirements.txt
+      - name: Sync
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          ASC_REVIEW_FIRST_NAME: ${{ secrets.ASC_REVIEW_FIRST_NAME }}
+          ASC_REVIEW_LAST_NAME: ${{ secrets.ASC_REVIEW_LAST_NAME }}
+          ASC_REVIEW_PHONE: ${{ secrets.ASC_REVIEW_PHONE }}
+          ASC_REVIEW_EMAIL: ${{ secrets.ASC_REVIEW_EMAIL }}
+          MODE: ${{ inputs.mode }}
+          SCREENSHOTS: ${{ inputs.screenshots }}
+          BUILD: ${{ inputs.build }}
+          SUBMIT: ${{ inputs.submit }}
+        run: |
+          args=("$MODE")
+          [ "$SCREENSHOTS" = "true" ] && args+=(--screenshots)
+          [ -n "$BUILD" ] && args+=(--build "$BUILD")
+          if [ "$SUBMIT" = "true" ]; then
+            [ "$MODE" = "apply" ] || { echo "::error::submit needs mode=apply"; exit 1; }
+            args+=(--submit)
+          fi
+          python3 scripts/appstore/asc.py "${args[@]}"
