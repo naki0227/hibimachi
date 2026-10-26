@@ -10,7 +10,7 @@
 3. `584d664` ウィジェット拡張 `HibimachiWidgetExtension`（小・中・大）、App Intent による達成、保存先を App Group へ移動、島の絵の書き出し、アプリ内のデバッグ用プレビューとUIテスト。
 4. `1fefe13` ADR-0006、DATA-MODEL、TODO。
 5. `13948e2` 修正: 島の絵の切り抜きで型を取り違えていた（CIのiOSビルドで検出）。
-6. ウィジェット大サイズの見た目修正（島の枠を正方形にして拡大、置いたもの数・発見数を追加、見出しを1行に）。
+6. `7c2d01b` ウィジェット大サイズの見た目修正（島の枠を正方形にして拡大、置いたもの数・発見数を追加、見出しを1行に）。
 
 ## 設計の要点（ADR-0006）
 - 保存は App Group コンテナの `Hibimachi/world.json`。旧保存は1回だけ移動し、失敗したら旧フォルダを使い続ける。App Group が無いビルドでは従来の保存先。
@@ -24,7 +24,7 @@
 |---|---|
 | `swift test --package-path HibimachiCore`（Linux, Swift 6.3.3） | 104件 PASS（追加7件） |
 | format-check / lint（ローカル） | PASS |
-| Swift CI（head `13948e2`）: Linux / iOS build・app unit・UI test 6件 | success |
+| Swift CI（head `13948e2`、`ff52952`）: Linux / iOS build・app unit・UI test 6件 | success |
 | Demo video（head `13948e2`） | success |
 | UI test `testWidgetPreviewShowsIslandAndTodaysQuests` | PASS（目標作成→1件達成→プレビューで「のこり2」と表示） |
 | `0beca27` 時点の CI（UI置き換えのみ） | success。デモ動画をユーザーへ送付 |
