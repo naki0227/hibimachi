@@ -11,7 +11,7 @@ AGENTS.md は「Domain/UseCaseはSpriteKit・SwiftUI・DBを知らない」「CI
 2. **format/lint は Swift toolchain 同梱の `swift format`**（追加依存なし）。設定は `.swift-format`。lint は `swift format lint --strict`。
 3. **CIは2段**: Linux（`swift:6.3.3-noble` をdigest固定）で format-check / lint / core build / core test。通過後に macOS（`macos-26`、Xcode 26.5固定、iPhone 17e / iOS 26.5 Simulator）で core test・アプリbuild・unit/UI test。
 4. Xcodeプロジェクトは Xcode 16以降の folder-synchronized group（objectVersion 77）で手書き。ファイル追加でpbxprojを編集しない。
-5. 最低iOS 17.0（Observation / `@Observable` を使うため）。iPhone・縦画面のみ。Bundle ID `dev.naki0227.hibimachi` は仮値。
+5. 最低iOS 17.0（Observation / `@Observable` を使うため）。iPhone・縦画面のみ。Bundle ID `dev.naki0227.hibimachi` は仮値。→ 2026-10-26 ユーザー決定で `com.enludus.hibimachi`（ウィジェット `.widget`、App Group `group.com.enludus.hibimachi`）に変更。TestFlight/App Store Connect 登録後は変更できない。
 
 ## 選択肢と比較
 | 案 | 利点 | 欠点 |

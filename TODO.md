@@ -35,7 +35,7 @@
 - [x] P0タイルマップ（16x16、草地/小道/水）と配置・移動・撤去・Undo（20段）。
 - [x] 生き物1匹の状態機械と4反応（ベンチ休憩・花ベンチ・木かげ昼寝・池のぞき）。
 - [x] 保存/復元（JSON schema v1、原子的書き込み、破損/新版は退避して通知）。
-- [x] 最低iOS 17.0、Xcode 26.5（CI固定）、Swift 6、Bundle ID仮値 `dev.naki0227.hibimachi` を決定（ADR-0002）。
+- [x] 最低iOS 17.0、Xcode 26.5（CI固定）、Swift 6、Bundle ID仮値 `dev.naki0227.hibimachi` を決定（ADR-0002）。→ 2026-10-26 `com.enludus.hibimachi` に確定（ユーザー決定）。
 
 ## 完了（企画段階）
 - [x] AIなしで楽しめる箱庭をコアとする方針を決めた。

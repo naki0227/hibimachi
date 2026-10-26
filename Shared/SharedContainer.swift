@@ -7,7 +7,7 @@ import ImageIO
 /// They live in the App Group container. When the group is not available (unsigned CI builds, or a developer
 /// account without the group yet), the app keeps its own folder and the widget shows its "open the app" state.
 enum SharedContainer {
-    static let appGroupID = "group.dev.naki0227.hibimachi"
+    static let appGroupID = "group.com.enludus.hibimachi"
     static let saveFolder = "Hibimachi"
 
     static var groupURL: URL? {
