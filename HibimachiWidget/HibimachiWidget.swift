@@ -50,9 +50,12 @@ struct IslandTimelineProvider: TimelineProvider {
     }
 
     static func entry(at date: Date) -> IslandWidgetEntry {
-        let board = SharedContainer.sharedRepository?.peek().map {
+        let snapshot = SharedContainer.sharedRepository?.peek()
+        let board = snapshot.map {
             QuestBoard.make(progress: $0.progress, day: LocalDay(date: date, calendar: .current))
         }
-        return IslandWidgetEntry(date: date, board: board, island: SharedContainer.loadIslandImage())
+        return IslandWidgetEntry(
+            date: date, board: board, island: SharedContainer.loadIslandImage(),
+            placedCount: snapshot?.world.objects.count ?? 0, discoveryCount: snapshot?.world.discoveries.count ?? 0)
     }
 }

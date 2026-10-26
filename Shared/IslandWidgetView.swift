@@ -8,6 +8,8 @@ struct IslandWidgetEntry: TimelineEntry {
     /// `nil` when there is no readable save yet (or no shared container).
     let board: QuestBoard?
     let island: CGImage?
+    var placedCount = 0
+    var discoveryCount = 0
 }
 
 /// Home-screen widget: the island on the left, today's quests on the right (one tap = "やった！").
@@ -24,7 +26,12 @@ struct IslandWidgetView: View {
             HStack(spacing: 12) {
                 VStack(spacing: 8) {
                     IslandTile(image: entry.island, board: entry.board, showsRemaining: false)
-                    if let board = entry.board { StatusRow(board: board) }
+                        .aspectRatio(1, contentMode: .fit)
+                    if let board = entry.board {
+                        StatusRow(board: board)
+                        IslandFacts(placed: entry.placedCount, discovered: entry.discoveryCount)
+                    }
+                    Spacer(minLength: 0)
                 }
                 .frame(maxWidth: .infinity)
                 QuestList(board: entry.board, limit: 6, detailed: true)
@@ -60,7 +67,8 @@ private struct IslandTile: View {
                     .interpolation(.none)
                     .resizable()
                     .scaledToFit()
-                    .padding(6)
+                    // The picture's corners are open sea; zoom in a little so the island itself reads larger.
+                    .scaleEffect(1.18)
             } else {
                 Image(systemName: "leaf.fill")
                     .font(.system(size: 30, weight: .bold))
@@ -109,6 +117,22 @@ private struct StatusRow: View {
     }
 }
 
+private struct IslandFacts: View {
+    let placed: Int
+    let discovered: Int
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Label("置いたもの \(placed)こ", systemImage: "house.fill")
+            Label("見つけた姿 \(discovered)", systemImage: "book.closed.fill")
+        }
+        .font(GameFont.body(11, weight: .bold))
+        .foregroundStyle(GameColor.inkSoft)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 4)
+    }
+}
+
 private struct QuestList: View {
     let board: QuestBoard?
     let limit: Int
@@ -140,7 +164,11 @@ private struct QuestList: View {
 
     private var header: some View {
         HStack(spacing: 4) {
-            Text("きょうのこと").font(GameFont.body(detailed ? 16 : 14, weight: .heavy)).foregroundStyle(GameColor.ink)
+            Text("きょうのこと")
+                .font(GameFont.body(14, weight: .heavy))
+                .foregroundStyle(GameColor.ink)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
             Spacer(minLength: 0)
             if let board, board.hasGoals {
                 Text(board.remaining > 0 ? "のこり\(board.remaining)" : "完了")
@@ -185,7 +213,7 @@ private struct QuestItemRow: View {
                     .foregroundStyle(item.isDone ? GameColor.inkSoft : GameColor.ink)
                     .lineLimit(detailed ? 2 : 1)
                 if detailed {
-                    Text("\(item.goalTitle)・約\(item.minutes)分")
+                    Text("約\(item.minutes)分・\(item.goalTitle)")
                         .font(GameFont.caption(10))
                         .foregroundStyle(GameColor.inkSoft)
                         .lineLimit(1)

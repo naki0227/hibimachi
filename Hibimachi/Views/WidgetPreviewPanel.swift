@@ -13,7 +13,8 @@
 
         var body: some View {
             let entry = IslandWidgetEntry(
-                date: Date(), board: QuestBoard.make(progress: store.progress, day: store.today), island: island)
+                date: Date(), board: QuestBoard.make(progress: store.progress, day: store.today), island: island,
+                placedCount: store.world.objects.count, discoveryCount: store.world.discoveries.count)
             GamePanel(title: "ウィジェット", symbol: "square.grid.2x2", identifier: "widget-preview", close: close) {
                 VStack(spacing: 14) {
                     preview(entry, .systemLarge, CGSize(width: 320, height: 336))
