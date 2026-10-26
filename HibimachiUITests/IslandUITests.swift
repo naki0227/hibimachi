@@ -231,4 +231,19 @@ final class IslandUITests: XCTestCase {
         XCTAssertTrue(app.descendants(matching: .any)["memory-panel"].waitForExistence(timeout: 5))
         screenshot(app, "15-memory")
     }
+
+    @MainActor
+    func testSettingsToggleAndReplayTheGuide() {
+        let app = launch()
+        app.buttons["メニュー"].tap()
+        app.buttons["せってい"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["settings-panel"].waitForExistence(timeout: 5))
+        let music = app.descendants(matching: .any)["setting-music"].firstMatch
+        XCTAssertEqual(music.value as? String, "オン")
+        music.tap()
+        XCTAssertEqual(music.value as? String, "オフ")
+        screenshot(app, "16-settings")
+        app.buttons["replay-tutorial"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["tutorial-card"].waitForExistence(timeout: 5))
+    }
 }

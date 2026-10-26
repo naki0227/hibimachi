@@ -14,6 +14,7 @@ final class DiscoveryAlbum {
 struct IslandScreen: View {
     let store: GameStore
     let tutorial: TutorialCoach
+    let settings: AppSettings
     @State private var scene: IslandScene
     @State private var album: DiscoveryAlbum
     @State private var tab: PaletteTab = .build
@@ -21,9 +22,10 @@ struct IslandScreen: View {
     @State private var overlay: IslandOverlay?
     @Environment(\.scenePhase) private var scenePhase
 
-    init(store: GameStore, tutorial: TutorialCoach, initialPhase: DayPhase? = nil) {
+    init(store: GameStore, tutorial: TutorialCoach, settings: AppSettings, initialPhase: DayPhase? = nil) {
         self.store = store
         self.tutorial = tutorial
+        self.settings = settings
         let scene = IslandScene(store: store)
         scene.dayPhaseOverride = initialPhase
         _phaseOverride = State(initialValue: initialPhase)
@@ -93,9 +95,10 @@ struct IslandScreen: View {
             // Leaving the app: the island is still on screen, so this is the moment to picture it for the widget.
             if phase == .inactive { WidgetSync.exportIsland(scene.islandPicture()) }
         }
-        .sensoryFeedback(.success, trigger: store.objectsRevision)
-        .sensoryFeedback(.selection, trigger: store.terrainRevision)
-        .sensoryFeedback(.error, trigger: store.lastRejection) { _, new in new != nil }
+        .sensoryFeedback(.success, trigger: store.objectsRevision) { _, _ in settings.haptics }
+        .sensoryFeedback(.selection, trigger: store.terrainRevision) { _, _ in settings.haptics }
+        .sensoryFeedback(.error, trigger: store.lastRejection) { _, new in settings.haptics && new != nil }
+        .modifier(SoundCues(store: store, settings: settings, phase: shownPhase))
         .overlay {
             ModalLayer(item: shownOverlay) { overlay in overlayContent(overlay) }
         }
@@ -129,6 +132,7 @@ struct IslandScreen: View {
                     close()
                 },
                 askReset: { overlay = .resetConfirm },
+                openSettings: { overlay = .settings },
                 previewWidget: Self.widgetPreviewAction { overlay = .widgetPreview },
                 close: close)
         case .quests:
@@ -141,6 +145,8 @@ struct IslandScreen: View {
             ObjectListPanel(store: store, close: close)
         case .album:
             AlbumPanel(store: store, close: close)
+        case .settings:
+            SettingsPanel(settings: settings, replayTutorial: { tutorial.restart(store: store) }, close: close)
         case .memory(let objectID):
             BuildingMemoryPanel(store: store, objectID: objectID, close: close)
         case .resetConfirm:

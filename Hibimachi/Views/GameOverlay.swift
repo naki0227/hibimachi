@@ -8,6 +8,7 @@ enum IslandOverlay: Hashable {
     case fieldGuide
     case objectList
     case album
+    case settings
     /// The day a selected object was placed.
     case memory(UUID)
     case resetConfirm
@@ -99,6 +100,7 @@ struct MenuPanel: View {
     let showWholeIsland: () -> Void
     let followDeviceClock: () -> Void
     let askReset: () -> Void
+    let openSettings: () -> Void
     /// Debug builds pass this to show the widget preview row.
     var previewWidget: (() -> Void)?
     let close: () -> Void
@@ -108,6 +110,7 @@ struct MenuPanel: View {
             VStack(spacing: 10) {
                 row("島全体を表示", "arrow.up.left.and.arrow.down.right", .secondary, showWholeIsland)
                 row("時間帯を端末の時刻に戻す", "clock", .secondary, followDeviceClock)
+                row("せってい", "gearshape.fill", .secondary, openSettings)
                 if let previewWidget {
                     row("ウィジェットのプレビュー", "square.grid.2x2", .secondary, previewWidget)
                 }

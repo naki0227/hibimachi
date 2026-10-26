@@ -6,25 +6,30 @@ import SwiftUI
 struct HibimachiApp: App {
     @State private var store = AppComposition.makeStore()
     @State private var tutorial = AppComposition.makeTutorial()
+    @State private var settings = AppSettings()
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
         WindowGroup {
-            IslandScreen(store: store, tutorial: tutorial, initialPhase: AppComposition.dayPhaseOverride())
-                // The art and UI kit are one light paper palette; Dark Mode would only flip system colors
-                // (text, keyboard, pickers) and make them unreadable on it.
-                .preferredColorScheme(.light)
+            IslandScreen(
+                store: store, tutorial: tutorial, settings: settings, initialPhase: AppComposition.dayPhaseOverride()
+            )
+            // The art and UI kit are one light paper palette; Dark Mode would only flip system colors
+            // (text, keyboard, pickers) and make them unreadable on it.
+            .preferredColorScheme(.light)
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .active:
                 // The widget may have completed quests while the app was away.
                 store.reloadProgressFromStorage()
+                SoundPlayer.shared.setActive(true)
             case .background:
                 // Edits are saved immediately; this also captures the creature's position before suspension.
                 // Only on .background: saving on the way back (.inactive) would overwrite the widget's changes.
                 store.persist()
                 WidgetSync.reloadWidgets()
+                SoundPlayer.shared.setActive(false)
             default:
                 break
             }

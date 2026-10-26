@@ -36,6 +36,14 @@ final class TutorialCoach {
         update { $0.skip() }
     }
 
+    /// From the settings panel: show the guide again, skipping steps the player has already done.
+    func restart(store: GameStore) {
+        update {
+            $0 = TutorialGuide()
+            $0.catchUp(hasDiscoveries: !store.world.discoveries.isEmpty, hasGoals: !store.progress.activeGoals.isEmpty)
+        }
+    }
+
     private func update(_ change: (inout TutorialGuide) -> Void) {
         var copy = guide
         change(&copy)
