@@ -90,6 +90,15 @@ final class CreatureNode: SKNode {
         if level == .bestFriend, emote.alpha == 0 { flash("♡", reduceMotion: true) }
     }
 
+    /// Short, one-off emote (e.g. "?" when its target vanished, a heart when petted).
+    func flash(_ text: String, reduceMotion: Bool) {
+        emote.text = text
+        emote.removeAllActions()
+        emote.alpha = 1
+        emote.run(.sequence([.wait(forDuration: 1.2), .fadeOut(withDuration: 0.3)]))
+        if !reduceMotion { hop(height: 8) }
+    }
+
     private func showPose(for activity: CreatureActivity, reduceMotion: Bool) {
         let key: String
         if case .interacting(let kind, _, _) = activity { key = kind.rawValue } else { key = "" }
