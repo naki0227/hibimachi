@@ -44,6 +44,7 @@ private struct MemoryComposer: View {
     @State private var pickerItem: PhotosPickerItem?
     @State private var photoJPEG: Data?
     @State private var linkedCompletion: UUID?
+    @FocusState private var editing: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -54,6 +55,7 @@ private struct MemoryComposer: View {
                 .padding(12)
                 .background(GameColor.cream, in: RoundedRectangle(cornerRadius: 14))
                 .overlay(RoundedRectangle(cornerRadius: 14).stroke(GameColor.line, lineWidth: 2))
+                .focused($editing)
                 .accessibilityIdentifier("memory-text")
             HStack(spacing: 8) {
                 PhotosPicker(selection: $pickerItem, matching: .images) {
@@ -123,6 +125,7 @@ private struct MemoryComposer: View {
 
     private func save() {
         if store.addMemory(text: text, photoJPEG: photoJPEG, completionID: linkedCompletion) {
+            editing = false
             text = ""
             photoJPEG = nil
             pickerItem = nil

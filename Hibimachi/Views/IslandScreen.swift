@@ -78,6 +78,8 @@ struct IslandScreen: View {
             }
             .padding(.horizontal, 12)
             .padding(.bottom, 8)
+            // The keyboard belongs to panels; the island HUD must not slide under the status bar with it.
+            .ignoresSafeArea(.keyboard)
             .animation(.easeOut(duration: 0.25), value: store.pendingDiscoveries.first)
             .animation(.easeOut(duration: 0.25), value: tutorial.guide.step)
         }
