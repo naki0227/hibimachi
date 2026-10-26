@@ -12,7 +12,7 @@ extension IslandScene {
         // origin. Extra room above for roofs and treetops, a little around for the cliff edges.
         let frame = worldLayer.calculateAccumulatedFrame()
         let scale = Double(full.width) / frame.width
-        let map = CGRect(origin: .zero, size: grid.mapSize).insetBy(dx: -12, dy: -12)
+        let map = CGRect(x: 0, y: 0, width: grid.mapSize.width, height: grid.mapSize.height).insetBy(dx: -12, dy: -12)
         let island = CGRect(x: map.minX, y: map.minY, width: map.width, height: map.height + 60)
         let crop = CGRect(
             x: (island.minX - frame.minX) * scale, y: (frame.maxY - island.maxY) * scale,
