@@ -21,6 +21,22 @@ struct PlayerProgressTests {
         #expect(progress.quests(of: goal.id).count == QuestPresets.quests(for: .tidy).count)
     }
 
+    @Test func englishGoalsGetEnglishPresetsWithTheSameShape() throws {
+        var progress = try started()
+        let goal = try progress.addGoal(
+            title: "Tidy room", category: .tidy, at: date, makeID: UUID.init, language: .english
+        ).get()
+        let titles = progress.quests(of: goal.id).map(\.title)
+        #expect(titles.first == "Clear the desk for 5 minutes")
+        for category in GoalCategory.allCases {
+            let english = QuestPresets.quests(for: category, language: .english)
+            let japanese = QuestPresets.quests(for: category, language: .japanese)
+            // Same number and length of quests, so rewards do not depend on the language.
+            #expect(english.map(\.minutes) == japanese.map(\.minutes))
+            #expect(english.allSatisfy { !$0.title.isEmpty && $0.title.count <= Goal.titleLimit })
+        }
+    }
+
     @Test func goalTitleAndCountAreLimited() throws {
         var progress = try started()
         let empty = progress.addGoal(title: "   ", category: .rest, at: date, makeID: UUID.init)

@@ -77,7 +77,8 @@ public struct PlayerProgress: Equatable, Sendable {
     // MARK: Goals and quests
 
     public mutating func addGoal(
-        title: String, category: GoalCategory, at date: Date, makeID: () -> UUID
+        title: String, category: GoalCategory, at date: Date, makeID: () -> UUID,
+        language: QuestPresets.Language = .japanese
     ) -> Result<Goal, ProgressError> {
         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
         if let issue = Self.titleIssue(trimmed, limit: Goal.titleLimit) { return .failure(issue) }
@@ -86,7 +87,7 @@ public struct PlayerProgress: Equatable, Sendable {
         }
         let goal = Goal(id: makeID(), title: trimmed, category: category, createdAt: date)
         goals.append(goal)
-        for preset in QuestPresets.quests(for: category) {
+        for preset in QuestPresets.quests(for: category, language: language) {
             quests.append(QuestTemplate(id: makeID(), goalID: goal.id, title: preset.title, minutes: preset.minutes))
         }
         return .success(goal)
