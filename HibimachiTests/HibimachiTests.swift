@@ -7,10 +7,10 @@ import Testing
 
 /// In-memory repository so scene tests never touch the real save file.
 final class MemoryRepository: WorldRepository, @unchecked Sendable {
-    var stored: World?
+    var stored: GameSnapshot?
 
     func load() -> WorldLoadOutcome { stored.map(WorldLoadOutcome.loaded) ?? .notFound }
-    func save(_ world: World) throws { stored = world }
+    func save(_ snapshot: GameSnapshot) throws { stored = snapshot }
 }
 
 @MainActor
