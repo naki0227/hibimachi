@@ -51,12 +51,16 @@ struct IslandScreen: View {
                 if let message = store.saveErrorMessage {
                     SaveErrorBanner(message: message) { store.persist() }
                 }
-                if let kind = store.pendingDiscoveries.first {
-                    DiscoveryCard(kind: kind, image: album.images[kind]) { store.dismissDiscovery() }
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                }
-                HStack {
-                    Spacer()
+                // Side buttons never move; the discovery card floats to their left so a tap can't land on a
+                // button that just shifted when the card appeared or auto-dismissed.
+                HStack(alignment: .top, spacing: 8) {
+                    ZStack(alignment: .top) {
+                        if let kind = store.pendingDiscoveries.first {
+                            DiscoveryCard(kind: kind, image: album.images[kind]) { store.dismissDiscovery() }
+                                .transition(.move(edge: .top).combined(with: .opacity))
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .top)
                     SideButtons(
                         phase: shownPhase,
                         questsLeft: store.progress.activeGoals.isEmpty ? 1 : store.todaysQuests.count,
