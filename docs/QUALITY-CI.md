@@ -42,6 +42,7 @@ python3 scripts/verify_docs.py
 - **docs**: `.github/workflows/docs-ci.yml` はPython標準ライブラリでドキュメントリンク/必須ファイル/機密文字列の基本確認（セキュリティ保証ではない）。
 - **Swift（導入済み）**: `.github/workflows/swift-ci.yml`。署名不要のSimulator向け `xcodebuild build-for-testing / test-without-building`、format/lint、core package test。UI testのスクリーンショットはartifact `ios-test-results` に保存。
 - **リリース前**: Simulator UI test、実機アクセシビリティ、パフォーマンス、TestFlight配信の手動jobを追加。
+- **TestFlight（手動、2026-10-26追加・未実行）**: `.github/workflows/testflight.yml`。Actions タブから「Run workflow」で起動。Release を archive し、App Store Connect API キーによる自動署名で書き出してアップロードする。ビルド番号は `run_number` の10倍（手動アップロードより必ず大きくするため）。必要な Secrets: `ASC_KEY_ID`、`ASC_ISSUER_ID`、`ASC_KEY_P8`（.p8 の中身）、`APPLE_TEAM_ID`。足りないと最初の手順で名前を出して止まる。PR からは起動できない（`workflow_dispatch` のみ）。
 
 ## セキュリティ・プライバシー
 - 写真・目標・家の中が写るデータをCI成果物やクラッシュログに含めない。
