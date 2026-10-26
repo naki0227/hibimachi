@@ -201,9 +201,17 @@ struct JSONFileWorldRepositoryTests {
     @Test func albumRoundTripsAndOldSavesHaveAnEmptyAlbum() throws {
         var saved = game(sampleWorld())
         let photo = MediaReference(id: UUID(), fileName: "a.jpg", bytes: 12, createdAt: Date(timeIntervalSince1970: 5))
-        _ = saved.album.add(
+        let first = try saved.album.add(
             text: "はじめての記録", photo: photo, completionID: nil, progress: saved.progress,
-            day: LocalDay(year: 2027, month: 1, day: 15), at: Date(timeIntervalSince1970: 5), id: UUID())
+            day: LocalDay(year: 2027, month: 1, day: 15), at: Date(timeIntervalSince1970: 5), id: UUID()
+        ).get()
+        let afterPhoto = MediaReference(
+            id: UUID(), fileName: "b.jpg", bytes: 9, createdAt: Date(timeIntervalSince1970: 6))
+        _ = saved.album.add(
+            text: nil, photo: afterPhoto, completionID: nil, progress: saved.progress,
+            day: LocalDay(year: 2027, month: 2, day: 15), at: Date(timeIntervalSince1970: 6), id: UUID(),
+            before: first.id)
+        #expect(saved.album.entries.count == 2)
         try repository().save(saved)
         #expect(repository().peek() == saved)
         let text = try String(contentsOf: repository().fileURL, encoding: .utf8)

@@ -17,6 +17,8 @@ struct AlbumRecord: Codable, Equatable {
         var text: String?
         var photo: PhotoRecord?
         var completionID: UUID?
+        /// Absent before the before/after comparison (2026-10-26).
+        var beforeEntryID: UUID?
     }
 
     var entries: [EntryRecord]
@@ -44,7 +46,7 @@ extension AlbumRecord {
                 photo: entry.photo.map {
                     PhotoRecord(id: $0.id, fileName: $0.fileName, bytes: $0.bytes, createdAt: $0.createdAt)
                 },
-                completionID: entry.completionID)
+                completionID: entry.completionID, beforeEntryID: entry.beforeEntryID)
         }
     }
 
@@ -63,7 +65,7 @@ extension AlbumRecord {
             }
             let result = album.add(
                 text: record.text, photo: photo, completionID: record.completionID, progress: progress, day: day,
-                at: record.createdAt, id: record.id)
+                at: record.createdAt, id: record.id, before: record.beforeEntryID)
             if case .failure(let error) = result { throw AlbumRecordError.invalidEntry(error) }
         }
         return album

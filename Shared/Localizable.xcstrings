@@ -21,12 +21,32 @@
         }
       }
     },
+    "%@と%@の写真をくらべる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compare the photos from %1$@ and %2$@"
+          }
+        }
+      }
+    },
     "%@に\n%@を迎えた日": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "%1$@\nThe day %2$@ arrived"
+          }
+        }
+      }
+    },
+    "%@の写真": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo from %@"
           }
         }
       }
@@ -221,6 +241,16 @@
         }
       }
     },
+    "あと": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After"
+          }
+        }
+      }
+    },
     "いつもうれしそう。ハートを見せてくれる。": {
       "localizations": {
         "en": {
@@ -387,6 +417,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Not enough sparkles (%1$lld / %2$lld)"
+          }
+        }
+      }
+    },
+    "くらべるには、両方に写真が必要です": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Both sides need a photo to compare"
           }
         }
       }
@@ -1111,6 +1151,16 @@
         }
       }
     },
+    "まえ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Before"
+          }
+        }
+      }
+    },
     "まだ何も見つけていません。生き物のそばに、いろいろなものを置いてみましょう。": {
       "localizations": {
         "en": {
@@ -1827,6 +1877,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "The photo could not be saved. You can still keep the words"
+          }
+        }
+      }
+    },
+    "前の写真とくらべる（なくてもOK）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compare with an earlier photo (optional)"
           }
         }
       }

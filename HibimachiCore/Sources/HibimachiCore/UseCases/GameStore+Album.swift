@@ -7,7 +7,9 @@ extension GameStore {
     /// Saves the photo first, then the entry; if the entry is refused the new photo file is removed again.
     /// A failed save does not undo the entry: it stays in memory and the save-error banner offers a retry.
     @discardableResult
-    public func addMemory(text: String, photoJPEG: Data? = nil, completionID: UUID? = nil) -> Bool {
+    public func addMemory(
+        text: String, photoJPEG: Data? = nil, completionID: UUID? = nil, before: UUID? = nil
+    ) -> Bool {
         let date = nowForProgress
         var photo: MediaReference?
         if let photoJPEG {
@@ -27,7 +29,7 @@ extension GameStore {
         updateAlbum { album in
             result = album.add(
                 text: text, photo: photo, completionID: completionID, progress: progress, day: today, at: date,
-                id: entryID)
+                id: entryID, before: before)
         }
         switch result {
         case .success:

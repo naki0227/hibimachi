@@ -45,6 +45,7 @@ private struct MemoryComposer: View {
     @State private var pickerItem: PhotosPickerItem?
     @State private var photoJPEG: Data?
     @State private var linkedCompletion: UUID?
+    @State private var beforeID: UUID?
     @FocusState private var editing: Bool
 
     var body: some View {
@@ -67,6 +68,7 @@ private struct MemoryComposer: View {
                     Button {
                         self.photoJPEG = nil
                         pickerItem = nil
+                        beforeID = nil
                     } label: {
                         Image(systemName: "xmark")
                     }
@@ -77,6 +79,9 @@ private struct MemoryComposer: View {
                 Text("\(text.count)/\(Album.textLimit)")
                     .font(GameFont.caption(11))
                     .foregroundStyle(text.count > Album.textLimit ? GameColor.berry : GameColor.inkSoft)
+            }
+            if photoJPEG != nil, !store.album.photoEntries.isEmpty {
+                BeforePicker(store: store, selection: $beforeID)
             }
             if !store.completedToday.isEmpty { completionChips }
             if let error = store.lastAlbumError {
@@ -122,12 +127,13 @@ private struct MemoryComposer: View {
     }
 
     private func save() {
-        if store.addMemory(text: text, photoJPEG: photoJPEG, completionID: linkedCompletion) {
+        if store.addMemory(text: text, photoJPEG: photoJPEG, completionID: linkedCompletion, before: beforeID) {
             editing = false
             text = ""
             photoJPEG = nil
             pickerItem = nil
             linkedCompletion = nil
+            beforeID = nil
         }
     }
 }
@@ -158,6 +164,11 @@ struct AlbumDayCard: View {
                     .foregroundStyle(GameColor.wood)
             }
             ForEach(day.memories) { entry in
+                if let beforeID = entry.beforeEntryID, let before = store.album.entry(beforeID) {
+                    BeforeAfterPair(
+                        before: before, beforeURL: store.photoURL(for: before), after: entry,
+                        afterURL: store.photoURL(for: entry))
+                }
                 MemoryRow(entry: entry, photoURL: store.photoURL(for: entry)) { store.deleteMemory(entry.id) }
             }
         }
@@ -169,22 +180,12 @@ private struct MemoryRow: View {
     let entry: MemoryEntry
     let photoURL: URL?
     let delete: () -> Void
-    @State private var thumbnail: CGImage?
     @State private var confirming = false
 
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
-            if entry.photo != nil {
-                Group {
-                    if let thumbnail {
-                        Image(decorative: thumbnail, scale: 1).resizable().scaledToFill()
-                    } else {
-                        GameColor.cream
-                    }
-                }
-                .frame(width: 64, height: 64)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .accessibilityLabel("記録の写真")
+            if entry.photo != nil, entry.beforeEntryID == nil {
+                PhotoThumb(url: photoURL).accessibilityLabel("記録の写真")
             }
             Text(entry.text ?? "")
                 .font(GameFont.body(14, weight: .medium))
@@ -199,11 +200,6 @@ private struct MemoryRow: View {
         }
         .padding(8)
         .background(GameColor.cream.opacity(0.6), in: RoundedRectangle(cornerRadius: 14))
-        .task(id: photoURL) {
-            guard let photoURL else { return }
-            // A 240px thumbnail of an already-downsized JPEG is cheap enough for the main actor.
-            thumbnail = PhotoPrep.thumbnail(at: photoURL)
-        }
         .accessibilityIdentifier("memory-row")
     }
 }
@@ -227,6 +223,7 @@ extension AlbumError {
         case .unknownCompletion: String(localized: "そのクエストの記録が見つかりませんでした")
         case .notFound: String(localized: "その記録はもうありません")
         case .photoUnavailable, .photoSaveFailed: String(localized: "写真を保存できませんでした。ことばだけなら残せます")
+        case .comparisonNeedsPhotos: String(localized: "くらべるには、両方に写真が必要です")
         }
     }
 }
