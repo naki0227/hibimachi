@@ -17,6 +17,16 @@
 - [x] シート・リスト・メニュー・アラートなどのiOS標準UIを、独自のゲームUI（紙のパネル・押し込みボタン）に置き換え（`0beca27`）。
 - [x] ホーム画面ウィジェット（小・中・大。大/中は左に島、右にきょうのクエスト。○タップで達成）。保存をApp Groupへ移動（ADR-0006）。
 
+## 完了（2026-10-26、チュートリアル・アルバム・TestFlight準備、PR #1）
+- [x] 最初の案内（置く→発見→きょうのこと）。とばせて、保存ごとに進み具合を覚える。
+- [x] 成長アルバム（P2）: ひとこと＋写真1枚、今日のクエストへのひもづけ、日別の歴史、削除、容量表示。保存 schema v3（ADR-0007）。
+- [x] バンドルID `com.enludus.hibimachi` に確定、アプリアイコン、暗号化申告キー、TestFlight 手動ワークフロー。
+
+## 要確認（TestFlight・本人の作業）
+- [ ] Apple Developer Program 登録、App Store Connect でアプリ作成（バンドルID `com.enludus.hibimachi`）。
+- [ ] App Store Connect API キー（App Manager）を作り、GitHub Secrets に `ASC_KEY_ID` / `ASC_ISSUER_ID` / `ASC_KEY_P8` / `APPLE_TEAM_ID` を登録 → Actions の「TestFlight」を手動実行（未実行）。
+- [ ] 写真をiCloudバックアップに含めるか（PRD未決事項）。
+
 ## 要確認（ウィジェット）
 - [ ] 実機・署名付きビルドで App Group を有効にし、ウィジェット表示と○タップでの達成を確認（CIは署名なしのため未検証）。
 - [ ] 既存の保存がApplication SupportからApp Groupへ移動することを実機で確認。
