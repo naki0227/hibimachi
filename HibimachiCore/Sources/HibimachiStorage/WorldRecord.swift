@@ -4,9 +4,10 @@ import HibimachiCore
 /// On-disk representation. Kept separate from domain types so storage concerns never leak into rules.
 /// v1 (2026-10-25): island only. v2 (2026-10-26): adds `progress` (goals, quests, rewards, owned buildings).
 /// v3 (2026-10-26): adds `album` (optional memories; photos are separate files).
+/// v4 (2026-10-26): adds `residents` (newcomers) and a `species` on every creature record.
 struct WorldRecord: Codable, Equatable {
-    static let currentSchemaVersion = 3
-    static let supportedSchemaVersions = 1...3
+    static let currentSchemaVersion = 4
+    static let supportedSchemaVersions = 1...4
 
     struct ObjectRecord: Codable, Equatable {
         var id: UUID
@@ -19,6 +20,8 @@ struct WorldRecord: Codable, Equatable {
         var id: UUID
         var x: Int
         var y: Int
+        /// Absent before v4: the original mochi.
+        var species: String?
     }
 
     var schemaVersion: Int
@@ -28,6 +31,8 @@ struct WorldRecord: Codable, Equatable {
     var terrain: String
     var objects: [ObjectRecord]
     var creature: CreatureRecord
+    /// Residents after the first one (v4). Absent before v4.
+    var residents: [CreatureRecord]?
     var discoveries: [String]
     /// Absent in v1 files; migrated by `makeSnapshot`.
     var progress: ProgressRecord?
@@ -45,6 +50,7 @@ enum WorldRecordError: Error, Equatable, CustomStringConvertible {
     case unknownTerrain(Character)
     case unknownObjectKind(String)
     case invalidWorld(WorldValidationError)
+    case unknownSpecies(String)
 
     var description: String {
         switch self {
@@ -52,6 +58,7 @@ enum WorldRecordError: Error, Equatable, CustomStringConvertible {
         case .unknownTerrain(let character): "unknown terrain '\(character)'"
         case .unknownObjectKind(let kind): "unknown object kind '\(kind)'"
         case .invalidWorld(let error): "invalid world: \(error)"
+        case .unknownSpecies(let species): "unknown species '\(species)'"
         }
     }
 }
@@ -81,7 +88,8 @@ extension WorldRecord {
         height = world.height
         terrain = String(world.terrain.map(\.rawValue))
         objects = world.objects.map { ObjectRecord(id: $0.id, kind: $0.kind.rawValue, x: $0.origin.x, y: $0.origin.y) }
-        creature = CreatureRecord(id: world.creature.id, x: world.creature.position.x, y: world.creature.position.y)
+        creature = CreatureRecord(world.creature)
+        residents = world.residents.dropFirst().map(CreatureRecord.init)
         // Sorted so identical worlds produce identical files.
         discoveries = world.discoveries.map(\.rawValue).sorted()
         progress = nil
@@ -104,17 +112,33 @@ extension WorldRecord {
         }
         // Unknown discovery IDs (e.g. from a removed reaction) are dropped rather than failing the whole save.
         let known = Set(discoveries.compactMap(ReactionKind.init(rawValue:)))
+        let first = try creature.makeCreature()
+        let others = try (residents ?? []).map { try $0.makeCreature() }
         do {
             return try World(
                 width: width,
                 height: height,
                 terrain: tiles,
                 objects: worldObjects,
-                creature: Creature(id: creature.id, position: TileCoord(x: creature.x, y: creature.y)),
+                creature: first,
+                otherResidents: others,
                 discoveries: known
             )
         } catch {
             throw WorldRecordError.invalidWorld(error)
         }
+    }
+}
+
+extension WorldRecord.CreatureRecord {
+    init(_ creature: Creature) {
+        self.init(id: creature.id, x: creature.position.x, y: creature.position.y, species: creature.species.rawValue)
+    }
+
+    func makeCreature() throws -> Creature {
+        guard let species = Species(rawValue: species ?? Species.mochi.rawValue) else {
+            throw WorldRecordError.unknownSpecies(species ?? "")
+        }
+        return Creature(id: id, species: species, position: TileCoord(x: x, y: y))
     }
 }

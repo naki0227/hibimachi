@@ -12,10 +12,14 @@ public enum RewardRule {
 
     public static func price(of kind: ObjectKind) -> Int {
         switch kind {
-        case .flower: 5
-        case .bench, .lamp, .roundTree, .pineTree: 10
-        case .pond: 20
+        case .flower, .bush, .rock, .fence: 5
+        case .bench, .lamp, .roundTree, .pineTree, .mailbox, .picnicMat, .birdhouse: 10
+        case .sakuraTree, .swing, .campfire: 15
+        case .pond, .well: 20
+        case .garden: 25
         case .house: 30
+        case .fountain: 40
+        case .cafe: 50
         }
     }
 

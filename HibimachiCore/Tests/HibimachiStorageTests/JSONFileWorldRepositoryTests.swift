@@ -123,6 +123,33 @@ struct JSONFileWorldRepositoryTests {
         #expect(preserved == Data(contents.utf8))
     }
 
+    @Test func residentsRoundTripAndPreV4CreaturesAreMochi() throws {
+        var world = sampleWorld()
+        for kind in [ReactionKind.benchRest, .treeNap, .pondVisit] { world.recordDiscovery(kind) }
+        _ = world.welcomeResidentsIfDue(makeID: UUID.init)
+        try repository().save(game(world))
+        guard case .loaded(let loaded) = repository().load() else {
+            Issue.record("expected the save to load")
+            return
+        }
+        #expect(loaded.world.residents.map(\.species) == [.mochi, .kotori])
+        #expect(loaded.world.residents.map(\.position) == world.residents.map(\.position))
+
+        let text = try String(contentsOf: repository().fileURL, encoding: .utf8)
+        var object = try #require(try JSONSerialization.jsonObject(with: Data(text.utf8)) as? [String: Any])
+        object["residents"] = nil
+        object["schemaVersion"] = 3
+        var creature = try #require(object["creature"] as? [String: Any])
+        creature["species"] = nil
+        object["creature"] = creature
+        try write(String(decoding: try JSONSerialization.data(withJSONObject: object), as: UTF8.self))
+        guard case .loaded(let old) = repository().load() else {
+            Issue.record("expected the v3 file to load")
+            return
+        }
+        #expect(old.world.residents.map(\.species) == [.mochi])
+    }
+
     @Test func peekReadsWithoutTouchingUnreadableFiles() throws {
         #expect(repository().peek() == nil)
         let saved = game(sampleWorld())
@@ -145,7 +172,7 @@ struct JSONFileWorldRepositoryTests {
         try repository().save(saved)
         #expect(repository().peek() == saved)
         let text = try String(contentsOf: repository().fileURL, encoding: .utf8)
-        #expect(text.contains("\"schemaVersion\":3"))
+        #expect(text.contains("\"schemaVersion\":4"))
 
         // A v2 file (no album key) loads with an empty album.
         var object = try #require(

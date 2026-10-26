@@ -1,6 +1,6 @@
 import Foundation
 
-/// Advances the creature's state machine by one tick. Pure function of (world, rng):
+/// Advances every resident's state machine by one tick, in order. Pure function of (world, rng):
 /// the same seed and edits always produce the same behaviour.
 public enum CreatureBrain {
     static let wanderRadius = 4
@@ -9,7 +9,17 @@ public enum CreatureBrain {
 
     public static func step<R: RandomNumberGenerator>(world: inout World, rng: inout R) -> [WorldEvent] {
         var events: [WorldEvent] = []
-        var creature = world.creature
+        for index in world.residents.indices {
+            step(residentAt: index, world: &world, rng: &rng, events: &events)
+        }
+        return events
+    }
+
+    private static func step<R: RandomNumberGenerator>(
+        residentAt index: Int, world: inout World, rng: inout R, events: inout [WorldEvent]
+    ) {
+        var creature = world.residents[index]
+        let me = creature.id
         creature.cooldowns = creature.cooldowns.compactMapValues { $0 > 1 ? $0 - 1 : nil }
 
         switch creature.activity {
@@ -32,7 +42,7 @@ public enum CreatureBrain {
             guard let target = world.object(withID: targetID), rule.accepts(target, in: world),
                 isInteractionTile(path.last ?? creature.position, for: target)
             else {
-                events.append(.reactionInterrupted(kind))
+                events.append(.reactionInterrupted(kind, by: me))
                 creature.activity = .idle(ticksLeft: 2)
                 break
             }
@@ -41,8 +51,8 @@ public enum CreatureBrain {
             } else if isInteractionTile(creature.position, for: target) {
                 creature.activity = .interacting(
                     kind, targetID: targetID, ticksLeft: Int.random(in: rule.duration, using: &rng))
-                events.append(.reactionStarted(kind, objectID: targetID))
-                if world.recordDiscovery(kind) { events.append(.discovered(kind)) }
+                events.append(.reactionStarted(kind, objectID: targetID, by: me))
+                if world.recordDiscovery(kind) { events.append(.discovered(kind, by: me)) }
             } else {
                 // Path got blocked by a newly placed object: give up quietly and re-decide soon.
                 creature.activity = .idle(ticksLeft: 1)
@@ -53,7 +63,7 @@ public enum CreatureBrain {
             guard let target = world.object(withID: targetID), rule.accepts(target, in: world),
                 isInteractionTile(creature.position, for: target)
             else {
-                events.append(.reactionInterrupted(kind))
+                events.append(.reactionInterrupted(kind, by: me))
                 creature.activity = .idle(ticksLeft: 2)
                 break
             }
@@ -67,8 +77,7 @@ public enum CreatureBrain {
             }
         }
 
-        world.creature = creature
-        return events
+        world.residents[index] = creature
     }
 
     /// Tiles from which the creature interacts with `target`: orthogonally adjacent to its footprint.
@@ -88,7 +97,7 @@ public enum CreatureBrain {
             next.chebyshevDistance(to: creature.position) <= 1
         else { return nil }
         creature.position = next
-        events.append(.creatureMoved(to: next))
+        events.append(.creatureMoved(creature.id, to: next))
         let remaining = Array(path.dropFirst())
         return remaining.isEmpty ? nil : remaining
     }
@@ -115,7 +124,8 @@ public enum CreatureBrain {
                     let path = PathFinder.path(
                         in: world, from: creature.position, where: { isInteractionTile($0, for: target) })
                 else { continue }
-                candidates.append(Candidate(kind: rule.kind, targetID: target.id, path: path, weight: rule.weight))
+                let weight = rule.weight * creature.species.preference(for: rule.kind)
+                candidates.append(Candidate(kind: rule.kind, targetID: target.id, path: path, weight: weight))
             }
         }
         if let wander = wanderPath(for: creature, in: world, rng: &rng) {

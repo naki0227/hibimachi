@@ -29,6 +29,8 @@ public final class GameStore {
     public private(set) var lastRejection: PlacementError?
     /// Discoveries waiting to be shown as a toast, oldest first.
     public private(set) var pendingDiscoveries: [ReactionKind] = []
+    /// Newcomers waiting to be announced ("新しい住人がやってきた").
+    public private(set) var pendingArrivals: [Species] = []
     public private(set) var saveErrorMessage: String?
     public private(set) var startupNotice: StartupNotice?
     /// Bumped whenever the set or position of objects changes, so renderers can diff cheaply.
@@ -128,9 +130,14 @@ public final class GameStore {
     /// Owned copies of `kind` not yet on the island.
     public func available(_ kind: ObjectKind) -> Int { progress.available(kind, in: world) }
 
-    /// A kind can be placed from storage, or bought on confirm if there are enough きらめき.
+    /// Unlocked by level or by discoveries (see `Unlocks`). Owned copies can always be placed again.
+    public func isUnlocked(_ kind: ObjectKind) -> Bool {
+        Unlocks.isUnlocked(kind, level: progress.level, discoveries: world.discoveries.count)
+    }
+
+    /// A kind can be placed from storage, or bought on confirm if it is unlocked and there are enough きらめき.
     public func canPlaceOrBuy(_ kind: ObjectKind) -> Bool {
-        available(kind) > 0 || progress.sparkles >= RewardRule.price(of: kind)
+        available(kind) > 0 || (isUnlocked(kind) && progress.sparkles >= RewardRule.price(of: kind))
     }
 
     /// Returns `false` (and does nothing) when the kind is neither in storage nor affordable.
@@ -182,7 +189,9 @@ public final class GameStore {
                 return false
             }
             if available(kind) == 0 {
-                guard case .success = progress.purchase(kind, at: now(), transactionID: makeID()) else { return false }
+                guard isUnlocked(kind),
+                    case .success = progress.purchase(kind, at: now(), transactionID: makeID())
+                else { return false }
             }
             result = editor.place(kind, at: origin, id: makeID())
         case .moving(let id, let origin): result = editor.move(id, to: origin)
@@ -263,25 +272,31 @@ public final class GameStore {
         mode = .browse
         selectedObjectID = nil
         pendingDiscoveries = []
+        pendingArrivals = []
         terrainRevision += 1
         objectsDidChange()
     }
 
     // MARK: Simulation
 
-    /// Advances the creature by one step. New discoveries are queued for the UI and saved immediately.
+    /// Advances the residents by one step. New discoveries and newcomers are queued for the UI and saved.
     @discardableResult
     public func tick() -> [WorldEvent] {
-        let events = CreatureBrain.step(world: &editor.world, rng: &rng)
+        var events = CreatureBrain.step(world: &editor.world, rng: &rng)
         let discovered = events.compactMap { event -> ReactionKind? in
-            if case .discovered(let kind) = event { return kind }
+            if case .discovered(let kind, _) = event { return kind }
             return nil
         }
-        if !discovered.isEmpty {
-            pendingDiscoveries.append(contentsOf: discovered)
-            persist()
-        }
+        let arrived = editor.world.welcomeResidentsIfDue(makeID: makeID)
+        events += arrived.map { .residentArrived($0.species, id: $0.id) }
+        pendingDiscoveries.append(contentsOf: discovered)
+        pendingArrivals.append(contentsOf: arrived.map(\.species))
+        if !discovered.isEmpty || !arrived.isEmpty { persist() }
         return events
+    }
+
+    public func dismissArrival() {
+        if !pendingArrivals.isEmpty { pendingArrivals.removeFirst() }
     }
 
     public func dismissDiscovery() {

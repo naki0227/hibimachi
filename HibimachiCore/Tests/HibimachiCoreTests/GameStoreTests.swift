@@ -160,7 +160,7 @@ struct GameStoreTests {
         for _ in 0..<600 {
             discovered += store.tick().filter { if case .discovered = $0 { true } else { false } }
         }
-        #expect(discovered == [.discovered(.benchRest)])
+        #expect(discovered == [.discovered(.benchRest, by: store.world.creature.id)])
         #expect(store.pendingDiscoveries == [.benchRest])
         #expect(repository.saved.count == 1)
         #expect(repository.saved.last?.world.discoveries == [.benchRest])

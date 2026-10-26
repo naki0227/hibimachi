@@ -7,7 +7,7 @@ import Testing
 struct CreatureBrainTests {
     private func started(_ events: [WorldEvent]) -> [ReactionKind] {
         events.compactMap { event in
-            if case .reactionStarted(let kind, _) = event { return kind }
+            if case .reactionStarted(let kind, _, _) = event { return kind }
             return nil
         }
     }
@@ -26,7 +26,7 @@ struct CreatureBrainTests {
         var world = try TestWorlds.grass(objects: [TestWorlds.object(.bench, 4, 3)], creatureAt: TileCoord(x: 1, y: 3))
         let events = simulate(&world, limit: 600)
         #expect(started(events).filter { $0 == .benchRest }.count >= 2)
-        #expect(events.filter { $0 == .discovered(.benchRest) }.count == 1)
+        #expect(events.filter { $0 == .discovered(.benchRest, by: world.creature.id) }.count == 1)
         #expect(world.discoveries == [.benchRest])
     }
 
@@ -83,7 +83,7 @@ struct CreatureBrainTests {
         _ = world.removeObject(bench.id)
         var rng = SeededRandom(seed: 1)
         let events = CreatureBrain.step(world: &world, rng: &rng)
-        #expect(events == [.reactionInterrupted(.benchRest)])
+        #expect(events == [.reactionInterrupted(.benchRest, by: world.creature.id)])
         #expect(world.creature.activity == .idle(ticksLeft: 2))
         #expect(world.creature.position == TileCoord(x: 1, y: 3))
     }
@@ -96,7 +96,7 @@ struct CreatureBrainTests {
         _ = world.removeObject(flower.id)
         var rng = SeededRandom(seed: 1)
         let result1 = CreatureBrain.step(world: &world, rng: &rng)
-        #expect(result1 == [.reactionInterrupted(.bloomBench)])
+        #expect(result1 == [.reactionInterrupted(.bloomBench, by: world.creature.id)])
     }
 
     @Test func cooldownPreventsImmediateRepeat() throws {
