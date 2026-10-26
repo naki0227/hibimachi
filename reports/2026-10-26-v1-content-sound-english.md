@@ -15,6 +15,9 @@
 8. `931765e` App Store の en-US 情報、日英のスクリーンショット撮影。日本語の説明文も新要素に合わせて更新。
 9. `78a483d` ADR-0009〜0011、DATA-MODEL（schema v4）、TODO。
 10. `7a0485f` せっていのスイッチは標準の値（VoiceOver が利用者の言語で読む）に任せる。UIテストの期待値を修正。
+11. `c3475b6` / `5ccb926` CI 修正（import 漏れ、英語UIテストの競合）。
+12. `7535bff` アルバム: 保存に失敗した削除では写真ファイルを残す（再起動後に写真のない記録になるのを防ぐ。外部レビューの指摘）。
+13. `2fc9389` バージョン 1.0.0、README・ROADMAP を現状に更新。
 
 ## 設計の要点
 - 解放は「レベル **または** 発見数」。クエストを使わない人も置き方の工夫で先へ進める（ADR-0009）。
@@ -30,7 +33,10 @@
 | `python3 scripts/appstore/asc.py validate` | OK（ja, en-US。スクリーンショット未撮影の警告のみ） |
 | Docs quality / App Store metadata（head `7a0485f`） | success |
 | Swift CI（head `4d26aee`→`86f2b30`） | 1回目: iOS ビルド失敗（手順5で修正）／2回目: ビルド成功、UIテスト1件失敗（手順10で修正） |
-| Swift CI（head `7a0485f`） | 下の追記を参照 |
+| Swift CI（head `7a0485f`） | iOS ビルド失敗（`Bundle` のため Foundation の import 漏れ）→ `c3475b6` で修正 |
+| Swift CI（head `c3475b6`） | `EnglishUITests` が要素一覧の取得中に消えた要素で失敗 → `5ccb926` で1回のスナップショットから読むよう修正 |
+| Swift CI（head `5ccb926`）: Linux / iOS build・unit・UI test（英語テスト含む11件） | success |
+| アルバム削除の保存失敗時の整合性（`7535bff`、テスト2件追加、計134件） | ローカル PASS。最終 head の CI 結果は PR #3 の本文に記録 |
 
 ## 未実施・残課題
 - 英語の文言はネイティブ確認前。enludus.com のサポート/プライバシーは日本語のみ。
