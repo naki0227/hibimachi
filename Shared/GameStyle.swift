@@ -198,18 +198,34 @@ extension View {
     func gameTile(radius: CGFloat = 16) -> some View { modifier(GameTileBackground(radius: radius)) }
 }
 
-/// Text field drawn like the rest of the UI (paper with a soft outline).
+/// Text field drawn like the rest of the UI (paper with a soft outline). Text, placeholder and cursor use the
+/// game's ink colors explicitly: system defaults turn white in Dark Mode on this always-light paper.
 struct GameTextField: View {
     let placeholder: String
     @Binding var text: String
+    /// Multi-line fields grow between these line counts; `nil` keeps a single line.
+    var lines: ClosedRange<Int>?
 
     var body: some View {
-        TextField(placeholder, text: $text)
+        field
             .font(GameFont.body(16, weight: .medium))
             .foregroundStyle(GameColor.ink)
+            .tint(GameColor.leafDark)
             .padding(.horizontal, 14)
+            .padding(.vertical, lines == nil ? 0 : 12)
             .frame(minHeight: 46)
             .background(GameColor.cream, in: RoundedRectangle(cornerRadius: 14))
             .overlay(RoundedRectangle(cornerRadius: 14).stroke(GameColor.line, lineWidth: 2))
+            .accessibilityLabel(placeholder)
+    }
+
+    @ViewBuilder
+    private var field: some View {
+        let prompt = Text(placeholder).foregroundStyle(GameColor.inkSoft.opacity(0.7))
+        if let lines {
+            TextField("", text: $text, prompt: prompt, axis: .vertical).lineLimit(lines)
+        } else {
+            TextField("", text: $text, prompt: prompt)
+        }
     }
 }

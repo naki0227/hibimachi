@@ -11,6 +11,9 @@ struct HibimachiApp: App {
     var body: some Scene {
         WindowGroup {
             IslandScreen(store: store, tutorial: tutorial, initialPhase: AppComposition.dayPhaseOverride())
+                // The art and UI kit are one light paper palette; Dark Mode would only flip system colors
+                // (text, keyboard, pickers) and make them unreadable on it.
+                .preferredColorScheme(.light)
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
