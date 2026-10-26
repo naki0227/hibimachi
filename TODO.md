@@ -24,15 +24,16 @@
 
 ## 要確認（TestFlight・本人の作業）
 - [ ] Apple Developer Program 登録、App Store Connect でアプリ作成（バンドルID `com.enludus.hibimachi`）。
-- [ ] App Store Connect API キー（App Manager）を作り、GitHub Secrets に `ASC_KEY_ID` / `ASC_ISSUER_ID` / `ASC_KEY_P8` / `APPLE_TEAM_ID` を登録 → Actions の「TestFlight」を手動実行（未実行）。
+- [x] API キーと Secrets を登録し、Actions「TestFlight」で初回アップロード成功（2026-10-26、0.1.0 (20)。リポジトリを public にして macOS ランナーの枠切れを解消）。
 - [x] 写真はiCloudバックアップに含める（ユーザー決定 2026-10-26、標準のまま）。
 - [x] 著作権「2026 enludus」、サポート/プライバシーポリシーは enludus.com に作成（company-web PR #38、マージ後に公開）。
 - [ ] 審査連絡先の Secrets（`ASC_REVIEW_*`）→ Actions「App Store metadata」を plan で実行（未実行、ADR-0008）。
 - [ ] App Store Connect で「App のプライバシー」（データを収集していません）と価格・配信国を手で設定。
 
 ## 要確認（ウィジェット）
-- [ ] 実機・署名付きビルドで App Group を有効にし、ウィジェット表示と○タップでの達成を確認（CIは署名なしのため未検証）。
-- [ ] 既存の保存がApplication SupportからApp Groupへ移動することを実機で確認。
+- [x] TestFlight 版で、ウィジェット（島とクエスト、○タップの達成）とアルバムの写真保存を本人が実機確認（2026-10-26）。
+- [x] ダークモードで入力中の文字が白く読めない → 常にライト表示＋入力欄の色を明示して修正（実機の再確認は次の TestFlight 版で）。
+- [ ] 既存の保存がApplication SupportからApp Groupへ移動することを実機で確認（初回インストールの本人端末では移動元が無いため未確認）。
 
 ## 完了（2026-10-26、P1、PR #1）
 - [x] 目標（6カテゴリ・最大3つ）→今日の小クエスト3件→ワンタップ達成→XP・きらめき（1種）、二重付与の防止、当日の取り消し。

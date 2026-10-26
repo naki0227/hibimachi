@@ -49,12 +49,7 @@ private struct MemoryComposer: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("きょうの記録").gameSectionTitle()
-            TextField("ひとこと（なくてもOK）", text: $text, axis: .vertical)
-                .lineLimit(2...4)
-                .font(GameFont.body(15, weight: .medium))
-                .padding(12)
-                .background(GameColor.cream, in: RoundedRectangle(cornerRadius: 14))
-                .overlay(RoundedRectangle(cornerRadius: 14).stroke(GameColor.line, lineWidth: 2))
+            GameTextField(placeholder: "ひとこと（なくてもOK）", text: $text, lines: 2...4)
                 .focused($editing)
                 .accessibilityIdentifier("memory-text")
             HStack(spacing: 8) {
