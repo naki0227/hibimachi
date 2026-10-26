@@ -9,7 +9,8 @@ struct IslandFactoryTests {
         let world = IslandFactory.makeWorld(makeID: ids.make)
         #expect(world.width == 16 && world.height == 16)
         #expect(Set(world.terrain) == Set(Terrain.allCases))
-        #expect(Set(world.objects.map(\.kind)) == Set(ObjectKind.allCases))
+        // Vertical slice spec: two trees, a house, a bench, a flower and a pond. Lamps are built by the player.
+        #expect(Set(world.objects.map(\.kind)) == [.roundTree, .pineTree, .house, .bench, .flower, .pond])
         #expect(world.isWalkable(world.creature.position))
         #expect(world.discoveries.isEmpty)
     }

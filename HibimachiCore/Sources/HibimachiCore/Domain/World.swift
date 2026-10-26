@@ -13,8 +13,8 @@ public enum WorldValidationError: Error, Equatable, Sendable {
 public struct World: Equatable, Sendable {
     public let width: Int
     public let height: Int
-    /// Row-major terrain, index = y * width + x.
-    public let terrain: [Terrain]
+    /// Row-major terrain, index = y * width + x. Only grass <-> path can change (painting paths).
+    public private(set) var terrain: [Terrain]
     public private(set) var objects: [WorldObject]
     public var creature: Creature
     public private(set) var discoveries: Set<ReactionKind>
@@ -109,9 +109,30 @@ public struct World: Equatable, Sendable {
         return .success(objects.remove(at: index))
     }
 
-    /// Replaces all objects (used by undo). Snapshots come from this same world, so they are valid by construction.
-    mutating func restoreObjects(_ snapshot: [WorldObject]) {
+    /// Why the tile cannot be switched between grass and path, or `nil` if it can. Water never changes,
+    /// and an object standing there must accept the new terrain (a house cannot end up on a path).
+    public func pathToggleIssue(at tile: TileCoord) -> PlacementError? {
+        guard let current = terrain(at: tile) else { return .outOfBounds }
+        guard current != .water else { return .blockedByTerrain(.water) }
+        let target: Terrain = current == .path ? .grass : .path
+        if let object = object(at: tile), !object.kind.allowedTerrain.contains(target) {
+            return .overlapsObject(object.id)
+        }
+        return nil
+    }
+
+    /// Switches grass <-> path. Returns the new terrain.
+    public mutating func togglePath(at tile: TileCoord) -> Result<Terrain, PlacementError> {
+        if let issue = pathToggleIssue(at: tile) { return .failure(issue) }
+        let index = tile.y * width + tile.x
+        terrain[index] = terrain[index] == .path ? .grass : .path
+        return .success(terrain[index])
+    }
+
+    /// Restores objects and terrain (used by undo). Snapshots come from this same world, so they are valid.
+    mutating func restore(objects snapshot: [WorldObject], terrain snapshotTerrain: [Terrain]) {
         objects = snapshot
+        terrain = snapshotTerrain
         relocateCreatureIfBlocked()
     }
 

@@ -6,18 +6,19 @@ public enum ObjectKind: String, CaseIterable, Sendable {
     case bench = "bench"
     case flower = "flower"
     case pond = "pond"
+    case lamp = "lamp"
 
     public var footprint: Footprint {
         switch self {
         case .house, .pond: Footprint(width: 2, height: 2)
-        case .roundTree, .pineTree, .bench, .flower: Footprint(width: 1, height: 1)
+        case .roundTree, .pineTree, .bench, .flower, .lamp: Footprint(width: 1, height: 1)
         }
     }
 
-    /// Terrain the whole footprint must sit on. Benches may line paths; everything else needs grass.
+    /// Terrain the whole footprint must sit on. Benches and lamps may line paths; everything else needs grass.
     public var allowedTerrain: Set<Terrain> {
         switch self {
-        case .bench: [.grass, .path]
+        case .bench, .lamp: [.grass, .path]
         case .roundTree, .pineTree, .house, .flower, .pond: [.grass]
         }
     }

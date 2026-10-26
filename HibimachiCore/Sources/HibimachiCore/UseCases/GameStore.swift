@@ -5,6 +5,8 @@ public enum EditMode: Equatable, Sendable {
     case browse
     case placing(ObjectKind, origin: TileCoord)
     case moving(UUID, origin: TileCoord)
+    /// Tapping tiles switches grass <-> path until the player is done.
+    case paintingPath
 }
 
 public enum StartupNotice: Equatable, Sendable {
@@ -31,6 +33,8 @@ public final class GameStore {
     public private(set) var startupNotice: StartupNotice?
     /// Bumped whenever the set or position of objects changes, so renderers can diff cheaply.
     public private(set) var objectsRevision = 0
+    /// Bumped whenever terrain changes (path painting, undo, reset).
+    public private(set) var terrainRevision = 0
 
     @ObservationIgnored private let repository: any WorldRepository
     @ObservationIgnored private var rng: SeededRandom
@@ -61,7 +65,7 @@ public final class GameStore {
 
     public var previewKind: ObjectKind? {
         switch mode {
-        case .browse: nil
+        case .browse, .paintingPath: nil
         case .placing(let kind, _): kind
         case .moving(let id, _): world.object(withID: id)?.kind
         }
@@ -69,7 +73,7 @@ public final class GameStore {
 
     public var previewOrigin: TileCoord? {
         switch mode {
-        case .browse: nil
+        case .browse, .paintingPath: nil
         case .placing(_, let origin), .moving(_, let origin): origin
         }
     }
@@ -77,7 +81,7 @@ public final class GameStore {
     /// `nil` means the preview can be confirmed.
     public var previewIssue: PlacementError? {
         switch mode {
-        case .browse: nil
+        case .browse, .paintingPath: nil
         case .placing(let kind, let origin): world.placementIssue(for: kind, at: origin)
         case .moving(let id, let origin):
             if let object = world.object(withID: id) {
@@ -111,7 +115,7 @@ public final class GameStore {
         )
         lastRejection = nil
         switch mode {
-        case .browse: break
+        case .browse, .paintingPath: break
         case .placing(let kind, _): mode = .placing(kind, origin: clamped)
         case .moving(let id, _): mode = .moving(id, origin: clamped)
         }
@@ -127,7 +131,7 @@ public final class GameStore {
     public func confirmPreview() -> Bool {
         let result: Result<WorldObject, PlacementError>
         switch mode {
-        case .browse: return false
+        case .browse, .paintingPath: return false
         case .placing(let kind, let origin): result = editor.place(kind, at: origin, id: makeID())
         case .moving(let id, let origin): result = editor.move(id, to: origin)
         }
@@ -137,6 +141,28 @@ public final class GameStore {
             selectedObjectID = object.id
             lastRejection = nil
             objectsDidChange()
+            return true
+        case .failure(let issue):
+            lastRejection = issue
+            return false
+        }
+    }
+
+    public func beginPaintingPath() {
+        selectedObjectID = nil
+        lastRejection = nil
+        mode = .paintingPath
+    }
+
+    /// In path mode, switches the tapped tile between grass and path (each tap is one undo step).
+    @discardableResult
+    public func togglePath(at tile: TileCoord) -> Bool {
+        guard mode == .paintingPath else { return false }
+        switch editor.togglePath(at: tile) {
+        case .success:
+            lastRejection = nil
+            terrainRevision += 1
+            persist()
             return true
         case .failure(let issue):
             lastRejection = issue
@@ -168,10 +194,12 @@ public final class GameStore {
         }
     }
 
+    /// Undo leaves path-painting mode active so several strokes can be undone in a row.
     public func undo() {
-        cancelEdit()
+        if mode != .paintingPath { cancelEdit() }
         guard editor.undo() else { return }
         if let id = selectedObjectID, world.object(withID: id) == nil { selectedObjectID = nil }
+        terrainRevision += 1
         objectsDidChange()
     }
 
@@ -181,6 +209,7 @@ public final class GameStore {
         mode = .browse
         selectedObjectID = nil
         pendingDiscoveries = []
+        terrainRevision += 1
         objectsDidChange()
     }
 
