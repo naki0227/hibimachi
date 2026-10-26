@@ -214,11 +214,16 @@ final class IslandUITests: XCTestCase {
         screenshot(app, "13-tutorial")
         app.buttons["tab-nature"].tap()
         app.buttons["palette-flower"].tap()
+        XCTAssertTrue(app.buttons["confirm-edit"].waitForExistence(timeout: 10))
         app.buttons["confirm-edit"].tap()
+        // Wait for the placement to land before moving on: on a slow CI simulator taps can take seconds each.
+        XCTAssertTrue(app.staticTexts["selection-name"].waitForExistence(timeout: 10))
         app.buttons["deselect"].tap()
         // Placing moved the guide on (to the reaction step, or further if the creature already reacted).
         XCTAssertTrue(card.waitForExistence(timeout: 5))
-        XCTAssertFalse(app.staticTexts["島に、ひとつ置いてみよう"].exists)
+        let firstStep = app.staticTexts["島に、ひとつ置いてみよう"]
+        let gone = expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: firstStep)
+        wait(for: [gone], timeout: 10)
         app.buttons["案内をとばす"].tap()
         XCTAssertFalse(card.waitForExistence(timeout: 2))
         app.terminate()
