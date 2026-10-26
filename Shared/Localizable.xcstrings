@@ -1421,6 +1421,16 @@
         }
       }
     },
+    "シェアする": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share"
+          }
+        }
+      }
+    },
     "タップした地面が小道になります（もう一度で草地に戻る）": {
       "localizations": {
         "en": {
@@ -2227,6 +2237,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Can't place it off the island"
+          }
+        }
+      }
+    },
+    "島の絵だけをシェアします。目標や記録、写真は含まれません。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only the island picture is shared. No goals, notes or photos."
+          }
+        }
+      }
+    },
+    "島の絵をシェア": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share island picture"
+          }
+        }
+      }
+    },
+    "島の絵を用意できませんでした。島を表示してから、もう一度ためしてください。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't make the picture. Show the island and try again."
           }
         }
       }

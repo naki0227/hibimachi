@@ -16,6 +16,8 @@ struct IslandScreen: View {
     let tutorial: TutorialCoach
     let settings: AppSettings
     @State private var scene: IslandScene
+    /// Rendered when the share panel opens, so it shows the island as it is right now.
+    @State private var sharePicture: UIImage?
     @State private var album: DiscoveryAlbum
     @State private var tab: PaletteTab = .build
     @State private var phaseOverride: DayPhase?
@@ -142,6 +144,10 @@ struct IslandScreen: View {
                 },
                 askReset: { overlay = .resetConfirm },
                 openSettings: { overlay = .settings },
+                shareIsland: {
+                    sharePicture = IslandShareCard.render(scene.islandPicture(maxWidth: 1080))
+                    overlay = .share
+                },
                 previewWidget: Self.widgetPreviewAction { overlay = .widgetPreview },
                 close: close)
         case .quests:
@@ -177,6 +183,8 @@ struct IslandScreen: View {
             #else
                 EmptyView()
             #endif
+        case .share:
+            IslandSharePanel(picture: sharePicture, close: close)
         case .startupNotice:
             GameDialog(
                 symbol: "exclamationmark.triangle.fill", title: "保存データを読み込めませんでした",
