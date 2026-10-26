@@ -6,11 +6,31 @@ struct FieldGuidePanel: View {
     let discoveries: Set<ReactionKind>
     /// Snapshots taken this session; entries without one show an icon.
     var images: [ReactionKind: CGImage] = [:]
+    /// Who lives on the island now (newcomers appear as the island gets livelier).
+    var residents: [Species] = [.mochi]
     let close: () -> Void
 
     var body: some View {
         GamePanel(title: "図鑑", symbol: "book.closed.fill", identifier: "field-guide-panel", close: close) {
             VStack(spacing: 10) {
+                Text("島の住人").gameSectionTitle()
+                HStack(spacing: 10) {
+                    ForEach(residents, id: \.self) { species in
+                        VStack(spacing: 4) {
+                            Image(decorative: IslandArt.creatureImage(species), scale: 1)
+                                .interpolation(.none).resizable().scaledToFit()
+                                .frame(width: 44, height: 40)
+                            Text(species.displayName).font(GameFont.body(12, weight: .bold))
+                                .foregroundStyle(GameColor.ink)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(.white, in: RoundedRectangle(cornerRadius: 14))
+                        .overlay(RoundedRectangle(cornerRadius: 14).stroke(GameColor.line, lineWidth: 2))
+                        .accessibilityElement(children: .combine)
+                    }
+                }
+                Text("見つけた姿").gameSectionTitle()
                 if discoveries.isEmpty {
                     Text("まだ何も見つけていません。生き物のそばに、いろいろなものを置いてみましょう。")
                         .font(GameFont.body(15, weight: .medium))

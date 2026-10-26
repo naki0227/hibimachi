@@ -58,6 +58,9 @@ struct IslandScreen: View {
                         if let kind = store.pendingDiscoveries.first {
                             DiscoveryCard(kind: kind, image: album.images[kind]) { store.dismissDiscovery() }
                                 .transition(.move(edge: .top).combined(with: .opacity))
+                        } else if let species = store.pendingArrivals.first {
+                            ArrivalCard(species: species) { store.dismissArrival() }
+                                .transition(.move(edge: .top).combined(with: .opacity))
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .top)
@@ -81,6 +84,7 @@ struct IslandScreen: View {
             // The keyboard belongs to panels; the island HUD must not slide under the status bar with it.
             .ignoresSafeArea(.keyboard)
             .animation(.easeOut(duration: 0.25), value: store.pendingDiscoveries.first)
+            .animation(.easeOut(duration: 0.25), value: store.pendingArrivals.first)
             .animation(.easeOut(duration: 0.25), value: tutorial.guide.step)
         }
         .modifier(TutorialSignals(store: store, coach: tutorial))
@@ -130,7 +134,9 @@ struct IslandScreen: View {
         case .quests:
             QuestPanel(store: store, close: close)
         case .fieldGuide:
-            FieldGuidePanel(discoveries: store.world.discoveries, images: album.images, close: close)
+            FieldGuidePanel(
+                discoveries: store.world.discoveries, images: album.images,
+                residents: store.world.residents.map(\.species), close: close)
         case .objectList:
             ObjectListPanel(store: store, close: close)
         case .album:

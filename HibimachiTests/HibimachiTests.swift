@@ -86,17 +86,40 @@ struct IslandSceneTests {
             store.tick()
             scene.syncWithStore(animated: false)
         }
-        #expect(nodes(named: "*", in: scene) == before)
+        // Newcomers may move in during the run (3 nodes each: the resident, its body and its emote).
+        let newcomers = store.world.residents.count - 1
+        #expect(nodes(named: "*", in: scene) == before + newcomers * 3)
+    }
+
+    @Test func everyResidentGetsOneNode() {
+        let (store, scene) = makeScene()
+        scene.syncWithStore(animated: false)
+        #expect(nodes(named: "creature-*", in: scene) == 1)
+        for _ in 0..<2_000 where store.world.residents.count < 2 { store.tick() }
+        scene.syncWithStore(animated: false)
+        #expect(nodes(named: "creature-*", in: scene) == store.world.residents.count)
     }
 }
 
 @MainActor
 @Suite("Creature rendering")
 struct CreatureNodeTests {
+    @Test func everyKindAndSpeciesHasArt() {
+        for kind in ObjectKind.allCases {
+            for lit in [false, true] {
+                let sprite = IslandArt.sprite(for: kind, lit: lit)
+                #expect(sprite.image.width > 0 && sprite.anchor.x > 0 && sprite.anchor.x < 1)
+            }
+        }
+        for species in Species.allCases {
+            #expect(IslandArt.creatureImage(species).width == 22)
+        }
+    }
+
     @Test func moveActionIsStartedOncePerNewTile() throws {
         let world = IslandFactory.makeWorld()
         let grid = IsoGrid(columns: world.width, rows: world.height)
-        let node = CreatureNode()
+        let node = CreatureNode(species: .mochi)
         node.show(world.creature, in: world, grid: grid, animated: false, reduceMotion: true)
         #expect(node.action(forKey: "move") == nil)
 
@@ -114,7 +137,11 @@ struct CreatureNodeTests {
 struct GameTextTests {
     @Test func everyKindAndReactionHasCopy() {
         for kind in ObjectKind.allCases {
-            #expect(!kind.displayName.isEmpty && !kind.symbolName.isEmpty)
+            #expect(!kind.displayName.isEmpty)
+            #expect(PaletteTab.allCases.contains { $0.kinds.contains(kind) }, "\(kind) must be buildable")
+        }
+        for species in Species.allCases {
+            #expect(!species.displayName.isEmpty && !species.arrivalLine.isEmpty)
         }
         for reaction in ReactionKind.allCases {
             #expect(!reaction.title.isEmpty && !reaction.detail.isEmpty && !reaction.emote.isEmpty)

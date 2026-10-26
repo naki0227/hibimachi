@@ -1,19 +1,22 @@
 import HibimachiCore
 import SpriteKit
 
-/// Renders the creature's position, pose and emotes. Holds no rules: it only mirrors `Creature` state.
+/// Renders a resident's position, pose and emotes. Holds no rules: it only mirrors `Creature` state.
 @MainActor
 final class CreatureNode: SKNode {
-    private let body = SKSpriteNode(texture: IslandArt.creatureTexture(sleeping: false))
+    let species: Species
+    private let body: SKSpriteNode
     private let emote = SKLabelNode(fontNamed: "HiraginoSans-W6")
     private var shownActivityKey = ""
     /// Last position we started moving to. Starting a new move only when it changes matters:
     /// restarting the action every frame means SpriteKit never advances it and the creature looks frozen.
     private(set) var movingTarget: CGPoint?
 
-    override init() {
+    init(species: Species) {
+        self.species = species
+        body = SKSpriteNode(texture: IslandArt.creatureTexture(species, sleeping: false))
         super.init()
-        name = "creature"
+        name = "creature-\(species.rawValue)"
         body.anchorPoint = CGPoint(x: 0.5, y: 0.1)
         // Drawn 1.5x so the creature reads at the default zoom (its art pixels are slightly larger than the world's).
         body.size = CGSize(width: 22 * IslandArt.pixel * 1.5, height: 20 * IslandArt.pixel * 1.5)
@@ -70,14 +73,14 @@ final class CreatureNode: SKNode {
         body.removeAction(forKey: "pose")
         body.yScale = 1
         guard case .interacting(let kind, _, _) = activity else {
-            body.texture = IslandArt.creatureTexture(sleeping: false)
+            body.texture = IslandArt.creatureTexture(species, sleeping: false)
             emote.run(.fadeOut(withDuration: 0.3))
             return
         }
         emote.removeAllActions()
         emote.text = kind.emote
         emote.alpha = 1
-        body.texture = IslandArt.creatureTexture(sleeping: kind == .treeNap || kind == .bloomBench)
+        body.texture = IslandArt.creatureTexture(species, sleeping: kind.looksSleepy)
         guard !reduceMotion else { return }
         let breathe = SKAction.sequence([.scaleY(to: 0.94, duration: 0.7), .scaleY(to: 1, duration: 0.7)])
         body.run(.repeatForever(breathe), withKey: "pose")

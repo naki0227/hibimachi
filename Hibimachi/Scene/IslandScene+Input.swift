@@ -58,8 +58,8 @@ extension IslandScene: UIGestureRecognizerDelegate {
             store.select(nil)
             return
         }
-        if tile == store.world.creature.position {
-            creatureNode.flash("!", reduceMotion: reduceMotion)
+        for resident in store.world.residents where resident.position == tile {
+            residentNodes[resident.id]?.flash("!", reduceMotion: reduceMotion)
         }
         store.selectObject(at: tile)
     }
