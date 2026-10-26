@@ -83,6 +83,8 @@ extension IslandScene {
         guard phase != dayPhase || !dayPhaseApplied else { return }
         dayPhase = phase
         dayPhaseApplied = true
+        // Some discoveries only happen at the time of day the player is looking at.
+        store.dayPhase = phase
         let (color, alpha): (SKColor, CGFloat) =
             switch phase {
             case .morning: (SKColor(hex: 0xFFC48A), 0.12)
@@ -99,7 +101,7 @@ extension IslandScene {
     func applyLights() {
         glowLayer.removeAllChildren()
         let lit = dayPhase.lightsOn
-        for object in store.world.objects where object.kind == .lamp || object.kind == .house {
+        for object in store.world.objects where [.lamp, .house, .cafe, .campfire].contains(object.kind) {
             guard let node = objectNodes[object.id] else { continue }
             node.texture = IslandArt.sprite(for: object.kind, lit: lit).texture
             guard lit else { continue }
@@ -109,6 +111,9 @@ extension IslandScene {
             if object.kind == .lamp {
                 glow.size = CGSize(width: 110, height: 110)
                 glow.position = CGPoint(x: front.x, y: front.y + 80)
+            } else if object.kind == .campfire {
+                glow.size = CGSize(width: 150, height: 120)
+                glow.position = CGPoint(x: front.x, y: front.y + 24)
             } else {
                 glow.size = CGSize(width: 170, height: 120)
                 glow.position = CGPoint(x: front.x, y: front.y + 34)
@@ -121,12 +126,22 @@ extension IslandScene {
     func handle(_ events: [WorldEvent]) {
         for event in events {
             switch event {
-            case .reactionInterrupted:
-                creatureNode.flash("?", reduceMotion: reduceMotion)
-            case .discovered(let kind):
-                sparkle(at: creatureNode.position)
-                captureDiscovery(kind)
-            case .creatureMoved, .reactionStarted:
+            case .reactionInterrupted(_, let who):
+                residentNodes[who]?.flash("?", reduceMotion: reduceMotion)
+            case .discovered(let kind, let who):
+                guard let node = residentNodes[who] else { break }
+                sparkle(at: node.position)
+                captureDiscovery(kind, around: who)
+            case .residentArrived(_, let id):
+                syncResidents(animated: false)
+                guard let node = residentNodes[id] else { break }
+                sparkle(at: node.position)
+                node.flash("♪", reduceMotion: reduceMotion)
+            case .reactionStarted(let kind, let objectID, _):
+                if let mote = NightMotes.color(for: kind), let target = objectNodes[objectID] {
+                    showMotes(around: target.position, color: mote)
+                }
+            case .creatureMoved:
                 break
             }
         }
@@ -145,19 +160,19 @@ extension IslandScene {
         }
     }
 
-    /// Takes a small picture of the creature reacting, for the discovery card and the field guide.
-    private func captureDiscovery(_ kind: ReactionKind) {
+    /// Takes a small picture of the resident reacting, for the discovery card and the field guide.
+    private func captureDiscovery(_ kind: ReactionKind, around resident: UUID) {
         Task { @MainActor [weak self] in
             // Wait for the creature to settle into its pose before taking the picture.
             try? await Task.sleep(for: .milliseconds(800))
-            guard let self, let view = self.view,
+            guard let self, let view = self.view, let node = self.residentNodes[resident],
                 let full = view.texture(from: self.worldLayer)?.cgImage()
             else { return }
             // Render the island layer (no tint/UI overlays) and crop around the creature ourselves:
             // the rendered image covers the layer's accumulated frame, top-left origin.
             let frame = self.worldLayer.calculateAccumulatedFrame()
             let scale = Double(full.width) / frame.width
-            let center = self.creatureNode.position
+            let center = node.position
             let crop = CGRect(
                 x: (center.x - 90 - frame.minX) * scale, y: (frame.maxY - (center.y + 110)) * scale,
                 width: 180 * scale, height: 150 * scale)

@@ -10,6 +10,8 @@ final class DemoUITests: XCTestCase {
         app.launchEnvironment["HIBIMACHI_SEED"] = "2026"
         app.launchEnvironment["HIBIMACHI_TUTORIAL"] = "off"
         app.launchEnvironment["HIBIMACHI_DAY_PHASE"] = "day"
+        // The script taps Japanese labels (the demo video is the Japanese one).
+        app.launchArguments += ["-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
         app.launch()
         XCTAssertTrue(app.descendants(matching: .any)["island-view"].waitForExistence(timeout: 15))
 

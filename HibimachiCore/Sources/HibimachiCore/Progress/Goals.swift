@@ -65,8 +65,36 @@ public struct QuestCompletion: Identifiable, Equatable, Sendable {
 }
 
 /// Built-in quest ideas per category (rule-based, no AI). Players can add their own too.
+/// The titles are copied into the player's goals when created, so they follow the language at that moment.
 public enum QuestPresets {
-    public static func quests(for category: GoalCategory) -> [(title: String, minutes: Int)] {
+    public enum Language: Sendable {
+        case japanese
+        case english
+    }
+
+    public static func quests(for category: GoalCategory, language: Language = .japanese)
+        -> [(title: String, minutes: Int)]
+    {
+        language == .english ? englishQuests(for: category) : japaneseQuests(for: category)
+    }
+
+    static func englishQuests(for category: GoalCategory) -> [(title: String, minutes: Int)] {
+        switch category {
+        case .tidy:
+            [("Clear the desk for 5 minutes", 5), ("Put 3 things back in place", 5), ("Gather the trash", 10)]
+        case .study:
+            [("Read 2 pages of a textbook", 10), ("Learn 5 new words", 10), ("Look over yesterday's notes", 5)]
+        case .rest:
+            [("Take 10 slow breaths", 5), ("Drink a glass of water slowly", 5), ("Close your eyes for 5 minutes", 5)]
+        case .create:
+            [("Jot down 3 ideas", 5), ("Create for 10 minutes", 10), ("Enjoy one work you love", 5)]
+        case .move: [("Stretch for 5 minutes", 5), ("Step outside for fresh air", 10), ("Take the stairs", 5)]
+        case .other:
+            [("Start it for just 5 minutes", 5), ("Write down the next step", 5), ("Keep going for 10 minutes", 10)]
+        }
+    }
+
+    static func japaneseQuests(for category: GoalCategory) -> [(title: String, minutes: Int)] {
         switch category {
         case .tidy: [("机の上を5分だけ片付ける", 5), ("出しっぱなしを3つ戻す", 5), ("ゴミをひとまとめにする", 10)]
         case .study: [("教科書を2ページ読む", 10), ("単語を5つ覚える", 10), ("昨日のノートを見返す", 5)]

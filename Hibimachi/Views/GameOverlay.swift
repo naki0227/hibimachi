@@ -8,6 +8,9 @@ enum IslandOverlay: Hashable {
     case fieldGuide
     case objectList
     case album
+    case settings
+    /// The day a selected object was placed.
+    case memory(UUID)
     case resetConfirm
     case startupNotice
     /// Debug builds only: the home-screen widget with live data.
@@ -51,8 +54,8 @@ struct ModalLayer<Item: Hashable, Content: View>: View {
 /// Small centered dialog: a big round icon, a title, a message and the game's buttons.
 struct GameDialog<Actions: View>: View {
     let symbol: String
-    let title: String
-    let message: String
+    let title: LocalizedStringKey
+    let message: LocalizedStringKey
     var tint = GameColor.leaf
     var identifier = ""
     @ViewBuilder let actions: () -> Actions
@@ -97,6 +100,7 @@ struct MenuPanel: View {
     let showWholeIsland: () -> Void
     let followDeviceClock: () -> Void
     let askReset: () -> Void
+    let openSettings: () -> Void
     /// Debug builds pass this to show the widget preview row.
     var previewWidget: (() -> Void)?
     let close: () -> Void
@@ -106,6 +110,7 @@ struct MenuPanel: View {
             VStack(spacing: 10) {
                 row("島全体を表示", "arrow.up.left.and.arrow.down.right", .secondary, showWholeIsland)
                 row("時間帯を端末の時刻に戻す", "clock", .secondary, followDeviceClock)
+                row("せってい", "gearshape.fill", .secondary, openSettings)
                 if let previewWidget {
                     row("ウィジェットのプレビュー", "square.grid.2x2", .secondary, previewWidget)
                 }
@@ -118,7 +123,7 @@ struct MenuPanel: View {
     }
 
     private func row(
-        _ title: String, _ symbol: String, _ kind: GameButtonStyle.Kind, _ action: @escaping () -> Void
+        _ title: LocalizedStringKey, _ symbol: String, _ kind: GameButtonStyle.Kind, _ action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
             Label(title, systemImage: symbol).frame(maxWidth: .infinity)

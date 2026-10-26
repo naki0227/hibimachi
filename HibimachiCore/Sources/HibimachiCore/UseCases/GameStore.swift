@@ -22,15 +22,19 @@ public enum StartupNotice: Equatable, Sendable {
 @MainActor
 @Observable
 public final class GameStore {
-    public private(set) var editor: WorldEditor
+    public internal(set) var editor: WorldEditor
     public private(set) var mode: EditMode = .browse
     public private(set) var selectedObjectID: UUID?
     /// Why the last confirm was rejected (shown next to the preview). Cleared when the preview moves.
     public private(set) var lastRejection: PlacementError?
     /// Discoveries waiting to be shown as a toast, oldest first.
-    public private(set) var pendingDiscoveries: [ReactionKind] = []
+    public internal(set) var pendingDiscoveries: [ReactionKind] = []
+    /// Newcomers waiting to be announced ("新しい住人がやってきた").
+    public internal(set) var pendingArrivals: [Species] = []
+    /// Residents who just became closer ("なかよしになった"), oldest first.
+    public internal(set) var pendingFriendships: [FriendshipNotice] = []
     public private(set) var saveErrorMessage: String?
-    public private(set) var startupNotice: StartupNotice?
+    public internal(set) var startupNotice: StartupNotice?
     /// Bumped whenever the set or position of objects changes, so renderers can diff cheaply.
     public private(set) var objectsRevision = 0
     /// Bumped whenever terrain changes (path painting, undo, reset).
@@ -44,10 +48,12 @@ public final class GameStore {
     /// Optional memories (P2) and why the last album action was refused.
     public private(set) var album = Album()
     public private(set) var lastAlbumError: AlbumError?
+    /// The time of day the island shows; some reactions only start then. Set by the app (clock or preview).
+    public var dayPhase: DayPhase = .day
 
     @ObservationIgnored let repository: any WorldRepository
-    @ObservationIgnored private var rng: SeededRandom
-    @ObservationIgnored private let makeID: () -> UUID
+    @ObservationIgnored var rng: SeededRandom
+    @ObservationIgnored let makeID: () -> UUID
     @ObservationIgnored private let now: () -> Date
     @ObservationIgnored let calendar: Calendar
     /// Where photos go; `nil` means text-only memories (e.g. tests, or a store without a media folder).
@@ -92,45 +98,19 @@ public final class GameStore {
     public var canUndo: Bool { editor.canUndo }
     public var selectedObject: WorldObject? { selectedObjectID.flatMap(world.object(withID:)) }
 
-    // MARK: Preview
-
-    public var previewKind: ObjectKind? {
-        switch mode {
-        case .browse, .paintingPath: nil
-        case .placing(let kind, _): kind
-        case .moving(let id, _): world.object(withID: id)?.kind
-        }
-    }
-
-    public var previewOrigin: TileCoord? {
-        switch mode {
-        case .browse, .paintingPath: nil
-        case .placing(_, let origin), .moving(_, let origin): origin
-        }
-    }
-
-    /// `nil` means the preview can be confirmed.
-    public var previewIssue: PlacementError? {
-        switch mode {
-        case .browse, .paintingPath: nil
-        case .placing(let kind, let origin): world.placementIssue(for: kind, at: origin)
-        case .moving(let id, let origin):
-            if let object = world.object(withID: id) {
-                world.placementIssue(for: object.kind, at: origin, ignoring: id)
-            } else {
-                .unknownObject(id)
-            }
-        }
-    }
-
     // MARK: Editing
 
     /// Owned copies of `kind` not yet on the island.
     public func available(_ kind: ObjectKind) -> Int { progress.available(kind, in: world) }
 
-    /// A kind can be placed from storage, or bought on confirm if there are enough きらめき.
+    /// Unlocked by level or by discoveries (see `Unlocks`). Owned copies can always be placed again.
+    public func isUnlocked(_ kind: ObjectKind) -> Bool {
+        Unlocks.isUnlocked(kind, level: progress.level, discoveries: world.discoveries.count)
+    }
+
+    /// A kind can be placed from storage, or bought on confirm if it is unlocked and there are enough きらめき.
     public func canPlaceOrBuy(_ kind: ObjectKind) -> Bool {
-        available(kind) > 0 || progress.sparkles >= RewardRule.price(of: kind)
+        available(kind) > 0 || (isUnlocked(kind) && progress.sparkles >= RewardRule.price(of: kind))
     }
 
     /// Returns `false` (and does nothing) when the kind is neither in storage nor affordable.
@@ -182,9 +162,11 @@ public final class GameStore {
                 return false
             }
             if available(kind) == 0 {
-                guard case .success = progress.purchase(kind, at: now(), transactionID: makeID()) else { return false }
+                guard isUnlocked(kind),
+                    case .success = progress.purchase(kind, at: now(), transactionID: makeID())
+                else { return false }
             }
-            result = editor.place(kind, at: origin, id: makeID())
+            result = editor.place(kind, at: origin, id: makeID(), placedAt: now())
         case .moving(let id, let origin): result = editor.move(id, to: origin)
         }
         switch result {
@@ -263,33 +245,10 @@ public final class GameStore {
         mode = .browse
         selectedObjectID = nil
         pendingDiscoveries = []
+        pendingArrivals = []
+        pendingFriendships = []
         terrainRevision += 1
         objectsDidChange()
-    }
-
-    // MARK: Simulation
-
-    /// Advances the creature by one step. New discoveries are queued for the UI and saved immediately.
-    @discardableResult
-    public func tick() -> [WorldEvent] {
-        let events = CreatureBrain.step(world: &editor.world, rng: &rng)
-        let discovered = events.compactMap { event -> ReactionKind? in
-            if case .discovered(let kind) = event { return kind }
-            return nil
-        }
-        if !discovered.isEmpty {
-            pendingDiscoveries.append(contentsOf: discovered)
-            persist()
-        }
-        return events
-    }
-
-    public func dismissDiscovery() {
-        if !pendingDiscoveries.isEmpty { pendingDiscoveries.removeFirst() }
-    }
-
-    public func dismissStartupNotice() {
-        startupNotice = nil
     }
 
     // MARK: PlayerProgress plumbing (used by GameStore+Quests)
@@ -339,19 +298,5 @@ public final class GameStore {
     private func objectsDidChange() {
         objectsRevision += 1
         persist()
-    }
-
-    /// First valid spot around the creature, so a new object appears where the player is already looking.
-    private func suggestedOrigin(for kind: ObjectKind) -> TileCoord {
-        let center = world.creature.position
-        for radius in 1...max(world.width, world.height) {
-            for dy in -radius...radius {
-                for dx in -radius...radius where max(abs(dx), abs(dy)) == radius {
-                    let origin = center.offset(dx: dx, dy: dy)
-                    if world.placementIssue(for: kind, at: origin) == nil { return origin }
-                }
-            }
-        }
-        return TileCoord(x: 0, y: 0)
     }
 }

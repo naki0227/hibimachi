@@ -7,9 +7,10 @@ extension GameStore {
     public var completedToday: [QuestCompletion] { progress.completions(on: today) }
 
     @discardableResult
-    public func addGoal(title: String, category: GoalCategory) -> Bool {
+    public func addGoal(title: String, category: GoalCategory, language: QuestPresets.Language = .japanese) -> Bool {
         apply { progress in
-            progress.addGoal(title: title, category: category, at: nowForProgress, makeID: makeIDForProgress)
+            progress.addGoal(
+                title: title, category: category, at: nowForProgress, makeID: makeIDForProgress, language: language)
         }
     }
 

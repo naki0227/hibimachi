@@ -56,6 +56,13 @@ enum IslandArt {
         static let valid = SKColor(hex: 0x79BDD5)
         static let invalid = SKColor(hex: 0xE0705A)
         static let apricot = SKColor(hex: 0xEDAD94)
+        static let sakuraDark = SKColor(hex: 0xE38AA5)
+        static let sakuraLight = SKColor(hex: 0xFBD3DE)
+        static let cafeWall = SKColor(hex: 0xFFF3DC)
+        static let cafeWallShade = SKColor(hex: 0xE9D3B2)
+        static let cafeRoof = SKColor(hex: 0x5FA77A)
+        static let cafeRoofShade = SKColor(hex: 0x468A61)
+        static let awning = SKColor(hex: 0x6FB8A0)
     }
 
     struct Sprite {
@@ -79,6 +86,19 @@ enum IslandArt {
             case .flower: (ObjectSprites.flowerBush(), 16)
             case .pond: (ObjectSprites.pond(), 32)
             case .lamp: (ObjectSprites.lamp(lit: lit), 8)
+            case .sakuraTree: (ObjectSprites.sakuraTree(), 16)
+            case .bush: (ObjectSprites.bush(), 16)
+            case .rock: (ObjectSprites.rock(), 16)
+            case .fence: (ObjectSprites.fence(), 16)
+            case .mailbox: (ObjectSprites.mailbox(), 8)
+            case .picnicMat: (ObjectSprites.picnicMat(), 16)
+            case .birdhouse: (ObjectSprites.birdhouse(), 8)
+            case .swing: (ObjectSprites.swing(), 16)
+            case .campfire: (ObjectSprites.campfire(lit: lit), 16)
+            case .well: (ObjectSprites.well(), 16)
+            case .garden: (ObjectSprites.garden(), 32)
+            case .fountain: (ObjectSprites.fountain(), 32)
+            case .cafe: (ObjectSprites.cafe(lit: lit), 32)
             }
         let sprite = Sprite(
             texture: canvas.makeTexture(), image: canvas.makeImage(),
@@ -96,13 +116,24 @@ enum IslandArt {
         return node
     }
 
-    static func creatureTexture(sleeping: Bool) -> SKTexture {
-        let key = "creature-\(sleeping)"
+    static func creatureTexture(_ species: Species = .mochi, sleeping: Bool) -> SKTexture {
+        let key = "creature-\(species.rawValue)-\(sleeping)"
         if let cached = cache[key] { return cached.texture }
-        let canvas = ObjectSprites.creature(sleeping: sleeping)
+        let canvas =
+            switch species {
+            case .mochi: ObjectSprites.creature(sleeping: sleeping)
+            case .kotori: ObjectSprites.kotori(sleeping: sleeping)
+            case .tanuki: ObjectSprites.tanuki(sleeping: sleeping)
+            }
         let texture = canvas.makeTexture()
         cache[key] = Sprite(texture: texture, image: canvas.makeImage(), anchor: CGPoint(x: 0.5, y: 0.1))
         return texture
+    }
+
+    /// Resident art for SwiftUI (arrival card, field guide).
+    static func creatureImage(_ species: Species) -> CGImage {
+        _ = creatureTexture(species, sleeping: false)
+        return cache["creature-\(species.rawValue)-false"]?.image ?? ObjectSprites.creature(sleeping: false).makeImage()
     }
 
     static let glowTexture: SKTexture = {

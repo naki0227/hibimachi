@@ -123,6 +123,68 @@ struct JSONFileWorldRepositoryTests {
         #expect(preserved == Data(contents.utf8))
     }
 
+    @Test func residentsRoundTripAndPreV4CreaturesAreMochi() throws {
+        var world = sampleWorld()
+        for kind in [ReactionKind.benchRest, .treeNap, .pondVisit] { world.recordDiscovery(kind) }
+        _ = world.welcomeResidentsIfDue(makeID: UUID.init)
+        try repository().save(game(world))
+        guard case .loaded(let loaded) = repository().load() else {
+            Issue.record("expected the save to load")
+            return
+        }
+        #expect(loaded.world.residents.map(\.species) == [.mochi, .kotori])
+        #expect(loaded.world.residents.map(\.position) == world.residents.map(\.position))
+
+        var placed = world
+        _ = placed.place(.swing, at: TileCoord(x: 6, y: 6), id: UUID(), placedAt: Date(timeIntervalSince1970: 1_000))
+        try repository().save(game(placed))
+        #expect(repository().peek()?.world.objects.last?.placedAt == Date(timeIntervalSince1970: 1_000))
+        try repository().save(game(world))
+
+        let text = try String(contentsOf: repository().fileURL, encoding: .utf8)
+        var object = try #require(try JSONSerialization.jsonObject(with: Data(text.utf8)) as? [String: Any])
+        object["residents"] = nil
+        object["schemaVersion"] = 3
+        var creature = try #require(object["creature"] as? [String: Any])
+        creature["species"] = nil
+        object["creature"] = creature
+        try write(String(decoding: try JSONSerialization.data(withJSONObject: object), as: UTF8.self))
+        guard case .loaded(let old) = repository().load() else {
+            Issue.record("expected the v3 file to load")
+            return
+        }
+        #expect(old.world.residents.map(\.species) == [.mochi])
+    }
+
+    @Test func friendshipRoundTripsAndOlderSavesStartAtZero() throws {
+        var world = sampleWorld()
+        let day = try #require(LocalDay(string: "2027-01-15"))
+        _ = world.creature.friendship.pet(on: day)
+        world.creature.friendship.addDiscovery()
+        try repository().save(game(world))
+        let loaded = try #require(repository().peek())
+        #expect(loaded.world.creature.friendship == world.creature.friendship)
+        #expect(loaded.world.creature.friendship.points == 3)
+
+        let text = try String(contentsOf: repository().fileURL, encoding: .utf8)
+        var object = try #require(try JSONSerialization.jsonObject(with: Data(text.utf8)) as? [String: Any])
+        var creature = try #require(object["creature"] as? [String: Any])
+        creature["friendship"] = nil
+        object["creature"] = creature
+        object["schemaVersion"] = 4
+        try write(String(decoding: try JSONSerialization.data(withJSONObject: object), as: UTF8.self))
+        #expect(repository().peek()?.world.creature.friendship == Friendship())
+
+        creature["friendship"] = ["points": 1, "petDay": "not a day", "petsOnPetDay": 1]
+        object["creature"] = creature
+        object["schemaVersion"] = 5
+        try write(String(decoding: try JSONSerialization.data(withJSONObject: object), as: UTF8.self))
+        guard case .unreadable = repository().load() else {
+            Issue.record("a broken pet day makes the save unreadable instead of silently dropping it")
+            return
+        }
+    }
+
     @Test func peekReadsWithoutTouchingUnreadableFiles() throws {
         #expect(repository().peek() == nil)
         let saved = game(sampleWorld())
@@ -145,7 +207,7 @@ struct JSONFileWorldRepositoryTests {
         try repository().save(saved)
         #expect(repository().peek() == saved)
         let text = try String(contentsOf: repository().fileURL, encoding: .utf8)
-        #expect(text.contains("\"schemaVersion\":3"))
+        #expect(text.contains("\"schemaVersion\":5"))
 
         // A v2 file (no album key) loads with an empty album.
         var object = try #require(

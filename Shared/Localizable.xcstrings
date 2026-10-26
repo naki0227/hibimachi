@@ -1,0 +1,2806 @@
+{
+  "sourceLanguage": "ja",
+  "strings": {
+    "%@がやってきた": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ moved in"
+          }
+        }
+      }
+    },
+    "%@と%@になった": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Now %2$@ with %1$@"
+          }
+        }
+      }
+    },
+    "%@に\n%@を迎えた日": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@\nThe day %2$@ arrived"
+          }
+        }
+      }
+    },
+    "%@をきらめき%lldで置く": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Place %1$@ for %2$lld sparkles"
+          }
+        }
+      }
+    },
+    "%@をしまう": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Store %@"
+          }
+        }
+      }
+    },
+    "%@をやった！にする": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mark %@ as done"
+          }
+        }
+      }
+    },
+    "%@を置いてみると、だれかが寄ってくるかも": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try placing a new %@. Someone may come by"
+          }
+        }
+      }
+    },
+    "%@を置く（手持ち%lld）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Place %1$@ (%2$lld in storage)"
+          }
+        }
+      }
+    },
+    "%@を迎えた": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcomed %@"
+          }
+        }
+      }
+    },
+    "%@・約%lld分": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · about %2$lld min"
+          }
+        }
+      }
+    },
+    "%@（きらめき%lldが必要）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ (needs %2$lld sparkles)"
+          }
+        }
+      }
+    },
+    "%@（レベル%lldか、発見%lldつで解放）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ (unlocks at level %2$lld or %3$lld discoveries)"
+          }
+        }
+      }
+    },
+    "%lld/%lldに迎えた": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrived %1$lld/%2$lld"
+          }
+        }
+      }
+    },
+    "%lld分": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld min"
+          }
+        }
+      }
+    },
+    "%lld文字までにしてください": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep it to %lld characters"
+          }
+        }
+      }
+    },
+    "%lld月%lld日に迎えた。その日の思い出を見る": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrived on %1$lld/%2$lld. See the memory of that day"
+          }
+        }
+      }
+    },
+    "Lv%lld / 発見%lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lv%1$lld / %2$lld found"
+          }
+        }
+      }
+    },
+    "Lv%lldか、発見%lldつで%@が置けるように": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%3$@ unlocks at Lv%1$lld or %2$lld discoveries"
+          }
+        }
+      }
+    },
+    "○をタップで「やった！」": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap ○ when done"
+          }
+        }
+      }
+    },
+    "✨%lldで置く": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Place for ✨%lld"
+          }
+        }
+      }
+    },
+    "「%@」の小さなクエストが3つ用意されます。あとで自分のクエストも足せます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You'll get 3 small \"%@\" quests. You can add your own later."
+          }
+        }
+      }
+    },
+    "いつもうれしそう。ハートを見せてくれる。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Always happy to see you, with a heart to show it."
+          }
+        }
+      }
+    },
+    "いわ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rock"
+          }
+        }
+      }
+    },
+    "おてがみ待ち": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for a letter"
+          }
+        }
+      }
+    },
+    "おやすみ中の目標です": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This goal is resting"
+          }
+        }
+      }
+    },
+    "おーい": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "hello!"
+          }
+        }
+      }
+    },
+    "かざる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Decor"
+          }
+        }
+      }
+    },
+    "からだ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move"
+          }
+        }
+      }
+    },
+    "からだを動かす": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move my body"
+          }
+        }
+      }
+    },
+    "きょうのこと": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today"
+          }
+        }
+      }
+    },
+    "きょうのことを始めよう": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start today's quests"
+          }
+        }
+      }
+    },
+    "きょうのこと（のこり%lld）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today (%lld left)"
+          }
+        }
+      }
+    },
+    "きょうのクエスト": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today's quests"
+          }
+        }
+      }
+    },
+    "きょうの記録": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today's note"
+          }
+        }
+      }
+    },
+    "きらめき": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sparkles"
+          }
+        }
+      }
+    },
+    "きらめき %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sparkles %lld"
+          }
+        }
+      }
+    },
+    "きらめきが足りません（%lld / %lld）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not enough sparkles (%1$lld / %2$lld)"
+          }
+        }
+      }
+    },
+    "けす": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
+          }
+        }
+      }
+    },
+    "けす？": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete?"
+          }
+        }
+      }
+    },
+    "ここに置く": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Place here"
+          }
+        }
+      }
+    },
+    "ここに置けます（ドラッグかタップで場所を変えられます）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can place it here (drag or tap to change the spot)"
+          }
+        }
+      }
+    },
+    "ここへ動かす": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move here"
+          }
+        }
+      }
+    },
+    "こだぬき": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Little tanuki"
+          }
+        }
+      }
+    },
+    "ことり": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Birdie"
+          }
+        }
+      }
+    },
+    "この地面には置けません": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't place it on this ground"
+          }
+        }
+      }
+    },
+    "この目標をおやすみする": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rest this goal"
+          }
+        }
+      }
+    },
+    "この記録はもう受け取り済みです": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This reward was already received"
+          }
+        }
+      }
+    },
+    "この記録は見つかりませんでした。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This record could not be found."
+          }
+        }
+      }
+    },
+    "この記録をけす": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this note"
+          }
+        }
+      }
+    },
+    "さく": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fence"
+          }
+        }
+      }
+    },
+    "さくらの木": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cherry tree"
+          }
+        }
+      }
+    },
+    "さくらの木の下で、だれかが上を見ているかも": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Someone may look up from under a cherry tree"
+          }
+        }
+      }
+    },
+    "さくらを見上げる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gazing at the blossoms"
+          }
+        }
+      }
+    },
+    "しげみ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shrub"
+          }
+        }
+      }
+    },
+    "しぜん": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nature"
+          }
+        }
+      }
+    },
+    "しまう": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Store"
+          }
+        }
+      }
+    },
+    "せってい": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        }
+      }
+    },
+    "ぜんぶできた！": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All done!"
+          }
+        }
+      }
+    },
+    "そのほか": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Other"
+          }
+        }
+      }
+    },
+    "そのクエストの記録が見つかりませんでした": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That quest record could not be found"
+          }
+        }
+      }
+    },
+    "その記録はもうありません": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That note is already gone"
+          }
+        }
+      }
+    },
+    "たき火": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Campfire"
+          }
+        }
+      }
+    },
+    "たき火でぬくぬく": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cozy by the campfire"
+          }
+        }
+      }
+    },
+    "たき火のそばにベンチがあったら、夜が楽しそう": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A bench by the campfire would make for a nice evening"
+          }
+        }
+      }
+    },
+    "たき火のそばは、あたたかそう": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It looks warm by the campfire"
+          }
+        }
+      }
+    },
+    "たき火やはたけ、ピクニックが好きみたい。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seems to like campfires, gardens and picnics."
+          }
+        }
+      }
+    },
+    "たき火をかこむ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Around the campfire"
+          }
+        }
+      }
+    },
+    "だいすき": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Best friends"
+          }
+        }
+      }
+    },
+    "ちゃんと休む": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rest properly"
+          }
+        }
+      }
+    },
+    "つくる時間を持つ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Make time to create"
+          }
+        }
+      }
+    },
+    "できた": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        }
+      }
+    },
+    "できたらタップ。できなかった日も、島は何も失いません。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap when done. On days you can't, the island loses nothing."
+          }
+        }
+      }
+    },
+    "とがった木": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pointy tree"
+          }
+        }
+      }
+    },
+    "ときどき、うれしそうにはねるようになった。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Now and then, it hops for joy."
+          }
+        }
+      }
+    },
+    "とじています": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collapsed"
+          }
+        }
+      }
+    },
+    "とじる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
+          }
+        }
+      }
+    },
+    "とばす": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skip"
+          }
+        }
+      }
+    },
+    "どんなことを育てたい？": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What would you like to grow?"
+          }
+        }
+      }
+    },
+    "なかよし": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Friends"
+          }
+        }
+      }
+    },
+    "のこす": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save"
+          }
+        }
+      }
+    },
+    "のこり %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld left"
+          }
+        }
+      }
+    },
+    "のこり%lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld left"
+          }
+        }
+      }
+    },
+    "はじめから": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start over"
+          }
+        }
+      }
+    },
+    "はじめからある": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Here from the start"
+          }
+        }
+      }
+    },
+    "はじめまして": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Just met"
+          }
+        }
+      }
+    },
+    "はじめる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start"
+          }
+        }
+      }
+    },
+    "はたけ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Garden patch"
+          }
+        }
+      }
+    },
+    "はたけのお世話": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tending the garden"
+          }
+        }
+      }
+    },
+    "はたけの葉っぱ、だれか気にしているみたい": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Someone seems curious about the garden leaves"
+          }
+        }
+      }
+    },
+    "はたけの葉っぱを一枚ずつ、ていねいに見てまわる。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checks every leaf in the garden, one by one."
+          }
+        }
+      }
+    },
+    "はなやぶ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flower bush"
+          }
+        }
+      }
+    },
+    "ひとことか写真のどちらかを入れてください": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add a few words or a photo"
+          }
+        }
+      }
+    },
+    "ひとことは%lld文字までです": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notes can be up to %lld characters"
+          }
+        }
+      }
+    },
+    "ひとこと（なくてもOK）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A few words (optional)"
+          }
+        }
+      }
+    },
+    "ひとつ戻す": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Undo one step"
+          }
+        }
+      }
+    },
+    "ひびまち": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hibimachi"
+          }
+        }
+      }
+    },
+    "ひびまち %@ (%@)\n絵と音はすべてコードで描いています。© 2026 enludus": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hibimachi %1$@ (%2$@)\nAll art and sound are made in code. © 2026 enludus"
+          }
+        }
+      }
+    },
+    "ひびまちの島": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hibimachi island"
+          }
+        }
+      }
+    },
+    "ひらいています": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expanded"
+          }
+        }
+      }
+    },
+    "ひらひら落ちる花びらを、首をかしげて見上げる。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tilts its head to watch the petals drift down."
+          }
+        }
+      }
+    },
+    "ふるえる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vibration"
+          }
+        }
+      }
+    },
+    "ふんすい": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fountain"
+          }
+        }
+      }
+    },
+    "ふんすいで水あそび": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Splashing at the fountain"
+          }
+        }
+      }
+    },
+    "ふんすいのしぶき、気になる子がいるかも": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Someone may like the fountain's spray"
+          }
+        }
+      }
+    },
+    "ふんすいのしぶきに、ぴょんと飛びはねる。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hops around in the fountain's spray."
+          }
+        }
+      }
+    },
+    "ほかの": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Other"
+          }
+        }
+      }
+    },
+    "ほかのものと重なっています": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It overlaps something else"
+          }
+        }
+      }
+    },
+    "ほかのクエストにする": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show another quest"
+          }
+        }
+      }
+    },
+    "ほたるの池": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Firefly pond"
+          }
+        }
+      }
+    },
+    "まだ何も見つけていません。生き物のそばに、いろいろなものを置いてみましょう。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing found yet. Try placing different things near the residents."
+          }
+        }
+      }
+    },
+    "まだ記録はありません。クエストをやった日や、島に何かを迎えた日がここに並びます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing here yet. Days you finish a quest or welcome something to the island will line up here."
+          }
+        }
+      }
+    },
+    "まるい木": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Round tree"
+          }
+        }
+      }
+    },
+    "みち": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paths"
+          }
+        }
+      }
+    },
+    "もち": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mochi"
+          }
+        }
+      }
+    },
+    "もどす": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Undo"
+          }
+        }
+      }
+    },
+    "やった！": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Did it!"
+          }
+        }
+      }
+    },
+    "やめておく": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep it"
+          }
+        }
+      }
+    },
+    "やめる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        }
+      }
+    },
+    "アプリで目標をえらぶと、ここに今日のクエストが並びます": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick a goal in the app to see today's quests here"
+          }
+        }
+      }
+    },
+    "アプリをひらいて、島をはじめよう": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open the app to start your island"
+          }
+        }
+      }
+    },
+    "アルバム": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Album"
+          }
+        }
+      }
+    },
+    "ウィジェット": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Widget"
+          }
+        }
+      }
+    },
+    "ウィジェットのプレビュー": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Widget preview"
+          }
+        }
+      }
+    },
+    "カフェ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Café"
+          }
+        }
+      }
+    },
+    "カフェから、いいにおいがしてきそう": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something nice might smell from the café"
+          }
+        }
+      }
+    },
+    "カフェにより道": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A stop at the café"
+          }
+        }
+      }
+    },
+    "カフェの前に、すわれる場所があったら…？": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What if there were a seat in front of the café…?"
+          }
+        }
+      }
+    },
+    "カフェの前のベンチで、ひと息ついている。ベンチを置いたからこそ。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Takes a break on the bench by the café. Only because you put a bench there."
+          }
+        }
+      }
+    },
+    "カフェの窓をのぞいて、いいにおいをかぐ。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Peeks in the café window and sniffs the nice smell."
+          }
+        }
+      }
+    },
+    "クエスト": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quest"
+          }
+        }
+      }
+    },
+    "クエストをやった！にする": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mark a quest as done"
+          }
+        }
+      }
+    },
+    "サポート・お問い合わせ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Support and contact"
+          }
+        }
+      }
+    },
+    "タップした地面が小道になります（もう一度で草地に戻る）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap ground to make a path (tap again for grass)"
+          }
+        }
+      }
+    },
+    "タップすると、なでられます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a resident to pet it."
+          }
+        }
+      }
+    },
+    "タップで閉じます": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap to close"
+          }
+        }
+      }
+    },
+    "タップで閉じます。図鑑に記録されました": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap to close. Added to the field guide"
+          }
+        }
+      }
+    },
+    "テラスでひと息": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A break on the terrace"
+          }
+        }
+      }
+    },
+    "データはこの端末の中だけに保存されます。通信や登録はありません。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your data stays on this device. No accounts, no network."
+          }
+        }
+      }
+    },
+    "ピクニックシート": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Picnic blanket"
+          }
+        }
+      }
+    },
+    "ピクニックシートは、日なたより木かげが好きみたい": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Picnics seem nicer in the shade than in the sun"
+          }
+        }
+      }
+    },
+    "ブランコ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swing"
+          }
+        }
+      }
+    },
+    "ブランコ、だれか乗りにこないかな": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Will someone come ride the swing?"
+          }
+        }
+      }
+    },
+    "ブランコでゆらゆら": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swaying on the swing"
+          }
+        }
+      }
+    },
+    "ブランコに乗って、ゆらゆら。ちょっと得意げ。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Swings back and forth, looking a little proud."
+          }
+        }
+      }
+    },
+    "プライバシーポリシー": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacy policy"
+          }
+        }
+      }
+    },
+    "ベンチ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bench"
+          }
+        }
+      }
+    },
+    "ベンチでひと休み": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A rest on the bench"
+          }
+        }
+      }
+    },
+    "ベンチのとなりに花があったら…？": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What if there were flowers next to a bench…?"
+          }
+        }
+      }
+    },
+    "ベンチのまわりをあけておくと、だれかが座りにくるかも": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leave room around a bench and someone may come sit"
+          }
+        }
+      }
+    },
+    "ベンチや木のそばで、生き物が何かをするかも。見つけると「発見！」になります。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Near benches and trees, residents may do something. Spotting it is a \"Discovery!\""
+          }
+        }
+      }
+    },
+    "ポスト": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mailbox"
+          }
+        }
+      }
+    },
+    "ポストの前で、だれかからのおてがみを待っている。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waits by the mailbox for a letter from someone."
+          }
+        }
+      }
+    },
+    "ポストの前で、だれかが待っているかも": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Someone may wait by the mailbox"
+          }
+        }
+      }
+    },
+    "メニュー": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menu"
+          }
+        }
+      }
+    },
+    "ランプ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lamp"
+          }
+        }
+      }
+    },
+    "ランプのひかり": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lamp lights"
+          }
+        }
+      }
+    },
+    "レベル %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Level %lld"
+          }
+        }
+      }
+    },
+    "・%@（%lld分）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "· %1$@ (%2$lld min)"
+          }
+        }
+      }
+    },
+    "下のパレットから選んで、置きたい場所で「ここに置く」。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick from the palette below, then tap \"Place here\"."
+          }
+        }
+      }
+    },
+    "井戸": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Well"
+          }
+        }
+      }
+    },
+    "井戸の中から、何か聞こえるかも": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You might hear something from the well"
+          }
+        }
+      }
+    },
+    "井戸の中に向かって「おーい」。こだまが返ってくる。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calls \"hello!\" into the well and hears an echo."
+          }
+        }
+      }
+    },
+    "井戸をのぞく": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Peeking into the well"
+          }
+        }
+      }
+    },
+    "今日の分はおしまい。島でゆっくりしましょう": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All done for today. Relax on the island"
+          }
+        }
+      }
+    },
+    "今日はもう記録済みです": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Already done today"
+          }
+        }
+      }
+    },
+    "休息": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rest"
+          }
+        }
+      }
+    },
+    "住人をタップすると、なでられます。なかよくなると…？": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a resident to pet it. What happens as you become friends…?"
+          }
+        }
+      }
+    },
+    "何も置かれていません": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing placed yet"
+          }
+        }
+      }
+    },
+    "保存できませんでした。島はこのまま残っています。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't save. Your island is still here as it is."
+          }
+        }
+      }
+    },
+    "保存データを読み込めませんでした": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't read the saved data"
+          }
+        }
+      }
+    },
+    "再試行": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retry"
+          }
+        }
+      }
+    },
+    "写真 %lld枚・%@MB（この端末の中だけに保存）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld photos · %2$@ MB (stored only on this device)"
+          }
+        }
+      }
+    },
+    "写真をえらぶ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose photo"
+          }
+        }
+      }
+    },
+    "写真をかえる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Change photo"
+          }
+        }
+      }
+    },
+    "写真をはずす": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove photo"
+          }
+        }
+      }
+    },
+    "写真を保存できませんでした。ことばだけなら残せます": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The photo could not be saved. You can still keep the words"
+          }
+        }
+      }
+    },
+    "創作": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create"
+          }
+        }
+      }
+    },
+    "効果音": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sound effects"
+          }
+        }
+      }
+    },
+    "動かす": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move"
+          }
+        }
+      }
+    },
+    "動かすものが見つかりません": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't find what to move"
+          }
+        }
+      }
+    },
+    "取り消す": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Undo"
+          }
+        }
+      }
+    },
+    "取り消せるのは当日の記録だけです": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only today's records can be undone"
+          }
+        }
+      }
+    },
+    "右の ✓ ボタンから目標をえらぶと、小さなクエストで きらめき がもらえます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick a goal with the ✓ button on the right to earn sparkles from small quests."
+          }
+        }
+      }
+    },
+    "右上へ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Up right"
+          }
+        }
+      }
+    },
+    "右下へ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Down right"
+          }
+        }
+      }
+    },
+    "名前を入れてください": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a name"
+          }
+        }
+      }
+    },
+    "図鑑": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Field guide"
+          }
+        }
+      }
+    },
+    "夕方": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Evening"
+          }
+        }
+      }
+    },
+    "夕方から夜、たき火のそばのベンチで、ぱちぱちという音を聞いている。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From evening into night, sits on the bench by the fire, listening to it crackle."
+          }
+        }
+      }
+    },
+    "夜": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Night"
+          }
+        }
+      }
+    },
+    "夜、木のないところにシートを広げてみたら…？": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What if you spread a blanket away from trees at night…?"
+          }
+        }
+      }
+    },
+    "夜、花にかこまれたランプには何かが集まるかも": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At night, something may gather at a lamp among flowers"
+          }
+        }
+      }
+    },
+    "夜、花のそばの池に、ほたるがふわりと集まる。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At night, fireflies gather over a pond with flowers beside it."
+          }
+        }
+      }
+    },
+    "夜の池のそばに花があったら…？": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What if there were flowers by the pond at night…?"
+          }
+        }
+      }
+    },
+    "学び": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Study"
+          }
+        }
+      }
+    },
+    "完了": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        }
+      }
+    },
+    "小さな家": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Little house"
+          }
+        }
+      }
+    },
+    "小さな島に、日々が育つ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your days grow a little island"
+          }
+        }
+      }
+    },
+    "小道の上には置けません": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't place it on a path"
+          }
+        }
+      }
+    },
+    "小道をひく": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Draw paths"
+          }
+        }
+      }
+    },
+    "少しずつ学ぶ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Learn a little each day"
+          }
+        }
+      }
+    },
+    "島に、ひとつ置いてみよう": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Place something on the island"
+          }
+        }
+      }
+    },
+    "島にあるもの": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On the island"
+          }
+        }
+      }
+    },
+    "島のくらしが、少し豊かになったようです。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Island life got a little richer."
+          }
+        }
+      }
+    },
+    "島のさいしょの住人です。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The island's very first resident."
+          }
+        }
+      }
+    },
+    "島のようすと、きょうのクエスト。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your island and today's quests."
+          }
+        }
+      }
+    },
+    "島の住人": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Residents"
+          }
+        }
+      }
+    },
+    "島の外には置けません": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't place it off the island"
+          }
+        }
+      }
+    },
+    "島をはじめからにしますか？": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start the island over?"
+          }
+        }
+      }
+    },
+    "島をはじめからにする": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start the island over"
+          }
+        }
+      }
+    },
+    "島全体を表示": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show the whole island"
+          }
+        }
+      }
+    },
+    "巣箱": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Birdhouse"
+          }
+        }
+      }
+    },
+    "巣箱のバードウォッチ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Birdwatching"
+          }
+        }
+      }
+    },
+    "巣箱は、木のそばにあると落ち着くみたい": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Birdhouses feel at home next to a tree"
+          }
+        }
+      }
+    },
+    "左上へ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Up left"
+          }
+        }
+      }
+    },
+    "左下へ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Down left"
+          }
+        }
+      }
+    },
+    "建てる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Build"
+          }
+        }
+      }
+    },
+    "思い出": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Memory"
+          }
+        }
+      }
+    },
+    "新しい住人！": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New resident!"
+          }
+        }
+      }
+    },
+    "新しい島ではじめます。読めなかったデータは別名で端末内に残してあります。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starting a new island. The unreadable data was kept on this device under another name."
+          }
+        }
+      }
+    },
+    "星をながめる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stargazing"
+          }
+        }
+      }
+    },
+    "昼": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Day"
+          }
+        }
+      }
+    },
+    "時間は1〜60分にしてください": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose 1 to 60 minutes"
+          }
+        }
+      }
+    },
+    "時間を増やす": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "More time"
+          }
+        }
+      }
+    },
+    "時間を減らす": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Less time"
+          }
+        }
+      }
+    },
+    "時間帯: %@（タップで切り替え）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time of day: %@ (tap to change)"
+          }
+        }
+      }
+    },
+    "時間帯を端末の時刻に戻す": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Follow the device clock again"
+          }
+        }
+      }
+    },
+    "最初の案内をもう一度見る": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show the guide again"
+          }
+        }
+      }
+    },
+    "朝": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Morning"
+          }
+        }
+      }
+    },
+    "朝いちばんに、井戸で水をくむ。ひんやり気持ちいい。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Draws water from the well first thing in the morning. Nice and cool."
+          }
+        }
+      }
+    },
+    "朝の井戸に、だれかが来るかも": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Someone may come to the well in the morning"
+          }
+        }
+      }
+    },
+    "朝の水くみ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Morning water"
+          }
+        }
+      }
+    },
+    "木かげでうたた寝": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A nap in the shade"
+          }
+        }
+      }
+    },
+    "木かげのシートでおべんとう。日なただとやらないみたい。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lunch on a blanket in the shade. Never in the sun, it seems."
+          }
+        }
+      }
+    },
+    "木かげのピクニック": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Picnic in the shade"
+          }
+        }
+      }
+    },
+    "木のそばに来ると、ころんと横になって眠ってしまう。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Curls up and dozes off next to a tree."
+          }
+        }
+      }
+    },
+    "木のそばの巣箱を、じっと見守る。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quietly watches the birdhouse by the tree."
+          }
+        }
+      }
+    },
+    "木のそばは、ひなたぼっこにちょうどよさそう": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The spot by a tree looks perfect for a nap"
+          }
+        }
+      }
+    },
+    "木のない空の下、シートに寝ころんで星をかぞえる。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lies on a blanket under an open sky and counts the stars."
+          }
+        }
+      }
+    },
+    "木や巣箱、水のあるところが好きみたい。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seems to like trees, birdhouses and water."
+          }
+        }
+      }
+    },
+    "本当にこの記録をけす": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Really delete this note"
+          }
+        }
+      }
+    },
+    "案内をとばす": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skip the guide"
+          }
+        }
+      }
+    },
+    "横%lld・縦%lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Column %1$lld, row %2$lld"
+          }
+        }
+      }
+    },
+    "次のレベルまで %lld XP": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld XP to next level"
+          }
+        }
+      }
+    },
+    "気になることを進める": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move something forward"
+          }
+        }
+      }
+    },
+    "水の上には置けません": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can't place it on water"
+          }
+        }
+      }
+    },
+    "池": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pond"
+          }
+        }
+      }
+    },
+    "池のふちで、水面をじっとのぞきこむ。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stares into the water from the edge of the pond."
+          }
+        }
+      }
+    },
+    "池のまわりを歩きやすくしてみたら…？": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What if the pond were easier to walk up to…?"
+          }
+        }
+      }
+    },
+    "池をのぞきこむ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Peeking into the pond"
+          }
+        }
+      }
+    },
+    "火のそばにすわって、手をかざしてぬくぬく。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sits by the fire and warms its hands."
+          }
+        }
+      }
+    },
+    "片付け": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tidy"
+          }
+        }
+      }
+    },
+    "生き物のようすを見てみよう": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Watch what the residents do"
+          }
+        }
+      }
+    },
+    "発見！": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Discovery!"
+          }
+        }
+      }
+    },
+    "発見！ %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Discovery! %@"
+          }
+        }
+      }
+    },
+    "目標": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Goals"
+          }
+        }
+      }
+    },
+    "目標の名前": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Goal name"
+          }
+        }
+      }
+    },
+    "目標は%lldつまでです。どれかを「おやすみ」にすると追加できます": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can have up to %lld goals. Rest one to add another"
+          }
+        }
+      }
+    },
+    "目標を追加": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add goal"
+          }
+        }
+      }
+    },
+    "約%lld分・%@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About %1$lld min · %2$@"
+          }
+        }
+      }
+    },
+    "置いたもの %lldこ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld placed"
+          }
+        }
+      }
+    },
+    "置いたもの・小道・図鑑の記録が最初の状態に戻ります。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Placed things, paths and the field guide go back to the start."
+          }
+        }
+      }
+    },
+    "置き方しだいで、まだ見たことのない姿が見られるかも…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrange things differently and you may see something new…"
+          }
+        }
+      }
+    },
+    "自分のクエストを追加": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add your own quest"
+          }
+        }
+      }
+    },
+    "花にかこまれたランプのまわりを、小さなひかりが舞う。夜だけの景色。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Little lights dance around a lamp among flowers. A night-only sight."
+          }
+        }
+      }
+    },
+    "花のとなりのベンチがお気に入り。いつもよりうれしそう。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loves a bench next to flowers. Happier than usual."
+          }
+        }
+      }
+    },
+    "花をながめて休む": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resting by the flowers"
+          }
+        }
+      }
+    },
+    "見つかりませんでした。もう一度ためしてください": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not found. Please try again"
+          }
+        }
+      }
+    },
+    "見つけた姿": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Discoveries"
+          }
+        }
+      }
+    },
+    "見つけた姿 %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld discovered"
+          }
+        }
+      }
+    },
+    "記録に問題があります": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something is wrong with the records"
+          }
+        }
+      }
+    },
+    "記録の写真": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo of the day"
+          }
+        }
+      }
+    },
+    "近くにベンチがあると、腰かけてのんびりする。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sits down and relaxes when a bench is nearby."
+          }
+        }
+      }
+    },
+    "追加": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add"
+          }
+        }
+      }
+    },
+    "選ぶと島の上で動かしたり、しまったりできます": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select to move it or put it away"
+          }
+        }
+      }
+    },
+    "部屋を心地よくする": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Make my room cozy"
+          }
+        }
+      }
+    },
+    "配置物の一覧": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Things on the island"
+          }
+        }
+      }
+    },
+    "配置物の一覧ボタンから、島のものを選んだり動かしたりできます": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use the list button to select and move things on the island"
+          }
+        }
+      }
+    },
+    "閉じる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
+          }
+        }
+      }
+    },
+    "音楽": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Music"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

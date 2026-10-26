@@ -14,6 +14,7 @@ final class DiscoveryAlbum {
 struct IslandScreen: View {
     let store: GameStore
     let tutorial: TutorialCoach
+    let settings: AppSettings
     @State private var scene: IslandScene
     @State private var album: DiscoveryAlbum
     @State private var tab: PaletteTab = .build
@@ -21,9 +22,10 @@ struct IslandScreen: View {
     @State private var overlay: IslandOverlay?
     @Environment(\.scenePhase) private var scenePhase
 
-    init(store: GameStore, tutorial: TutorialCoach, initialPhase: DayPhase? = nil) {
+    init(store: GameStore, tutorial: TutorialCoach, settings: AppSettings, initialPhase: DayPhase? = nil) {
         self.store = store
         self.tutorial = tutorial
+        self.settings = settings
         let scene = IslandScene(store: store)
         scene.dayPhaseOverride = initialPhase
         _phaseOverride = State(initialValue: initialPhase)
@@ -58,6 +60,12 @@ struct IslandScreen: View {
                         if let kind = store.pendingDiscoveries.first {
                             DiscoveryCard(kind: kind, image: album.images[kind]) { store.dismissDiscovery() }
                                 .transition(.move(edge: .top).combined(with: .opacity))
+                        } else if let species = store.pendingArrivals.first {
+                            ResidentCard.arrival(species) { store.dismissArrival() }
+                                .transition(.move(edge: .top).combined(with: .opacity))
+                        } else if let notice = store.pendingFriendships.first {
+                            ResidentCard.friendship(notice) { store.dismissFriendship() }
+                                .transition(.move(edge: .top).combined(with: .opacity))
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .top)
@@ -81,6 +89,8 @@ struct IslandScreen: View {
             // The keyboard belongs to panels; the island HUD must not slide under the status bar with it.
             .ignoresSafeArea(.keyboard)
             .animation(.easeOut(duration: 0.25), value: store.pendingDiscoveries.first)
+            .animation(.easeOut(duration: 0.25), value: store.pendingArrivals.first)
+            .animation(.easeOut(duration: 0.25), value: store.pendingFriendships.first)
             .animation(.easeOut(duration: 0.25), value: tutorial.guide.step)
         }
         .modifier(TutorialSignals(store: store, coach: tutorial))
@@ -89,9 +99,10 @@ struct IslandScreen: View {
             // Leaving the app: the island is still on screen, so this is the moment to picture it for the widget.
             if phase == .inactive { WidgetSync.exportIsland(scene.islandPicture()) }
         }
-        .sensoryFeedback(.success, trigger: store.objectsRevision)
-        .sensoryFeedback(.selection, trigger: store.terrainRevision)
-        .sensoryFeedback(.error, trigger: store.lastRejection) { _, new in new != nil }
+        .sensoryFeedback(.success, trigger: store.objectsRevision) { _, _ in settings.haptics }
+        .sensoryFeedback(.selection, trigger: store.terrainRevision) { _, _ in settings.haptics }
+        .sensoryFeedback(.error, trigger: store.lastRejection) { _, new in settings.haptics && new != nil }
+        .modifier(SoundCues(store: store, settings: settings, phase: shownPhase))
         .overlay {
             ModalLayer(item: shownOverlay) { overlay in overlayContent(overlay) }
         }
@@ -125,16 +136,23 @@ struct IslandScreen: View {
                     close()
                 },
                 askReset: { overlay = .resetConfirm },
+                openSettings: { overlay = .settings },
                 previewWidget: Self.widgetPreviewAction { overlay = .widgetPreview },
                 close: close)
         case .quests:
             QuestPanel(store: store, close: close)
         case .fieldGuide:
-            FieldGuidePanel(discoveries: store.world.discoveries, images: album.images, close: close)
+            FieldGuidePanel(
+                discoveries: store.world.discoveries, images: album.images,
+                residents: store.world.residents, close: close)
         case .objectList:
             ObjectListPanel(store: store, close: close)
         case .album:
             AlbumPanel(store: store, close: close)
+        case .settings:
+            SettingsPanel(settings: settings, replayTutorial: { tutorial.restart(store: store) }, close: close)
+        case .memory(let objectID):
+            BuildingMemoryPanel(store: store, objectID: objectID, close: close)
         case .resetConfirm:
             GameDialog(
                 symbol: "arrow.counterclockwise", title: "島をはじめからにしますか？",
@@ -182,7 +200,7 @@ struct IslandScreen: View {
             PathBar(store: store)
         case .browse:
             if let selected = store.selectedObject {
-                SelectionBar(store: store, object: selected)
+                SelectionBar(store: store, object: selected) { overlay = .memory(selected.id) }
             } else {
                 BuildPalette(store: store, tab: $tab)
             }

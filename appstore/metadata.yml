@@ -14,7 +14,7 @@ app:
     secondary: LIFESTYLE
 
 version:
-  version_string: "0.1.0"        # アプリの MARKETING_VERSION と同じにする（validate が確認する）
+  version_string: "1.0.0"        # アプリの MARKETING_VERSION と同じにする（validate が確認する）
   copyright: "2026 enludus"    # 著作権
   release_type: MANUAL           # 審査通過後: MANUAL=自分で公開 / AFTER_APPROVAL=自動で公開
 
@@ -34,9 +34,10 @@ localizations:
       「ひびまち」は、ドット絵の小さな島を自由に作る箱庭ゲームです。家やベンチ、木や花、小道を置くと、島の生き物がのんびり歩きまわり、置いたものに反応してくれます。ベンチでひとやすみしたり、木かげでうたた寝したり。置き方しだいで見られる姿が変わり、見つけた姿は図鑑に記録されます。
 
       ■ 自由に置ける箱庭
-      ・タップとドラッグで、家・ベンチ・ランプ・木・花・池を配置
+      ・タップとドラッグで、家・ベンチ・ランプ・木・花・池、カフェやふんすいなどを配置
       ・地面をなぞって小道をひく。まちがえても「もどす」で戻せます
       ・朝・昼・夕方・夜で島の色が変わり、夜にはランプが灯ります
+      ・発見が増えると新しい住人がやってきます。住人ごとにお気に入りの場所があります
 
       ■ 現実の「小さなやった！」が島の資源に
       ・片付け、勉強、休息、創作、からだ…育てたいことを選ぶと、今日の小さなクエストが3つ届きます
@@ -54,7 +55,45 @@ localizations:
       ■ 安心して使える
       ・アカウント登録なし、広告なし、通信なし。データはすべて端末の中に保存されます
       ・写真は縮小し、位置情報を取り除いてから端末内に保存します
+      ・音楽と効果音もすべてコードで鳴らしています（せっていでオフにできます）
     whats_new: 新しい島と生き物、今日のクエスト、ウィジェット、アルバムを追加しました。   # 新機能（初回バージョンでは送られない）
+  en-US:                                       # 英語（アプリ内の英語表示と同じ言葉づかい）
+    name: Hibimachi
+    subtitle: Your days grow a little island
+    privacy_policy_url: https://enludus.com/products/hibimachi-privacy
+    support_url: https://enludus.com/products/hibimachi
+    keywords: island,town builder,pixel art,cozy,habit,goals,todo,widget,journal,relaxing,diorama
+    promotional_text: >-
+      Each small "did it!" in your day becomes a house or a bench on your island. Build a tiny diorama where gentle residents live at their own pace.
+    description: |
+      Your days grow a little island.
+
+      Hibimachi is a cozy diorama game where you build a small pixel-art island. Place houses, benches, trees, flowers and paths, and the residents wander around and react to what you build: a rest on the bench, a nap in the shade, a picnic under the trees. How you arrange things changes what you get to see, and every discovery goes into your field guide.
+
+      ■ A diorama you arrange freely
+      ・Tap and drag to place houses, benches, lamps, trees, flowers, ponds, a café, a fountain and more
+      ・Draw paths by tracing the ground. Made a mistake? Just undo
+      ・The island changes with morning, day, evening and night, and the lamps light up after dark
+      ・New residents move in as you make discoveries, each with their own favorite spots
+
+      ■ Small real-life wins become island resources
+      ・Pick something you want to grow (tidying, study, rest, creating, moving) and get three small quests for today
+      ・Tap when you're done to earn XP and sparkles
+      ・Spend sparkles to welcome new buildings. On days you can't, the island loses nothing
+
+      ■ Home Screen widget
+      ・The large widget shows your island on the left and today's quests on the right
+      ・Mark quests as done right from the widget
+
+      ■ Growth album
+      ・Keep a few words and one photo for the day (or don't — the game works either way)
+      ・Finished quests and new buildings line up by date as your island's history
+
+      ■ Calm and private
+      ・No account, no ads, no network. Everything stays on your device
+      ・Photos are downsized and stripped of location data before being saved on the device
+      ・Gentle music and sounds, all generated in code (you can turn them off in Settings)
+    whats_new: New island, residents, daily quests, widget and album.
 
 age_rating:      # 年齢制限指定の回答（API の属性名そのまま）。新しい質問が増えたらキーを足す
   alcoholTobaccoOrDrugUseOrReferences: NONE
@@ -90,11 +129,17 @@ review:          # App Review に関する情報
 screenshots:     # スクリーンショット（フォルダ内の PNG をファイル名順に最大10枚）
   ja:
     APP_IPHONE_67: appstore/screenshots/ja/iphone69   # 6.9インチ（1320x2868 / 1290x2796）。Actions で自動撮影
+  en-US:
+    APP_IPHONE_67: appstore/screenshots/en-US/iphone69   # 英語表示で同じ手順を撮影
 
 testflight:      # TestFlight（外部テスト時に必要。内部テストだけなら無くても良い）
   localizations:
     ja:
       description: 小さな島を作る箱庭ゲームです。置いたものに生き物が反応します。今日のクエストを「やった！」にすると、島の資源がもらえます。
+      feedback_email: ${ASC_REVIEW_EMAIL}
+      privacy_policy_url: https://enludus.com/products/hibimachi-privacy
+    en-US:
+      description: A cozy island diorama game. The residents react to what you place, and finishing today's small quests earns resources for your island.
       feedback_email: ${ASC_REVIEW_EMAIL}
       privacy_policy_url: https://enludus.com/products/hibimachi-privacy
   review:
@@ -106,4 +151,4 @@ testflight:      # TestFlight（外部テスト時に必要。内部テストだ
 
 # --- API で設定できない項目（App Store Connect で一度だけ手で入れる） ---
 # App のプライバシー: 「データを収集していません」を選ぶ（解析・広告・通信なし、写真や記録は端末内のみ）
-# 価格および配信状況: 無料、配信国は日本（ほかの国は英語版を用意してから）
+# 価格および配信状況: 無料。アプリとストア情報は日本語・英語に対応（英語以外の国にも出すかは手で選ぶ）

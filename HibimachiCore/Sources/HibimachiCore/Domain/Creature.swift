@@ -1,17 +1,24 @@
 import Foundation
 
-/// The single wandering creature of P0. Only `id` and `position` are persisted;
+/// A wandering island resident. `id`, `species`, `position` and `friendship` are persisted;
 /// `activity` and `cooldowns` are transient and reset to idle on load.
 public struct Creature: Equatable, Sendable {
     public let id: UUID
+    public let species: Species
     public var position: TileCoord
+    public var friendship: Friendship
     public var activity: CreatureActivity
     /// Remaining ticks before a reaction kind may trigger again.
     public var cooldowns: [ReactionKind: Int]
 
-    public init(id: UUID, position: TileCoord, activity: CreatureActivity = .idle(ticksLeft: 2)) {
+    public init(
+        id: UUID, species: Species = .mochi, position: TileCoord, friendship: Friendship = Friendship(),
+        activity: CreatureActivity = .idle(ticksLeft: 2)
+    ) {
         self.id = id
+        self.species = species
         self.position = position
+        self.friendship = friendship
         self.activity = activity
         self.cooldowns = [:]
     }

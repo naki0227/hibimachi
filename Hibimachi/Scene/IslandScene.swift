@@ -13,8 +13,9 @@ final class IslandScene: SKScene {
     let grid: IsoGrid
     let cameraBounds: CameraBounds
     let cameraNode = SKCameraNode()
-    let creatureNode = CreatureNode()
-    /// Called with a snapshot around the creature shortly after a first-time discovery.
+    /// One node per resident, keyed by resident ID.
+    private(set) var residentNodes: [UUID: CreatureNode] = [:]
+    /// Called with a snapshot around the resident shortly after a first-time discovery.
     var onDiscoverySnapshot: (@MainActor (ReactionKind, CGImage) -> Void)?
     /// Manual time-of-day preview; `nil` follows the device clock.
     var dayPhaseOverride: DayPhase? {
@@ -77,7 +78,6 @@ final class IslandScene: SKScene {
         [backdropLayer, terrainNode, objectLayer, glowLayer].forEach(worldLayer.addChild)
         [worldLayer, gridOverlay, overlayLayer].forEach(addChild)
         cameraNode.addChild(tint)
-        objectLayer.addChild(creatureNode)
         buildBackdrop()
         buildSeaPattern()
         buildGridOverlay()
@@ -140,8 +140,7 @@ final class IslandScene: SKScene {
             renderedRevision = store.objectsRevision
             syncObjects()
         }
-        let world = store.world
-        creatureNode.show(world.creature, in: world, grid: grid, animated: animated, reduceMotion: reduceMotion)
+        syncResidents(animated: animated)
         let previewValid = store.previewIssue == nil
         if store.mode != renderedMode || previewValid != renderedPreviewValid {
             renderedMode = store.mode
@@ -162,6 +161,27 @@ final class IslandScene: SKScene {
             (0..<store.world.height).compactMap { y in
                 store.world.terrain(at: TileCoord(x: x, y: y)) == .water ? TileCoord(x: x, y: y) : nil
             }
+        }
+    }
+
+    /// Adds nodes for newcomers, drops nodes of residents that left (island reset), then mirrors each one.
+    func syncResidents(animated: Bool) {
+        let world = store.world
+        let alive = Set(world.residents.map(\.id))
+        for (id, node) in residentNodes where !alive.contains(id) {
+            node.removeFromParent()
+            residentNodes[id] = nil
+        }
+        for resident in world.residents {
+            let node: CreatureNode
+            if let existing = residentNodes[resident.id] {
+                node = existing
+            } else {
+                node = CreatureNode(species: resident.species)
+                objectLayer.addChild(node)
+                residentNodes[resident.id] = node
+            }
+            node.show(resident, in: world, grid: grid, animated: animated, reduceMotion: reduceMotion)
         }
     }
 

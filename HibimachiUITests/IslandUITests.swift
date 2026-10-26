@@ -16,9 +16,21 @@ final class IslandUITests: XCTestCase {
         if !tutorial { app.launchEnvironment["HIBIMACHI_TUTORIAL"] = "off" }
         app.launchEnvironment["HIBIMACHI_SEED"] = "2026"
         app.launchEnvironment["HIBIMACHI_DAY_PHASE"] = "day"
+        // The assertions below read Japanese labels; English is covered by EnglishUITests.
+        app.launchArguments += ["-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
         app.launch()
         XCTAssertTrue(app.descendants(matching: .any)["island-view"].waitForExistence(timeout: 15))
         return app
+    }
+
+    /// Opens today's quests. On a loaded CI simulator the first tap is sometimes synthesized while the app is
+    /// still busy and gets lost, so wait for the panel and tap once more if it did not open.
+    @MainActor
+    private func openQuests(_ app: XCUIApplication) {
+        let panel = app.descendants(matching: .any)["quest-panel"]
+        app.buttons["quests"].tap()
+        if !panel.waitForExistence(timeout: 5) { app.buttons["quests"].tap() }
+        XCTAssertTrue(panel.waitForExistence(timeout: 10))
     }
 
     @MainActor
@@ -104,7 +116,7 @@ final class IslandUITests: XCTestCase {
     func testQuestCompletionRewardsAndCanBeUndone() {
         let app = launch()
         XCTAssertEqual(sparkles(app), "きらめき 30")
-        app.buttons["quests"].tap()
+        openQuests(app)
         app.buttons["goal-category-tidy"].tap()
         XCTAssertTrue(app.buttons["create-goal"].waitForExistence(timeout: 5))
         app.buttons["create-goal"].tap()
@@ -116,7 +128,7 @@ final class IslandUITests: XCTestCase {
         app.buttons["閉じる"].tap()
         XCTAssertEqual(sparkles(app), "きらめき 35")
         XCTAssertEqual(app.descendants(matching: .any)["level"].label, "レベル 1")
-        app.buttons["quests"].tap()
+        openQuests(app)
         app.buttons["undo-completion"].tap()
         app.buttons["閉じる"].tap()
         XCTAssertEqual(sparkles(app), "きらめき 30")
@@ -153,7 +165,7 @@ final class IslandUITests: XCTestCase {
     @MainActor
     func testWidgetPreviewShowsIslandAndTodaysQuests() {
         let app = launch()
-        app.buttons["quests"].tap()
+        openQuests(app)
         app.buttons["goal-category-tidy"].tap()
         app.buttons["create-goal"].tap()
         XCTAssertTrue(app.buttons["quest-done-0"].waitForExistence(timeout: 5))
@@ -209,5 +221,42 @@ final class IslandUITests: XCTestCase {
         app.buttons["この記録をけす"].tap()
         app.buttons["本当にこの記録をけす"].tap()
         XCTAssertFalse(row.waitForExistence(timeout: 2))
+    }
+
+    @MainActor
+    func testPlacedObjectOpensTheMemoryOfItsDayAndQuestsSuggestANextStep() {
+        let app = launch()
+        openQuests(app)
+        app.buttons["goal-category-tidy"].tap()
+        app.buttons["create-goal"].tap()
+        XCTAssertTrue(app.buttons["quest-done-0"].waitForExistence(timeout: 5))
+        app.buttons["quest-done-0"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["next-step"].waitForExistence(timeout: 5))
+        app.buttons["閉じる"].tap()
+
+        app.buttons["tab-nature"].tap()
+        app.buttons["palette-flower"].tap()
+        app.buttons["confirm-edit"].tap()
+        let memory = app.buttons["selection-memory"]
+        XCTAssertTrue(memory.waitForExistence(timeout: 5))
+        memory.tap()
+        XCTAssertTrue(app.descendants(matching: .any)["memory-panel"].waitForExistence(timeout: 5))
+        screenshot(app, "15-memory")
+    }
+
+    @MainActor
+    func testSettingsToggleAndReplayTheGuide() {
+        let app = launch()
+        app.buttons["メニュー"].tap()
+        app.buttons["せってい"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["settings-panel"].waitForExistence(timeout: 5))
+        let music = app.descendants(matching: .any)["setting-music"].firstMatch
+        // The Toggle reports the system switch value (VoiceOver reads it as on/off in the user's language).
+        XCTAssertEqual(music.value as? String, "1")
+        music.tap()
+        XCTAssertEqual(music.value as? String, "0")
+        screenshot(app, "16-settings")
+        app.buttons["replay-tutorial"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["tutorial-card"].waitForExistence(timeout: 5))
     }
 }

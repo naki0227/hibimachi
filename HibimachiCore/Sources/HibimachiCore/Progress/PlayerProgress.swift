@@ -77,7 +77,8 @@ public struct PlayerProgress: Equatable, Sendable {
     // MARK: Goals and quests
 
     public mutating func addGoal(
-        title: String, category: GoalCategory, at date: Date, makeID: () -> UUID
+        title: String, category: GoalCategory, at date: Date, makeID: () -> UUID,
+        language: QuestPresets.Language = .japanese
     ) -> Result<Goal, ProgressError> {
         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
         if let issue = Self.titleIssue(trimmed, limit: Goal.titleLimit) { return .failure(issue) }
@@ -86,7 +87,7 @@ public struct PlayerProgress: Equatable, Sendable {
         }
         let goal = Goal(id: makeID(), title: trimmed, category: category, createdAt: date)
         goals.append(goal)
-        for preset in QuestPresets.quests(for: category) {
+        for preset in QuestPresets.quests(for: category, language: language) {
             quests.append(QuestTemplate(id: makeID(), goalID: goal.id, title: preset.title, minutes: preset.minutes))
         }
         return .success(goal)
@@ -137,9 +138,10 @@ public struct PlayerProgress: Equatable, Sendable {
         }
         let completion = QuestCompletion(
             id: completionID, questID: questID, goalID: quest.goalID, day: day, completedAt: date)
+        let amount = RewardRule.questReward(minutes: quest.minutes)
         let reward = RewardTransaction(
-            id: transactionID, reason: .questCompleted(completionID: completionID), xpDelta: RewardRule.questXP,
-            sparkleDelta: RewardRule.questSparkles, ruleVersion: RewardRule.version, date: date)
+            id: transactionID, reason: .questCompleted(completionID: completionID), xpDelta: amount.xp,
+            sparkleDelta: amount.sparkles, ruleVersion: RewardRule.version, date: date)
         completions.append(completion)
         ledger.append(reward)
         return .success(reward)

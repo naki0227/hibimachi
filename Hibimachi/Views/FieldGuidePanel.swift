@@ -6,11 +6,36 @@ struct FieldGuidePanel: View {
     let discoveries: Set<ReactionKind>
     /// Snapshots taken this session; entries without one show an icon.
     var images: [ReactionKind: CGImage] = [:]
+    /// Who lives on the island now (newcomers appear as the island gets livelier).
+    var residents: [Creature] = []
     let close: () -> Void
 
     var body: some View {
         GamePanel(title: "図鑑", symbol: "book.closed.fill", identifier: "field-guide-panel", close: close) {
             VStack(spacing: 10) {
+                Text("島の住人").gameSectionTitle()
+                HStack(spacing: 10) {
+                    ForEach(residents, id: \.id) { resident in
+                        VStack(spacing: 4) {
+                            Image(decorative: IslandArt.creatureImage(resident.species), scale: 1)
+                                .interpolation(.none).resizable().scaledToFit()
+                                .frame(width: 44, height: 40)
+                            Text(resident.species.displayName).font(GameFont.body(12, weight: .bold))
+                                .foregroundStyle(GameColor.ink)
+                            FriendshipHearts(friendship: resident.friendship)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(.white, in: RoundedRectangle(cornerRadius: 14))
+                        .overlay(RoundedRectangle(cornerRadius: 14).stroke(GameColor.line, lineWidth: 2))
+                        .accessibilityElement(children: .combine)
+                    }
+                }
+                Text("住人をタップすると、なでられます。なかよくなると…？")
+                    .font(GameFont.caption(11))
+                    .foregroundStyle(GameColor.inkSoft)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Text("見つけた姿").gameSectionTitle()
                 if discoveries.isEmpty {
                     Text("まだ何も見つけていません。生き物のそばに、いろいろなものを置いてみましょう。")
                         .font(GameFont.body(15, weight: .medium))

@@ -4,21 +4,35 @@ import HibimachiCore
 /// On-disk representation. Kept separate from domain types so storage concerns never leak into rules.
 /// v1 (2026-10-25): island only. v2 (2026-10-26): adds `progress` (goals, quests, rewards, owned buildings).
 /// v3 (2026-10-26): adds `album` (optional memories; photos are separate files).
+/// v4 (2026-10-26): adds `residents` (newcomers) and a `species` on every creature record.
+/// v5 (2026-10-26): adds `friendship` on creature records.
 struct WorldRecord: Codable, Equatable {
-    static let currentSchemaVersion = 3
-    static let supportedSchemaVersions = 1...3
+    static let currentSchemaVersion = 5
+    static let supportedSchemaVersions = 1...5
 
     struct ObjectRecord: Codable, Equatable {
         var id: UUID
         var kind: String
         var x: Int
         var y: Int
+        /// When it was placed (v4); absent for starting objects and older saves.
+        var placedAt: Date?
     }
 
     struct CreatureRecord: Codable, Equatable {
         var id: UUID
         var x: Int
         var y: Int
+        /// Absent before v4: the original mochi.
+        var species: String?
+        /// Absent before v5: no friendship yet.
+        var friendship: FriendshipRecord?
+    }
+
+    struct FriendshipRecord: Codable, Equatable {
+        var points: Int
+        var petDay: String?
+        var petsOnPetDay: Int
     }
 
     var schemaVersion: Int
@@ -28,6 +42,8 @@ struct WorldRecord: Codable, Equatable {
     var terrain: String
     var objects: [ObjectRecord]
     var creature: CreatureRecord
+    /// Residents after the first one (v4). Absent before v4.
+    var residents: [CreatureRecord]?
     var discoveries: [String]
     /// Absent in v1 files; migrated by `makeSnapshot`.
     var progress: ProgressRecord?
@@ -45,6 +61,8 @@ enum WorldRecordError: Error, Equatable, CustomStringConvertible {
     case unknownTerrain(Character)
     case unknownObjectKind(String)
     case invalidWorld(WorldValidationError)
+    case unknownSpecies(String)
+    case badPetDay(String)
 
     var description: String {
         switch self {
@@ -52,6 +70,8 @@ enum WorldRecordError: Error, Equatable, CustomStringConvertible {
         case .unknownTerrain(let character): "unknown terrain '\(character)'"
         case .unknownObjectKind(let kind): "unknown object kind '\(kind)'"
         case .invalidWorld(let error): "invalid world: \(error)"
+        case .unknownSpecies(let species): "unknown species '\(species)'"
+        case .badPetDay(let day): "bad pet day '\(day)'"
         }
     }
 }
@@ -80,8 +100,11 @@ extension WorldRecord {
         width = world.width
         height = world.height
         terrain = String(world.terrain.map(\.rawValue))
-        objects = world.objects.map { ObjectRecord(id: $0.id, kind: $0.kind.rawValue, x: $0.origin.x, y: $0.origin.y) }
-        creature = CreatureRecord(id: world.creature.id, x: world.creature.position.x, y: world.creature.position.y)
+        objects = world.objects.map {
+            ObjectRecord(id: $0.id, kind: $0.kind.rawValue, x: $0.origin.x, y: $0.origin.y, placedAt: $0.placedAt)
+        }
+        creature = CreatureRecord(world.creature)
+        residents = world.residents.dropFirst().map(CreatureRecord.init)
         // Sorted so identical worlds produce identical files.
         discoveries = world.discoveries.map(\.rawValue).sorted()
         progress = nil
@@ -100,21 +123,52 @@ extension WorldRecord {
             guard let kind = ObjectKind(rawValue: record.kind) else {
                 throw WorldRecordError.unknownObjectKind(record.kind)
             }
-            return WorldObject(id: record.id, kind: kind, origin: TileCoord(x: record.x, y: record.y))
+            return WorldObject(
+                id: record.id, kind: kind, origin: TileCoord(x: record.x, y: record.y), placedAt: record.placedAt)
         }
         // Unknown discovery IDs (e.g. from a removed reaction) are dropped rather than failing the whole save.
         let known = Set(discoveries.compactMap(ReactionKind.init(rawValue:)))
+        let first = try creature.makeCreature()
+        let others = try (residents ?? []).map { try $0.makeCreature() }
         do {
             return try World(
                 width: width,
                 height: height,
                 terrain: tiles,
                 objects: worldObjects,
-                creature: Creature(id: creature.id, position: TileCoord(x: creature.x, y: creature.y)),
+                creature: first,
+                otherResidents: others,
                 discoveries: known
             )
         } catch {
             throw WorldRecordError.invalidWorld(error)
         }
+    }
+}
+
+extension WorldRecord.CreatureRecord {
+    init(_ creature: Creature) {
+        let friendship = creature.friendship
+        self.init(
+            id: creature.id, x: creature.position.x, y: creature.position.y, species: creature.species.rawValue,
+            friendship: friendship == Friendship()
+                ? nil
+                : WorldRecord.FriendshipRecord(
+                    points: friendship.points, petDay: friendship.petDay?.description,
+                    petsOnPetDay: friendship.petsOnPetDay))
+    }
+
+    func makeCreature() throws -> Creature {
+        guard let species = Species(rawValue: species ?? Species.mochi.rawValue) else {
+            throw WorldRecordError.unknownSpecies(species ?? "")
+        }
+        var petDay: LocalDay?
+        if let stored = friendship?.petDay {
+            guard let day = LocalDay(string: stored) else { throw WorldRecordError.badPetDay(stored) }
+            petDay = day
+        }
+        let bond = Friendship(
+            points: friendship?.points ?? 0, petDay: petDay, petsOnPetDay: friendship?.petsOnPetDay ?? 0)
+        return Creature(id: id, species: species, position: TileCoord(x: x, y: y), friendship: bond)
     }
 }

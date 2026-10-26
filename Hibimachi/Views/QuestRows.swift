@@ -110,7 +110,7 @@ struct GoalRow: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .accessibilityValue(expanded ? "ひらいています" : "とじています")
+            .accessibilityValue(expanded ? String(localized: "ひらいています") : String(localized: "とじています"))
             if expanded { details }
         }
         .gameCard()

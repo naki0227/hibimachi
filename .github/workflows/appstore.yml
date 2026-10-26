@@ -78,11 +78,18 @@ jobs:
           set -o pipefail
           xcodebuild build-for-testing -project Hibimachi.xcodeproj -scheme Hibimachi \
             -destination "id=$UDID" -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO
-          xcodebuild test-without-building -project Hibimachi.xcodeproj -scheme Hibimachi \
-            -destination "id=$UDID" -derivedDataPath build/DerivedData -resultBundlePath build/Shots.xcresult \
-            -only-testing:HibimachiUITests/AppStoreScreenshotTests
-          xcrun xcresulttool export attachments --path build/Shots.xcresult --output-path build/attachments
-          python3 scripts/appstore/collect_screenshots.py build/attachments appstore/screenshots/ja/iphone69
+          # Same script per store locale; -testLanguage/-testRegion switch the app's language.
+          for pair in "ja ja JP" "en-US en US"; do
+            read -r locale language region <<< "$pair"
+            xcodebuild test-without-building -project Hibimachi.xcodeproj -scheme Hibimachi \
+              -destination "id=$UDID" -derivedDataPath build/DerivedData -resultBundlePath "build/Shots-$locale.xcresult" \
+              -testLanguage "$language" -testRegion "$region" \
+              -only-testing:HibimachiUITests/AppStoreScreenshotTests
+            xcrun xcresulttool export attachments --path "build/Shots-$locale.xcresult" \
+              --output-path "build/attachments-$locale"
+            python3 scripts/appstore/collect_screenshots.py "build/attachments-$locale" \
+              "appstore/screenshots/$locale/iphone69"
+          done
       - name: Upload screenshots
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:

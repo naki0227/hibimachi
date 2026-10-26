@@ -6,9 +6,10 @@ public enum WorldValidationError: Error, Equatable, Sendable {
     case duplicateObjectID(UUID)
     case invalidObject(UUID, PlacementError)
     case creatureOutOfBounds
+    case duplicateResident(UUID)
 }
 
-/// The whole persisted island: terrain, placed objects, the creature and discovered reactions.
+/// The whole persisted island: terrain, placed objects, the residents and discovered reactions.
 /// Every initialiser path validates invariants, so a `World` value is always consistent.
 public struct World: Equatable, Sendable {
     public let width: Int
@@ -16,8 +17,15 @@ public struct World: Equatable, Sendable {
     /// Row-major terrain, index = y * width + x. Only grass <-> path can change (painting paths).
     public private(set) var terrain: [Terrain]
     public private(set) var objects: [WorldObject]
-    public var creature: Creature
+    /// Everyone living on the island; never empty. The first is the original resident.
+    public internal(set) var residents: [Creature]
     public private(set) var discoveries: Set<ReactionKind>
+
+    /// The original resident (kept as a shortcut: most rules and the tutorial talk about "the creature").
+    public var creature: Creature {
+        get { residents[0] }
+        set { residents[0] = newValue }
+    }
 
     public init(
         width: Int,
@@ -25,6 +33,7 @@ public struct World: Equatable, Sendable {
         terrain: [Terrain],
         objects: [WorldObject],
         creature: Creature,
+        otherResidents: [Creature] = [],
         discoveries: Set<ReactionKind> = []
     ) throws(WorldValidationError) {
         guard width > 0, height > 0 else { throw .invalidSize }
@@ -35,7 +44,7 @@ public struct World: Equatable, Sendable {
         self.height = height
         self.terrain = terrain
         self.objects = []
-        self.creature = creature
+        self.residents = [creature] + otherResidents
         self.discoveries = discoveries
         for object in objects {
             guard self.object(withID: object.id) == nil else { throw .duplicateObjectID(object.id) }
@@ -44,7 +53,11 @@ public struct World: Equatable, Sendable {
             }
             self.objects.append(object)
         }
-        guard contains(creature.position) else { throw .creatureOutOfBounds }
+        var seen = Set<UUID>()
+        for resident in residents {
+            guard contains(resident.position) else { throw .creatureOutOfBounds }
+            guard seen.insert(resident.id).inserted else { throw .duplicateResident(resident.id) }
+        }
         relocateCreatureIfBlocked()
     }
 
@@ -86,11 +99,11 @@ public struct World: Equatable, Sendable {
 
     // MARK: Mutations (validated)
 
-    public mutating func place(_ kind: ObjectKind, at origin: TileCoord, id: UUID) -> Result<
-        WorldObject, PlacementError
-    > {
+    public mutating func place(_ kind: ObjectKind, at origin: TileCoord, id: UUID, placedAt: Date? = nil)
+        -> Result<WorldObject, PlacementError>
+    {
         if let issue = placementIssue(for: kind, at: origin) { return .failure(issue) }
-        let object = WorldObject(id: id, kind: kind, origin: origin)
+        let object = WorldObject(id: id, kind: kind, origin: origin, placedAt: placedAt)
         objects.append(object)
         relocateCreatureIfBlocked()
         return .success(object)
@@ -142,16 +155,38 @@ public struct World: Equatable, Sendable {
         discoveries.insert(kind).inserted
     }
 
-    /// If an object now covers the creature, hop it to the nearest walkable tile and reset its plan.
+    /// If an object now covers a resident, hop it to the nearest walkable tile and reset its plan.
     mutating func relocateCreatureIfBlocked() {
-        guard !isWalkable(creature.position) else { return }
-        if let free = nearestWalkableTile(to: creature.position) {
-            creature.position = free
+        for index in residents.indices where !isWalkable(residents[index].position) {
+            if let free = nearestWalkableTile(to: residents[index].position) {
+                residents[index].position = free
+            }
+            residents[index].activity = .idle(ticksLeft: 1)
         }
-        creature.activity = .idle(ticksLeft: 1)
+    }
+
+    /// Moves in every species whose arrival condition is met and that does not live here yet.
+    /// Newcomers appear on a free tile next to the first resident. Returns who arrived.
+    public mutating func welcomeResidentsIfDue(makeID: () -> UUID) -> [Creature] {
+        var arrived: [Creature] = []
+        for species in Species.allCases
+        where discoveries.count >= species.arrivalDiscoveries && !residents.contains(where: { $0.species == species }) {
+            let taken = Set(residents.map(\.position))
+            let start = creature.position
+            let spot =
+                nearestTile(to: start) { isWalkable($0) && !taken.contains($0) } ?? creature.position
+            let newcomer = Creature(id: makeID(), species: species, position: spot)
+            residents.append(newcomer)
+            arrived.append(newcomer)
+        }
+        return arrived
     }
 
     func nearestWalkableTile(to start: TileCoord) -> TileCoord? {
+        nearestTile(to: start, where: isWalkable)
+    }
+
+    func nearestTile(to start: TileCoord, where accepts: (TileCoord) -> Bool) -> TileCoord? {
         let maxRadius = max(width, height)
         for radius in 1...maxRadius {
             let ring = (-radius...radius).flatMap { dx in
@@ -159,7 +194,7 @@ public struct World: Equatable, Sendable {
                     max(abs(dx), abs(dy)) == radius ? start.offset(dx: dx, dy: dy) : nil
                 }
             }
-            if let tile = ring.first(where: isWalkable) { return tile }
+            if let tile = ring.first(where: accepts) { return tile }
         }
         return nil
     }

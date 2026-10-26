@@ -5,6 +5,7 @@ extension GameStore {
     public var albumDays: [AlbumDay] { AlbumDay.history(progress: progress, album: album, calendar: calendar) }
 
     /// Saves the photo first, then the entry; if the entry is refused the new photo file is removed again.
+    /// A failed save does not undo the entry: it stays in memory and the save-error banner offers a retry.
     @discardableResult
     public func addMemory(text: String, photoJPEG: Data? = nil, completionID: UUID? = nil) -> Bool {
         let date = nowForProgress
@@ -39,7 +40,8 @@ extension GameStore {
         }
     }
 
-    /// Removes the entry from the save, then its photo file. A file that fails to delete is only wasted space.
+    /// Removes the entry from the save, then its photo file. The file is kept when the save failed: the file on
+    /// disk may still point at it after a relaunch, and a leftover file is only wasted space.
     @discardableResult
     public func deleteMemory(_ id: UUID) -> Bool {
         var removed: MemoryEntry?
@@ -48,7 +50,7 @@ extension GameStore {
             setAlbumError(.notFound(id))
             return false
         }
-        if let photo = removed.photo { try? media?.delete(photo) }
+        if let photo = removed.photo, saveErrorMessage == nil { try? media?.delete(photo) }
         setAlbumError(nil)
         return true
     }

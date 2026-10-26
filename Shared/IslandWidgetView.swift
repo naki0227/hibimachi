@@ -77,7 +77,7 @@ private struct IslandTile: View {
         }
         .overlay(alignment: .bottom) {
             if showsRemaining, let board, board.hasGoals {
-                Text(board.remaining > 0 ? "のこり \(board.remaining)" : "ぜんぶできた！")
+                Text(board.remaining > 0 ? String(localized: "のこり \(board.remaining)") : String(localized: "ぜんぶできた！"))
                     .font(GameFont.body(12, weight: .heavy))
                     .foregroundStyle(GameColor.ink)
                     .padding(.horizontal, 10)
@@ -152,10 +152,13 @@ private struct QuestList: View {
                         .foregroundStyle(GameColor.inkSoft)
                 }
             } else {
-                Text(board == nil ? "アプリをひらいて、島をはじめよう" : "アプリで目標をえらぶと、ここに今日のクエストが並びます")
-                    .font(GameFont.body(12, weight: .medium))
-                    .foregroundStyle(GameColor.inkSoft)
-                    .fixedSize(horizontal: false, vertical: true)
+                Text(
+                    board == nil
+                        ? String(localized: "アプリをひらいて、島をはじめよう") : String(localized: "アプリで目標をえらぶと、ここに今日のクエストが並びます")
+                )
+                .font(GameFont.body(12, weight: .medium))
+                .foregroundStyle(GameColor.inkSoft)
+                .fixedSize(horizontal: false, vertical: true)
             }
             if !detailed { Spacer(minLength: 0) }
         }
@@ -171,7 +174,7 @@ private struct QuestList: View {
                 .minimumScaleFactor(0.8)
             Spacer(minLength: 0)
             if let board, board.hasGoals {
-                Text(board.remaining > 0 ? "のこり\(board.remaining)" : "完了")
+                Text(board.remaining > 0 ? String(localized: "のこり\(board.remaining)") : String(localized: "完了"))
                     .font(GameFont.body(10, weight: .heavy))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 6)

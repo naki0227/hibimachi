@@ -1,7 +1,8 @@
 import XCTest
 
 /// Takes the App Store screenshots (run by .github/workflows/appstore.yml on a 6.9-inch simulator; regular CI
-/// skips it). Attachments named `appstore-NN-*` are copied into appstore/screenshots/ja/iphone69 in that order.
+/// skips it). Attachments named `appstore-NN-*` are copied into appstore/screenshots/<locale>/iphone69 in that
+/// order. The workflow picks the language with `xcodebuild -testLanguage`, so this test taps identifiers only.
 final class AppStoreScreenshotTests: XCTestCase {
     @MainActor
     func testTakeAppStoreScreenshots() {
@@ -26,7 +27,7 @@ final class AppStoreScreenshotTests: XCTestCase {
         app.buttons["quest-done-0"].tap()
         Thread.sleep(forTimeInterval: 1)
         shoot(app, "appstore-02-quests")
-        app.buttons["閉じる"].tap()
+        app.buttons["panel-close"].tap()
 
         // 3. Placing something new.
         app.buttons["tab-nature"].tap()
@@ -39,7 +40,7 @@ final class AppStoreScreenshotTests: XCTestCase {
         app.buttons["album"].tap()
         Thread.sleep(forTimeInterval: 1)
         shoot(app, "appstore-04-album")
-        app.buttons["閉じる"].tap()
+        app.buttons["panel-close"].tap()
 
         // 5. Night, lamps lit.
         for _ in 0..<2 { app.buttons["day-phase"].tap() }  // day -> evening -> night

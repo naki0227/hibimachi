@@ -32,7 +32,8 @@ struct AlbumPanel: View {
 
     private var storageText: String {
         let megabytes = Double(store.album.photoBytes) / 1_000_000
-        return "写真 \(store.album.photoCount)枚・\(String(format: "%.1f", megabytes))MB（この端末の中だけに保存）"
+        let size = megabytes.formatted(.number.precision(.fractionLength(1)))
+        return String(localized: "写真 \(store.album.photoCount)枚・\(size)MB（この端末の中だけに保存）")
     }
 }
 
@@ -54,7 +55,9 @@ private struct MemoryComposer: View {
                 .accessibilityIdentifier("memory-text")
             HStack(spacing: 8) {
                 PhotosPicker(selection: $pickerItem, matching: .images) {
-                    Label(photoJPEG == nil ? "写真をえらぶ" : "写真をかえる", systemImage: "photo")
+                    Label(
+                        photoJPEG == nil ? String(localized: "写真をえらぶ") : String(localized: "写真をかえる"),
+                        systemImage: "photo")
                 }
                 .buttonStyle(.game(.secondary, compact: true))
                 if let photoJPEG, let image = UIImage(data: photoJPEG) {
@@ -129,14 +132,14 @@ private struct MemoryComposer: View {
     }
 }
 
-private struct AlbumDayCard: View {
+struct AlbumDayCard: View {
     let day: AlbumDay
     let store: GameStore
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(day.day.japaneseTitle).font(GameFont.body(16, weight: .heavy)).foregroundStyle(GameColor.ink)
+                Text(day.day.displayTitle).font(GameFont.body(16, weight: .heavy)).foregroundStyle(GameColor.ink)
                 Spacer()
                 if day.sparklesEarned > 0 {
                     Label("+\(day.sparklesEarned)", systemImage: "sparkles")
@@ -188,11 +191,11 @@ private struct MemoryRow: View {
                 .foregroundStyle(GameColor.ink)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
-            Button(confirming ? "けす？" : "けす") {
+            Button(confirming ? String(localized: "けす？") : String(localized: "けす")) {
                 if confirming { delete() } else { confirming = true }
             }
             .buttonStyle(.game(confirming ? .danger : .secondary, compact: true))
-            .accessibilityLabel(confirming ? "本当にこの記録をけす" : "この記録をけす")
+            .accessibilityLabel(confirming ? String(localized: "本当にこの記録をけす") : String(localized: "この記録をけす"))
         }
         .padding(8)
         .background(GameColor.cream.opacity(0.6), in: RoundedRectangle(cornerRadius: 14))
@@ -206,26 +209,24 @@ private struct MemoryRow: View {
 }
 
 extension LocalDay {
-    /// "1月15日（金）"
-    fileprivate var japaneseTitle: String {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.locale = Locale(identifier: "ja_JP")
+    /// Month, day and weekday in the reader's language: "1月15日(金)" / "Fri, Jan 15".
+    var displayTitle: String {
+        let calendar = Calendar(identifier: .gregorian)
         guard let date = calendar.date(from: DateComponents(year: year, month: month, day: day)) else {
             return description
         }
-        let weekday = calendar.shortWeekdaySymbols[calendar.component(.weekday, from: date) - 1]
-        return "\(month)月\(day)日（\(weekday)）"
+        return date.formatted(.dateTime.month(.abbreviated).day().weekday(.abbreviated))
     }
 }
 
 extension AlbumError {
     var message: String {
         switch self {
-        case .empty: "ひとことか写真のどちらかを入れてください"
-        case .textTooLong(let limit): "ひとことは\(limit)文字までです"
-        case .unknownCompletion: "そのクエストの記録が見つかりませんでした"
-        case .notFound: "その記録はもうありません"
-        case .photoUnavailable, .photoSaveFailed: "写真を保存できませんでした。ことばだけなら残せます"
+        case .empty: String(localized: "ひとことか写真のどちらかを入れてください")
+        case .textTooLong(let limit): String(localized: "ひとことは\(limit)文字までです")
+        case .unknownCompletion: String(localized: "そのクエストの記録が見つかりませんでした")
+        case .notFound: String(localized: "その記録はもうありません")
+        case .photoUnavailable, .photoSaveFailed: String(localized: "写真を保存できませんでした。ことばだけなら残せます")
         }
     }
 }

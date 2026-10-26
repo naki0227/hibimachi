@@ -23,10 +23,10 @@ public struct WorldEditor: Sendable {
     public var canUndo: Bool { !undoStack.isEmpty }
 
     @discardableResult
-    public mutating func place(_ kind: ObjectKind, at origin: TileCoord, id: UUID) -> Result<
-        WorldObject, PlacementError
-    > {
-        recordingUndo { $0.place(kind, at: origin, id: id) }
+    public mutating func place(_ kind: ObjectKind, at origin: TileCoord, id: UUID, placedAt: Date? = nil)
+        -> Result<WorldObject, PlacementError>
+    {
+        recordingUndo { $0.place(kind, at: origin, id: id, placedAt: placedAt) }
     }
 
     @discardableResult

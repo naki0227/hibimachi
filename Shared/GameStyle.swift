@@ -79,7 +79,7 @@ extension EnvironmentValues {
 /// Floating paper panel with a title band and a round close button. The body scrolls only when it is taller
 /// than the room the modal layer gives it, so short panels (menus, small lists) stay compact.
 struct GamePanel<Content: View>: View {
-    let title: String
+    let title: LocalizedStringKey
     let symbol: String
     var identifier = ""
     var scrolls = true
@@ -138,6 +138,7 @@ struct GamePanel<Content: View>: View {
             }
             .buttonStyle(.plain)
             .accessibilityLabel("閉じる")
+            .accessibilityIdentifier("panel-close")
         }
         .padding(.horizontal, 16)
         .padding(.top, 14)
@@ -201,7 +202,7 @@ extension View {
 /// Text field drawn like the rest of the UI (paper with a soft outline). Text, placeholder and cursor use the
 /// game's ink colors explicitly: system defaults turn white in Dark Mode on this always-light paper.
 struct GameTextField: View {
-    let placeholder: String
+    let placeholder: LocalizedStringKey
     @Binding var text: String
     /// Multi-line fields grow between these line counts; `nil` keeps a single line.
     var lines: ClosedRange<Int>?

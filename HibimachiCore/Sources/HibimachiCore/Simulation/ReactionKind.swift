@@ -10,6 +10,40 @@ public enum ReactionKind: String, CaseIterable, Sendable {
     case treeNap = "tree-nap"
     /// Comes to look at a pond.
     case pondVisit = "pond-visit"
+    // v1.0 additions (2026-10-26).
+    /// Looks up at the cherry blossoms.
+    case sakuraViewing = "sakura-viewing"
+    /// Swings back and forth.
+    case swingPlay = "swing-play"
+    /// Warms up by the campfire.
+    case campfireWarm = "campfire-warm"
+    /// Looks after the vegetable garden.
+    case gardenTend = "garden-tend"
+    /// Splashes at the fountain.
+    case fountainSplash = "fountain-splash"
+    /// Visits the café.
+    case cafeVisit = "cafe-visit"
+    /// Sits at a bench in front of the café — a combination.
+    case cafeTerrace = "cafe-terrace"
+    /// Has a picnic on a mat in the shade of a tree — a combination.
+    case picnic = "picnic"
+    /// Watches birds at a birdhouse hung near a tree — a combination.
+    case birdWatch = "bird-watch"
+    /// Waits for a letter at the mailbox.
+    case mailWait = "mail-wait"
+    /// Peeks into the well.
+    case wellPeek = "well-peek"
+    // Time-of-day discoveries (2026-10-26): only when the island shows that time.
+    /// Watches fireflies over a pond with flowers beside it (night).
+    case fireflies = "fireflies"
+    /// Watches the little lights drawn to a lamp among flowers (night).
+    case lampGlow = "lamp-glow"
+    /// Lies on a picnic blanket under the open sky, away from trees (night).
+    case stargazing = "stargazing"
+    /// Sits around the campfire on a bench next to it (evening and night).
+    case campfireCircle = "campfire-circle"
+    /// Draws water from the well (morning).
+    case morningWater = "morning-water"
 }
 
 /// Tunable parameters of one reaction. Values are provisional (docs/GAME-DESIGN.md) and in simulation ticks.
@@ -19,8 +53,12 @@ public struct ReactionRule: Sendable {
     public let weight: Int
     public let duration: ClosedRange<Int>
     public let cooldown: Int
+    /// Times of day when the reaction can start (an ongoing one finishes even if the time changes).
+    public var phases: Set<DayPhase> = Set(DayPhase.allCases)
     /// Extra placement condition beyond the target kind (e.g. "a flower is next to the bench").
     let condition: @Sendable (WorldObject, World) -> Bool
+
+    public func canStart(during phase: DayPhase) -> Bool { phases.contains(phase) }
 
     public func accepts(_ object: WorldObject, in world: World) -> Bool {
         targetKinds.contains(object.kind) && condition(object, world)
@@ -44,6 +82,55 @@ extension ReactionRule {
         ReactionRule(
             kind: .pondVisit, targetKinds: [.pond], weight: 2, duration: 8...12, cooldown: 45,
             condition: { _, _ in true }),
+        ReactionRule(
+            kind: .sakuraViewing, targetKinds: [.sakuraTree], weight: 3, duration: 10...14, cooldown: 45,
+            condition: { _, _ in true }),
+        ReactionRule(
+            kind: .swingPlay, targetKinds: [.swing], weight: 3, duration: 8...12, cooldown: 40,
+            condition: { _, _ in true }),
+        ReactionRule(
+            kind: .campfireWarm, targetKinds: [.campfire], weight: 3, duration: 12...16, cooldown: 50,
+            condition: { fire, world in !has(.bench, near: fire, in: world) }),
+        ReactionRule(
+            kind: .gardenTend, targetKinds: [.garden], weight: 2, duration: 10...14, cooldown: 45,
+            condition: { _, _ in true }),
+        ReactionRule(
+            kind: .fountainSplash, targetKinds: [.fountain], weight: 3, duration: 8...12, cooldown: 40,
+            condition: { _, _ in true }),
+        ReactionRule(
+            kind: .cafeVisit, targetKinds: [.cafe], weight: 2, duration: 10...14, cooldown: 45,
+            condition: { cafe, world in !has(.bench, near: cafe, in: world) }),
+        ReactionRule(
+            kind: .cafeTerrace, targetKinds: [.cafe], weight: 4, duration: 12...16, cooldown: 45,
+            condition: { cafe, world in has(.bench, near: cafe, in: world) }),
+        ReactionRule(
+            kind: .picnic, targetKinds: [.picnicMat], weight: 4, duration: 12...16, cooldown: 50,
+            phases: [.morning, .day, .evening],
+            condition: { mat, world in hasTree(near: mat, in: world) }),
+        ReactionRule(
+            kind: .birdWatch, targetKinds: [.birdhouse], weight: 3, duration: 10...14, cooldown: 45,
+            condition: { birdhouse, world in hasTree(near: birdhouse, in: world) }),
+        ReactionRule(
+            kind: .mailWait, targetKinds: [.mailbox], weight: 2, duration: 8...12, cooldown: 60,
+            condition: { _, _ in true }),
+        ReactionRule(
+            kind: .wellPeek, targetKinds: [.well], weight: 2, duration: 8...12, cooldown: 45,
+            phases: [.day, .evening, .night], condition: { _, _ in true }),
+        ReactionRule(
+            kind: .fireflies, targetKinds: [.pond], weight: 5, duration: 12...16, cooldown: 50,
+            phases: [.night], condition: { pond, world in hasFlower(near: pond, in: world) }),
+        ReactionRule(
+            kind: .lampGlow, targetKinds: [.lamp], weight: 4, duration: 10...14, cooldown: 50,
+            phases: [.night], condition: { lamp, world in hasFlower(near: lamp, in: world) }),
+        ReactionRule(
+            kind: .stargazing, targetKinds: [.picnicMat], weight: 5, duration: 14...18, cooldown: 60,
+            phases: [.night], condition: { mat, world in !hasTree(near: mat, in: world) }),
+        ReactionRule(
+            kind: .campfireCircle, targetKinds: [.campfire], weight: 5, duration: 14...18, cooldown: 50,
+            phases: [.evening, .night], condition: { fire, world in has(.bench, near: fire, in: world) }),
+        ReactionRule(
+            kind: .morningWater, targetKinds: [.well], weight: 4, duration: 8...12, cooldown: 60,
+            phases: [.morning], condition: { _, _ in true }),
     ]
 
     public static func rule(for kind: ReactionKind) -> ReactionRule {
@@ -52,6 +139,19 @@ extension ReactionRule {
     }
 
     static func hasFlower(near object: WorldObject, in world: World) -> Bool {
-        world.objects.contains { $0.kind == .flower && object.distance(from: $0.origin) == 1 }
+        has(.flower, near: object, in: world)
+    }
+
+    /// Another object of `kind` touching `object`'s footprint (also diagonally).
+    static func has(_ kind: ObjectKind, near object: WorldObject, in world: World) -> Bool {
+        world.objects.contains { other in
+            other.kind == kind && other.tiles.contains { object.distance(from: $0) == 1 }
+        }
+    }
+
+    static func hasTree(near object: WorldObject, in world: World) -> Bool {
+        world.objects.contains { other in
+            other.kind.isTree && other.tiles.contains { object.distance(from: $0) == 1 }
+        }
     }
 }
