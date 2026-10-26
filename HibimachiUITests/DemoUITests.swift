@@ -88,9 +88,11 @@ final class DemoUITests: XCTestCase {
         app.buttons["day-phase"].tap()
         pause(4)
 
-        // 7. Invalid spot: a pond on the water shows the reason and cannot be confirmed.
+        // 7. Invalid spot: a flower bush on the water shows the reason and cannot be confirmed.
+        //    (The pond card is greyed out here: the きらめき left are fewer than its price.)
         app.buttons["tab-nature"].tap()
-        app.buttons["palette-pond"].tap()
+        pause(1.5)
+        app.buttons["palette-flower"].tap()
         pause(1)
         tile(app, x: 0, y: 0).tap()
         pause(3)
