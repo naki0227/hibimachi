@@ -15,6 +15,7 @@ final class IslandUITests: XCTestCase {
         app.launchEnvironment["HIBIMACHI_STORAGE_NAME"] = storageName
         if !tutorial { app.launchEnvironment["HIBIMACHI_TUTORIAL"] = "off" }
         app.launchEnvironment["HIBIMACHI_SEED"] = "2026"
+        app.launchEnvironment["HIBIMACHI_AUDIO"] = "off"
         app.launchEnvironment["HIBIMACHI_DAY_PHASE"] = "day"
         // The assertions below read Japanese labels; English is covered by EnglishUITests.
         app.launchArguments += ["-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]

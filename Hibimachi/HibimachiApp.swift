@@ -9,6 +9,10 @@ struct HibimachiApp: App {
     @State private var settings = AppSettings()
     @Environment(\.scenePhase) private var scenePhase
 
+    init() {
+        SoundPlayer.shared.isAvailable = AppComposition.audioAllowed()
+    }
+
     var body: some Scene {
         WindowGroup {
             IslandScreen(
@@ -80,6 +84,12 @@ enum AppComposition {
         TutorialCoach(
             storageName: environment["HIBIMACHI_STORAGE_NAME"] ?? SharedContainer.saveFolder,
             enabled: environment["HIBIMACHI_TUTORIAL"] != "off")
+    }
+
+    /// UI tests turn the audio engine off with HIBIMACHI_AUDIO=off: CI runners have no audio device, and a
+    /// running engine there made the app slow to quit between tests ("Failed to terminate").
+    static func audioAllowed(environment: [String: String] = ProcessInfo.processInfo.environment) -> Bool {
+        environment["HIBIMACHI_AUDIO"] != "off"
     }
 
     /// Demos and UI tests pin the time of day (CI simulators run on UTC, which is often "night").

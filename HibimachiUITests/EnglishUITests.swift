@@ -13,6 +13,7 @@ final class EnglishUITests: XCTestCase {
         app.launchEnvironment["HIBIMACHI_STORAGE_NAME"] = "uitest-en-\(UUID().uuidString)"
         app.launchEnvironment["HIBIMACHI_TUTORIAL"] = "off"
         app.launchEnvironment["HIBIMACHI_SEED"] = "2026"
+        app.launchEnvironment["HIBIMACHI_AUDIO"] = "off"
         app.launchEnvironment["HIBIMACHI_DAY_PHASE"] = "day"
         app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launch()
