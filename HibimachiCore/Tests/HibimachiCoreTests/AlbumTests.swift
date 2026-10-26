@@ -115,6 +115,31 @@ struct GameStoreAlbumTests {
         #expect(store.lastAlbumError == .notFound(entry.id))
     }
 
+    @Test func failedSaveKeepsThePhotoTheFileOnDiskStillPointsAt() throws {
+        let media = FakeMediaStore()
+        let (store, repository) = try store(media: media)
+        #expect(store.addMemory(text: "", photoJPEG: Data([1])))
+        let entry = try #require(store.album.entries.first)
+
+        repository.failSaves = true
+        #expect(store.deleteMemory(entry.id))
+        #expect(store.album.entries.isEmpty)
+        #expect(store.saveErrorMessage != nil)
+        #expect(repository.saved.last?.album.entries.map(\.id) == [entry.id])
+        #expect(media.files.count == 1, "the last good save still references this photo")
+    }
+
+    @Test func entryAddedDuringASaveFailureIsKeptForTheRetry() throws {
+        let (store, repository) = try store(media: FakeMediaStore())
+        repository.failSaves = true
+        #expect(store.addMemory(text: "あとで保存"))
+        #expect(store.saveErrorMessage != nil)
+        repository.failSaves = false
+        store.persist()
+        #expect(store.saveErrorMessage == nil)
+        #expect(repository.saved.last?.album.entries.map(\.text) == ["あとで保存"])
+    }
+
     @Test func refusedEntryLeavesNoOrphanPhoto() throws {
         let media = FakeMediaStore()
         let (store, _) = try store(media: media)
