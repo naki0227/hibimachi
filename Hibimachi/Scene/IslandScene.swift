@@ -48,6 +48,7 @@ final class IslandScene: SKScene {
     private var tickAccumulator: TimeInterval = 0
     private var ambientAccumulator: TimeInterval = 0
     private var clockAccumulator: TimeInterval = 0
+    private var smokeCounter = 0
 
     /// Pan/pinch state lives in the input extension; stored here because extensions cannot add storage.
     var panMode: PanMode = .none
@@ -78,6 +79,7 @@ final class IslandScene: SKScene {
         cameraNode.addChild(tint)
         objectLayer.addChild(creatureNode)
         buildBackdrop()
+        buildSeaPattern()
         buildGridOverlay()
         refreshDayPhase()
         syncWithStore(animated: false)
@@ -115,6 +117,8 @@ final class IslandScene: SKScene {
         if ambientAccumulator >= 0.35 {
             ambientAccumulator = 0
             spawnSparkle()
+            smokeCounter += 1
+            if smokeCounter.isMultiple(of: 4) { puffSmoke() }
         }
         clockAccumulator += delta
         if clockAccumulator >= 10 {

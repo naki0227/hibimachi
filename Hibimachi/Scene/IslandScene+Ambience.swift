@@ -19,6 +19,36 @@ extension IslandScene {
         }
     }
 
+    /// Faint wave marks scattered over the open sea (static, so they cost nothing per frame).
+    func buildSeaPattern() {
+        let size = grid.mapSize
+        var rng = SeededRandom(seed: 7)
+        for _ in 0..<140 {
+            let wave = SKSpriteNode(color: IslandArt.Palette.seaWave, size: CGSize(width: 10, height: 2))
+            wave.position = CGPoint(
+                x: Double.random(in: -400...(size.width + 400), using: &rng),
+                y: Double.random(in: -500...(size.height + 500), using: &rng))
+            wave.alpha = 0.55
+            backdropLayer.addChild(wave)
+        }
+    }
+
+    /// Chimney smoke from every house; skipped with Reduce Motion.
+    func puffSmoke() {
+        guard !reduceMotion else { return }
+        for object in store.world.objects where object.kind == .house {
+            let front = grid.frontVertex(at: object.origin)
+            let puff = SKSpriteNode(color: IslandArt.Palette.cream, size: CGSize(width: 6, height: 6))
+            puff.position = CGPoint(x: front.x + 31, y: front.y + 122)
+            puff.alpha = 0.85
+            puff.zPosition = 840
+            addChild(puff)
+            let rise = SKAction.moveBy(x: Double.random(in: 4...12), y: 34, duration: 2.2)
+            let grow = SKAction.scale(to: 2.2, duration: 2.2)
+            puff.run(.sequence([.group([rise, grow, .fadeOut(withDuration: 2.2)]), .removeFromParent()]))
+        }
+    }
+
     func buildGridOverlay() {
         let path = CGMutablePath()
         for column in 0...grid.columns {

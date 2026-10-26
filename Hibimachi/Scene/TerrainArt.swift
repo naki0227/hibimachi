@@ -62,12 +62,12 @@ enum TerrainArt {
         let leftOpen = !isLand(tile.offset(dx: -1, dy: 0), in: world)
         if rightOpen {
             c.polygon(P.cliffDark, [b, r, (r.0, r.1 - drop), (b.0, b.1 - drop)])
-            c.line(P.cliffShade, from: (b.0, b.1 - drop / 2), to: (r.0, r.1 - drop / 2))
+            rockSeams(from: b, to: r, drop: drop, seam: P.cliffShade, highlight: P.cliffLight, tile: tile, on: c)
             c.line(P.foam, from: (b.0, b.1 - drop), to: (r.0 - 1, r.1 - drop))
         }
         if leftOpen {
             c.polygon(P.cliffLight, [l, b, (b.0, b.1 - drop), (l.0, l.1 - drop)])
-            c.line(P.cliffDark, from: (l.0, l.1 - drop / 2 - 1), to: (b.0, b.1 - drop / 2 - 1))
+            rockSeams(from: l, to: b, drop: drop, seam: P.cliffDark, highlight: P.stoneLight, tile: tile, on: c)
             c.line(P.foam, from: (l.0 + 1, l.1 - drop), to: (b.0, b.1 - drop))
         }
         let terrain = world.terrain(at: tile) ?? .grass
@@ -78,6 +78,27 @@ enum TerrainArt {
         decorate(tile, terrain: terrain, center: (b.0, b.1 + 8), on: c)
         if rightOpen { c.line(P.grassDark, from: (b.0, b.1), to: (r.0 - 1, r.1)) }
         if leftOpen { c.line(P.grassDark, from: (l.0 + 1, l.1), to: (b.0, b.1)) }
+    }
+
+    /// Irregular horizontal seams and vertical joints so a cliff face reads as stacked rocks.
+    private static func rockSeams(
+        from start: (Double, Double), to end: (Double, Double), drop: Double, seam: SKColor, highlight: SKColor,
+        tile: TileCoord, on c: PixelCanvas
+    ) {
+        let slope = (end.1 - start.1) / (end.0 - start.0)
+        for row in [3.0, 6.5] {
+            c.line(seam, from: (start.0, start.1 - row), to: (end.0, end.1 - row))
+        }
+        var x = start.0 + 2 + Double(PixelNoise.value(tile.x, tile.y, 11) % 4)
+        var band = 0
+        while x < end.0 - 1 {
+            let y = start.1 + (x - start.0) * slope
+            let top = band.isMultiple(of: 2) ? 0.0 : 3.5
+            c.rect(seam, Int(x), Int(y - top - 3), 1, 3)
+            c.pixel(highlight, Int(x) + 1, Int(y - top - 1))
+            x += 5 + Double(PixelNoise.value(Int(x), tile.y, 13) % 3)
+            band += 1
+        }
     }
 
     /// Speckles, tiny wildflowers and cobbles, chosen by hash so the island looks hand-made but stable.
@@ -91,7 +112,12 @@ enum TerrainArt {
                 case .path:
                     if noise < 70 { c.rect(P.stone, x, y, 2, 1) } else if noise < 110 { c.pixel(P.stoneLight, x, y) }
                 case .grass, .water:
-                    if noise < 45 {
+                    if noise < 14 {
+                        // A little tuft: two dark blades with a light tip.
+                        c.rect(P.grassDark, x, y, 1, 2)
+                        c.pixel(P.grassDark, x + 2, y)
+                        c.pixel(P.grassLight, x + 1, y + 1)
+                    } else if noise < 45 {
                         c.pixel(P.grassDark, x, y)
                     } else if noise < 75 {
                         c.pixel(P.grassLight, x, y)

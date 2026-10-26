@@ -19,6 +19,11 @@ enum ObjectSprites {
         c.ellipse(P.leafDark, 20, 17, 9, 10)
         for (x, y) in [(10, 36), (13, 39), (19, 37), (6, 27), (24, 30), (16, 33)] { c.pixel(P.leafLight, x, y) }
         for (x, y) in [(21, 22), (12, 21), (25, 25)] { c.pixel(P.leafDark, x, y) }
+        // A few blossoms, like the mockup's flowering trees.
+        for (x, y) in [(9, 33), (18, 38), (23, 27), (13, 26), (20, 31)] {
+            c.rect(P.petalWhite, x, y, 2, 2)
+            c.pixel(P.petalPink, x + 1, y)
+        }
         return c
     }
 
