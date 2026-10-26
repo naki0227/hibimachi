@@ -35,27 +35,50 @@ public final class GameStore {
     public private(set) var objectsRevision = 0
     /// Bumped whenever terrain changes (path painting, undo, reset).
     public private(set) var terrainRevision = 0
+    /// Goals, quests, rewards and owned buildings (P1).
+    public private(set) var progress: PlayerProgress
+    /// The last quest completion, so the UI can offer "取り消す" for a mis-tap.
+    public private(set) var lastCompletion: (completionID: UUID, reward: RewardTransaction)?
+    /// Why the last goal/quest/purchase action was refused (shown in the quest sheet).
+    public private(set) var lastProgressError: ProgressError?
 
     @ObservationIgnored private let repository: any WorldRepository
     @ObservationIgnored private var rng: SeededRandom
     @ObservationIgnored private let makeID: () -> UUID
+    @ObservationIgnored private let now: () -> Date
+    @ObservationIgnored private let calendar: Calendar
 
-    public init(repository: any WorldRepository, seed: UInt64, makeID: @escaping () -> UUID = UUID.init) {
+    public init(
+        repository: any WorldRepository,
+        seed: UInt64,
+        makeID: @escaping () -> UUID = UUID.init,
+        now: @escaping () -> Date = Date.init,
+        calendar: Calendar = .current
+    ) {
         self.repository = repository
         self.rng = SeededRandom(seed: seed)
         self.makeID = makeID
+        self.now = now
+        self.calendar = calendar
         switch repository.load() {
-        case .loaded(let world):
-            editor = WorldEditor(world: world)
+        case .loaded(let snapshot):
+            editor = WorldEditor(world: snapshot.world)
+            progress = snapshot.progress
         case .notFound:
-            editor = WorldEditor(world: IslandFactory.makeWorld(makeID: makeID))
+            let world = IslandFactory.makeWorld(makeID: makeID)
+            editor = WorldEditor(world: world)
+            progress = PlayerProgress.starting(for: world, at: now(), id: makeID())
             persist()
         case .unreadable(_, let backup):
-            editor = WorldEditor(world: IslandFactory.makeWorld(makeID: makeID))
+            let world = IslandFactory.makeWorld(makeID: makeID)
+            editor = WorldEditor(world: world)
+            progress = PlayerProgress.starting(for: world, at: now(), id: makeID())
             startupNotice = .recoveredFromUnreadableSave(backupFileName: backup)
             persist()
         }
     }
+
+    public var today: LocalDay { LocalDay(date: now(), calendar: calendar) }
 
     public var world: World { editor.world }
     public var canUndo: Bool { editor.canUndo }
@@ -94,10 +117,22 @@ public final class GameStore {
 
     // MARK: Editing
 
-    public func beginPlacing(_ kind: ObjectKind) {
+    /// Owned copies of `kind` not yet on the island.
+    public func available(_ kind: ObjectKind) -> Int { progress.available(kind, in: world) }
+
+    /// A kind can be placed from storage, or bought on confirm if there are enough きらめき.
+    public func canPlaceOrBuy(_ kind: ObjectKind) -> Bool {
+        available(kind) > 0 || progress.sparkles >= RewardRule.price(of: kind)
+    }
+
+    /// Returns `false` (and does nothing) when the kind is neither in storage nor affordable.
+    @discardableResult
+    public func beginPlacing(_ kind: ObjectKind) -> Bool {
+        guard canPlaceOrBuy(kind) else { return false }
         selectedObjectID = nil
         lastRejection = nil
         mode = .placing(kind, origin: suggestedOrigin(for: kind))
+        return true
     }
 
     public func beginMovingSelection() {
@@ -132,7 +167,16 @@ public final class GameStore {
         let result: Result<WorldObject, PlacementError>
         switch mode {
         case .browse, .paintingPath: return false
-        case .placing(let kind, let origin): result = editor.place(kind, at: origin, id: makeID())
+        case .placing(let kind, let origin):
+            // Validate the spot before spending anything; buy only when storage is empty.
+            if let issue = world.placementIssue(for: kind, at: origin) {
+                lastRejection = issue
+                return false
+            }
+            if available(kind) == 0 {
+                guard case .success = progress.purchase(kind, at: now(), transactionID: makeID()) else { return false }
+            }
+            result = editor.place(kind, at: origin, id: makeID())
         case .moving(let id, let origin): result = editor.move(id, to: origin)
         }
         switch result {
@@ -204,8 +248,10 @@ public final class GameStore {
     }
 
     /// Starts over with the default island. Discoveries are cleared too; the UI must confirm first.
+    /// Goals, rewards and owned buildings are kept: nothing earned is lost.
     public func resetIsland() {
         editor = WorldEditor(world: IslandFactory.makeWorld(makeID: makeID))
+        progress = GameSnapshot(world: editor.world, progress: progress).progress
         mode = .browse
         selectedObjectID = nil
         pendingDiscoveries = []
@@ -238,12 +284,33 @@ public final class GameStore {
         startupNotice = nil
     }
 
+    // MARK: PlayerProgress plumbing (used by GameStore+Quests)
+
+    var makeIDForProgress: () -> UUID { makeID }
+    var nowForProgress: Date { now() }
+
+    /// Mutates progress; saves only if something actually changed.
+    func updateProgress(_ change: (inout PlayerProgress) -> Void) {
+        var copy = progress
+        change(&copy)
+        guard copy != progress else { return }
+        progress = copy
+        persist()
+    }
+
+    func setLastCompletion(_ value: (completionID: UUID, reward: RewardTransaction)?) {
+        lastCompletion = value
+    }
+
+    func recordProgressError(_ error: ProgressError) { lastProgressError = error }
+    func clearProgressError() { lastProgressError = nil }
+
     // MARK: Persistence
 
     /// Saves the current island. Safe to call repeatedly (e.g. when the app moves to the background).
     public func persist() {
         do {
-            try repository.save(world)
+            try repository.save(GameSnapshot(world: world, progress: progress))
             saveErrorMessage = nil
         } catch {
             saveErrorMessage = String(describing: error)

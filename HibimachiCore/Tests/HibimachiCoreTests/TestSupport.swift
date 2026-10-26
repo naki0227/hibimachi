@@ -59,3 +59,12 @@ func simulate(
     }
     return all
 }
+
+/// A saved game around `world` with plenty of きらめき, so island tests are not limited by the economy.
+func snapshot(_ world: World, sparkles: Int = 1_000) -> GameSnapshot {
+    let gift = RewardTransaction(
+        id: UUID(), reason: .welcome, xpDelta: 0, sparkleDelta: sparkles, ruleVersion: 1,
+        date: Date(timeIntervalSince1970: 0))
+    let progress = (try? PlayerProgress(ledger: [gift])) ?? PlayerProgress.starting(for: world, at: Date(), id: UUID())
+    return GameSnapshot(world: world, progress: progress)
+}

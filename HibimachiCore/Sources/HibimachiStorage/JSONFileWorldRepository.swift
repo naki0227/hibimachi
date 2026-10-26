@@ -29,21 +29,29 @@ public struct JSONFileWorldRepository: WorldRepository {
         do {
             let data = try Data(contentsOf: fileURL)
             let header = try JSONDecoder().decode(SchemaHeader.self, from: data)
-            guard header.schemaVersion == WorldRecord.currentSchemaVersion else {
-                // Migrations from older versions go here once v2 exists. Newer files are never overwritten.
+            guard WorldRecord.supportedSchemaVersions.contains(header.schemaVersion) else {
+                // Newer files are never overwritten: they are moved aside like corrupt ones.
                 throw WorldRecordError.unsupportedSchemaVersion(header.schemaVersion)
             }
-            return .loaded(try JSONDecoder().decode(WorldRecord.self, from: data).makeWorld())
+            let record = try Self.decoder.decode(WorldRecord.self, from: data)
+            return .loaded(try record.makeSnapshot(migrationDate: now(), makeID: UUID.init))
         } catch {
             return .unreadable(reason: String(describing: error), backupFileName: quarantine())
         }
     }
 
-    public func save(_ world: World) throws {
+    public func save(_ snapshot: GameSnapshot) throws {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]
-        try writer(try encoder.encode(WorldRecord(world)), fileURL)
+        encoder.dateEncodingStrategy = .iso8601
+        try writer(try encoder.encode(WorldRecord(snapshot)), fileURL)
+    }
+
+    private static var decoder: JSONDecoder {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return decoder
     }
 
     /// Moves the unreadable file to `world.unreadable-<timestamp>.json`. Returns `nil` if even that failed.

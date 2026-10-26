@@ -1,9 +1,11 @@
 import Foundation
 import HibimachiCore
 
-/// On-disk representation (schema v1). Kept separate from domain types so storage concerns never leak into rules.
+/// On-disk representation. Kept separate from domain types so storage concerns never leak into rules.
+/// v1 (2026-10-25): island only. v2 (2026-10-26): adds `progress` (goals, quests, rewards, owned buildings).
 struct WorldRecord: Codable, Equatable {
-    static let currentSchemaVersion = 1
+    static let currentSchemaVersion = 2
+    static let supportedSchemaVersions = 1...2
 
     struct ObjectRecord: Codable, Equatable {
         var id: UUID
@@ -26,6 +28,8 @@ struct WorldRecord: Codable, Equatable {
     var objects: [ObjectRecord]
     var creature: CreatureRecord
     var discoveries: [String]
+    /// Absent in v1 files; migrated by `makeSnapshot`.
+    var progress: ProgressRecord?
 }
 
 /// Only the version field, decoded first so newer files are recognised before full decoding fails.
@@ -50,6 +54,21 @@ enum WorldRecordError: Error, Equatable, CustomStringConvertible {
 }
 
 extension WorldRecord {
+    init(_ snapshot: GameSnapshot) {
+        self.init(snapshot.world)
+        progress = ProgressRecord(snapshot.progress)
+    }
+
+    /// Builds the saved game. v1 files get fresh progress (owning what is placed, plus the welcome gift).
+    func makeSnapshot(migrationDate: Date, makeID: () -> UUID) throws -> GameSnapshot {
+        let world = try makeWorld()
+        if let progress {
+            return GameSnapshot(world: world, progress: try progress.makeProgress())
+        }
+        return GameSnapshot(
+            world: world, progress: PlayerProgress.starting(for: world, at: migrationDate, id: makeID()))
+    }
+
     init(_ world: World) {
         schemaVersion = Self.currentSchemaVersion
         width = world.width
@@ -59,10 +78,11 @@ extension WorldRecord {
         creature = CreatureRecord(id: world.creature.id, x: world.creature.position.x, y: world.creature.position.y)
         // Sorted so identical worlds produce identical files.
         discoveries = world.discoveries.map(\.rawValue).sorted()
+        progress = nil
     }
 
     func makeWorld() throws -> World {
-        guard schemaVersion == Self.currentSchemaVersion else {
+        guard Self.supportedSchemaVersions.contains(schemaVersion) else {
             throw WorldRecordError.unsupportedSchemaVersion(schemaVersion)
         }
         let tiles = try terrain.map { character in

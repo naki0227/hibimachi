@@ -43,7 +43,7 @@ struct PathPaintingTests {
 
     @MainActor
     @Test func storeStaysInPaintModeAcrossUndo() throws {
-        let store = GameStore(repository: FakeRepository(.loaded(try TestWorlds.grass())), seed: 1)
+        let store = GameStore(repository: FakeRepository(.loaded(snapshot(try TestWorlds.grass()))), seed: 1)
         store.beginPaintingPath()
         #expect(store.togglePath(at: TileCoord(x: 1, y: 1)))
         #expect(store.terrainRevision == 1)
@@ -56,7 +56,8 @@ struct PathPaintingTests {
 
     @MainActor
     @Test func rejectedPaintExplainsWhy() throws {
-        let store = GameStore(repository: FakeRepository(.loaded(try TestWorlds.grass(waterColumn: 0))), seed: 1)
+        let store = GameStore(
+            repository: FakeRepository(.loaded(snapshot(try TestWorlds.grass(waterColumn: 0)))), seed: 1)
         store.beginPaintingPath()
         #expect(!store.togglePath(at: TileCoord(x: 0, y: 0)))
         #expect(store.lastRejection == .blockedByTerrain(.water))

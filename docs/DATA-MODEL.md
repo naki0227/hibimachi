@@ -26,6 +26,10 @@
 | `MemoryEntry` | id, completionID?, text?, mediaReferences, createdAt, linkedObjectIDs | 空データ/写真なし可、本人非公開が既定 |
 | `LocalMediaReference` | id, relativePath, format, bytes, createdAt, deletionState | 写真の絶対パスやEXIFに依存しない |
 
+## 実装状況（2026-10-26）
+- 保存は1つのJSONファイル。schema v2 は v1 に `progress`（goals, quests, completions, transactions, owned, skipped）を追加したもの。v1 は読み込み時に移行する（置いてある物を所持扱いにし、ようこそのきらめき30を付与）。
+- `Wallet` は保存しない。台帳（transactions）の合計から XP ときらめきを算出する。`Unlock` はP1では使わない（すべての建物を共通資源で買える。ADR-0005）。
+
 ## Save/loadの要件
 - Domain modelとSwiftDataのstorage modelは別。storageの都合をDomainへ混ぜない。
 - スキーマ移行: v1→v2のテストフィクスチャを保存し、古い保存データを移行できるか確認。
