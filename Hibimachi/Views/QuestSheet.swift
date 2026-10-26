@@ -151,12 +151,14 @@ struct RewardBanner: View {
             Label("+\(reward.xpDelta) XP　✨+\(reward.sparkleDelta)", systemImage: "leaf.fill")
                 .font(.system(.headline, design: .rounded))
                 .foregroundStyle(.green)
+                // Identifier on the text only: on the row it would be inherited by the button below.
+                .accessibilityIdentifier("reward-banner")
             Spacer()
             Button("取り消す", action: undo)
                 .font(.footnote)
+                .buttonStyle(.borderless)
                 .accessibilityIdentifier("undo-completion")
         }
-        .accessibilityIdentifier("reward-banner")
     }
 }
 
