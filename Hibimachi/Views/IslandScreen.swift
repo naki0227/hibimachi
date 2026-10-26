@@ -63,6 +63,10 @@ struct IslandScreen: View {
                         } else if let species = store.pendingArrivals.first {
                             ResidentCard.arrival(species) { store.dismissArrival() }
                                 .transition(.move(edge: .top).combined(with: .opacity))
+                        } else if store.pendingGrowths > 0 {
+                            GrowthCard { store.dismissGrowth() }
+                                .id(store.pendingGrowths)
+                                .transition(.move(edge: .top).combined(with: .opacity))
                         } else if let notice = store.pendingFriendships.first {
                             ResidentCard.friendship(notice) { store.dismissFriendship() }
                                 .transition(.move(edge: .top).combined(with: .opacity))
@@ -91,6 +95,7 @@ struct IslandScreen: View {
             .animation(.easeOut(duration: 0.25), value: store.pendingDiscoveries.first)
             .animation(.easeOut(duration: 0.25), value: store.pendingArrivals.first)
             .animation(.easeOut(duration: 0.25), value: store.pendingFriendships.first)
+            .animation(.easeOut(duration: 0.25), value: store.pendingGrowths)
             .animation(.easeOut(duration: 0.25), value: tutorial.guide.step)
         }
         .modifier(TutorialSignals(store: store, coach: tutorial))

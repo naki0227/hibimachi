@@ -1,6 +1,7 @@
 import Foundation
 
 /// The starting island. Layout values are provisional (16x16, docs/GAME-DESIGN.md) and tuned by playtests.
+/// It is placed in the middle of the larger map, leaving sea for the island to grow into (`IslandGrowth`).
 public enum IslandFactory {
     /// Top row first for readability; converted so that y = 0 is the bottom row.
     static let layout: [String] = [
@@ -22,6 +23,7 @@ public enum IslandFactory {
         "wwwwwwwwwwwwwwww",
     ]
 
+    /// Side of the starting layout (the map itself is `IslandGrowth.mapSize`).
     public static var size: Int { layout.count }
 
     public static func makeTerrain() -> [Terrain] {
@@ -46,7 +48,7 @@ public enum IslandFactory {
                 terrain: makeTerrain(),
                 objects: objects.map { WorldObject(id: makeID(), kind: $0.0, origin: $0.1) },
                 creature: creature
-            )
+            ).padded(toSize: IslandGrowth.mapSize)
         } catch {
             // The layout is a compile-time constant covered by tests; reaching this is a programming error.
             preconditionFailure("Default island is invalid: \(error)")

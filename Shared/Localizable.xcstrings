@@ -1121,6 +1121,16 @@
         }
       }
     },
+    "まわりの海に、新しい土地ができました。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New land rose from the sea around it."
+          }
+        }
+      }
+    },
     "みち": {
       "localizations": {
         "en": {
@@ -2007,6 +2017,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Learn a little each day"
+          }
+        }
+      }
+    },
+    "島が広がった！": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The island grew!"
           }
         }
       }

@@ -12,14 +12,16 @@ public enum WorldValidationError: Error, Equatable, Sendable {
 /// The whole persisted island: terrain, placed objects, the residents and discovered reactions.
 /// Every initialiser path validates invariants, so a `World` value is always consistent.
 public struct World: Equatable, Sendable {
-    public let width: Int
-    public let height: Int
+    public private(set) var width: Int
+    public private(set) var height: Int
     /// Row-major terrain, index = y * width + x. Only grass <-> path can change (painting paths).
     public private(set) var terrain: [Terrain]
     public private(set) var objects: [WorldObject]
     /// Everyone living on the island; never empty. The first is the original resident.
     public internal(set) var residents: [Creature]
     public private(set) var discoveries: Set<ReactionKind>
+    /// How many times the island has grown (`IslandGrowth`); its coast moves out one ring each time.
+    public private(set) var growthStage: Int
 
     /// The original resident (kept as a shortcut: most rules and the tutorial talk about "the creature").
     public var creature: Creature {
@@ -34,7 +36,8 @@ public struct World: Equatable, Sendable {
         objects: [WorldObject],
         creature: Creature,
         otherResidents: [Creature] = [],
-        discoveries: Set<ReactionKind> = []
+        discoveries: Set<ReactionKind> = [],
+        growthStage: Int = 0
     ) throws(WorldValidationError) {
         guard width > 0, height > 0 else { throw .invalidSize }
         guard terrain.count == width * height else {
@@ -46,6 +49,7 @@ public struct World: Equatable, Sendable {
         self.objects = []
         self.residents = [creature] + otherResidents
         self.discoveries = discoveries
+        self.growthStage = max(growthStage, 0)
         for object in objects {
             guard self.object(withID: object.id) == nil else { throw .duplicateObjectID(object.id) }
             if let issue = placementIssue(for: object.kind, at: object.origin) {
@@ -147,6 +151,64 @@ public struct World: Equatable, Sendable {
         objects = snapshot
         terrain = snapshotTerrain
         relocateCreatureIfBlocked()
+    }
+
+    /// The same island on a larger sea: every tile, object and resident shifts by the added margin, so the
+    /// island stays in the middle. Used once to move 16x16 saves onto the 20x20 map (2026-10-26).
+    public func padded(toSize size: Int) -> World {
+        let margin = (size - max(width, height)) / 2
+        guard margin > 0 else { return self }
+        var copy = self
+        copy.terrain = (0..<size).flatMap { y in
+            (0..<size).map { x in terrain(at: TileCoord(x: x - margin, y: y - margin)) ?? .water }
+        }
+        copy.objects = objects.map { object in
+            var moved = object
+            moved.origin = object.origin.offset(dx: margin, dy: margin)
+            return moved
+        }
+        copy.residents = residents.map { resident in
+            var moved = resident
+            moved.position = resident.position.offset(dx: margin, dy: margin)
+            return moved
+        }
+        copy.width = size
+        copy.height = size
+        return copy
+    }
+
+    /// Side (in tiles) of the smallest square around all land, for framing the island on screen.
+    public var landSpan: Int {
+        let land = (0..<height).flatMap { y in (0..<width).map { TileCoord(x: $0, y: y) } }
+            .filter { terrain(at: $0)?.isLand == true }
+        guard let minX = land.map(\.x).min(), let maxX = land.map(\.x).max(),
+            let minY = land.map(\.y).min(), let maxY = land.map(\.y).max()
+        else { return max(width, height) }
+        return max(maxX - minX, maxY - minY) + 1
+    }
+
+    /// Water tiles the coast would grow into: next to land (sides only) and not on the map's outer edge, so the
+    /// island always keeps some sea around it.
+    public var growthRing: [TileCoord] {
+        (1..<(height - 1)).flatMap { y in
+            (1..<(width - 1)).compactMap { x -> TileCoord? in
+                let tile = TileCoord(x: x, y: y)
+                guard terrain(at: tile) == .water else { return nil }
+                let touchesLand = [(1, 0), (-1, 0), (0, 1), (0, -1)].contains { dx, dy in
+                    terrain(at: tile.offset(dx: dx, dy: dy))?.isLand == true
+                }
+                return touchesLand ? tile : nil
+            }
+        }
+    }
+
+    /// Turns the growth ring into grass and counts a stage. Returns the new land.
+    @discardableResult
+    public mutating func grow() -> [TileCoord] {
+        let ring = growthRing
+        for tile in ring { terrain[tile.y * width + tile.x] = .grass }
+        growthStage += 1
+        return ring
     }
 
     /// Records a reaction as discovered. Returns `true` only the first time, so replaying an event is harmless.

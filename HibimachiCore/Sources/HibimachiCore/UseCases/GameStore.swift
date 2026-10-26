@@ -31,6 +31,8 @@ public final class GameStore {
     public internal(set) var pendingDiscoveries: [ReactionKind] = []
     /// Newcomers waiting to be announced ("新しい住人がやってきた").
     public internal(set) var pendingArrivals: [Species] = []
+    /// Island growths not yet announced ("島が広がった").
+    public internal(set) var pendingGrowths = 0
     /// Residents who just became closer ("なかよしになった"), oldest first.
     public internal(set) var pendingFriendships: [FriendshipNotice] = []
     public private(set) var saveErrorMessage: String?
@@ -38,23 +40,23 @@ public final class GameStore {
     /// Bumped whenever the set or position of objects changes, so renderers can diff cheaply.
     public private(set) var objectsRevision = 0
     /// Bumped whenever terrain changes (path painting, undo, reset).
-    public private(set) var terrainRevision = 0
+    public internal(set) var terrainRevision = 0
     /// Goals, quests, rewards and owned buildings (P1).
-    public private(set) var progress: PlayerProgress
+    public internal(set) var progress: PlayerProgress
     /// The last quest completion, so the UI can offer "取り消す" for a mis-tap.
-    public private(set) var lastCompletion: (completionID: UUID, reward: RewardTransaction)?
+    public internal(set) var lastCompletion: (completionID: UUID, reward: RewardTransaction)?
     /// Why the last goal/quest/purchase action was refused (shown in the quest sheet).
-    public private(set) var lastProgressError: ProgressError?
+    public internal(set) var lastProgressError: ProgressError?
     /// Optional memories (P2) and why the last album action was refused.
-    public private(set) var album = Album()
-    public private(set) var lastAlbumError: AlbumError?
+    public internal(set) var album = Album()
+    public internal(set) var lastAlbumError: AlbumError?
     /// The time of day the island shows; some reactions only start then. Set by the app (clock or preview).
     public var dayPhase: DayPhase = .day
 
     @ObservationIgnored let repository: any WorldRepository
     @ObservationIgnored var rng: SeededRandom
     @ObservationIgnored let makeID: () -> UUID
-    @ObservationIgnored private let now: () -> Date
+    @ObservationIgnored let now: () -> Date
     @ObservationIgnored let calendar: Calendar
     /// Where photos go; `nil` means text-only memories (e.g. tests, or a store without a media folder).
     @ObservationIgnored let media: (any MediaStore)?
@@ -90,6 +92,7 @@ public final class GameStore {
             startupNotice = .recoveredFromUnreadableSave(backupFileName: backup)
             persist()
         }
+        if growIslandIfDue() { persist() }
     }
 
     public var today: LocalDay { LocalDay(date: now(), calendar: calendar) }
@@ -247,41 +250,12 @@ public final class GameStore {
         pendingDiscoveries = []
         pendingArrivals = []
         pendingFriendships = []
+        // Growth was earned by the player, not the island: a fresh island starts at the size already earned.
+        growIslandIfDue()
+        pendingGrowths = 0
         terrainRevision += 1
         objectsDidChange()
     }
-
-    // MARK: PlayerProgress plumbing (used by GameStore+Quests)
-
-    var makeIDForProgress: () -> UUID { makeID }
-    var nowForProgress: Date { now() }
-
-    /// Mutates progress; saves only if something actually changed.
-    func updateProgress(_ change: (inout PlayerProgress) -> Void) {
-        var copy = progress
-        change(&copy)
-        guard copy != progress else { return }
-        progress = copy
-        persist()
-    }
-
-    func setLastCompletion(_ value: (completionID: UUID, reward: RewardTransaction)?) {
-        lastCompletion = value
-    }
-
-    func recordProgressError(_ error: ProgressError) { lastProgressError = error }
-
-    /// Mutates the album and saves (used by GameStore+Album).
-    func updateAlbum(_ change: (inout Album) -> Void) {
-        var copy = album
-        change(&copy)
-        guard copy != album else { return }
-        album = copy
-        persist()
-    }
-
-    func setAlbumError(_ error: AlbumError?) { lastAlbumError = error }
-    func clearProgressError() { lastProgressError = nil }
 
     // MARK: Persistence
 

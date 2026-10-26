@@ -7,7 +7,11 @@ struct IslandFactoryTests {
     @Test func defaultIslandMatchesTheVerticalSliceSpec() {
         let ids = SequentialIDs()
         let world = IslandFactory.makeWorld(makeID: ids.make)
-        #expect(world.width == 16 && world.height == 16)
+        #expect(world.width == IslandGrowth.mapSize && world.height == IslandGrowth.mapSize)
+        #expect(world.growthStage == 0)
+        // The 16x16 layout sits in the middle with two rings of sea to grow into.
+        #expect(world.terrain(at: TileCoord(x: 1, y: 1)) == .water)
+        #expect(world.terrain(at: TileCoord(x: 10, y: 10)) == Terrain(rawValue: Array(IslandFactory.layout[7])[8]))
         #expect(Set(world.terrain) == Set(Terrain.allCases))
         // Vertical slice spec: two trees, a house, a bench, a flower and a pond. Lamps are built by the player.
         #expect(Set(world.objects.map(\.kind)) == [.roundTree, .pineTree, .house, .bench, .flower, .pond])

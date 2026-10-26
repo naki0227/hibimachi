@@ -50,6 +50,14 @@ public struct WorldEditor: Sendable {
         return result
     }
 
+    /// Grows the island by one ring. Undo history is cleared: restoring an older terrain would take the new land
+    /// back (growth is a reward, not an edit).
+    @discardableResult
+    public mutating func grow() -> [TileCoord] {
+        undoStack.removeAll()
+        return world.grow()
+    }
+
     /// Returns `false` when there is nothing to undo.
     @discardableResult
     public mutating func undo() -> Bool {
