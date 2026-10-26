@@ -29,8 +29,9 @@
 ## 実装状況（2026-10-26）
 - 保存は1つのJSONファイル。schema v2 は v1 に `progress`（goals, quests, completions, transactions, owned, skipped）を追加したもの。v1 は読み込み時に移行する（置いてある物を所持扱いにし、ようこそのきらめき30を付与）。
 - schema v3（2026-10-26）は `album`（`MemoryEntry`: day, createdAt, text?, photo{id, fileName, bytes, createdAt}?, completionID?）を追加。v1/v2 は空のアルバムとして読む。写真は保存JSONに入れず、アプリ専用フォルダの `media/<id>.jpg` に置く（ADR-0007）。
+- schema v4（2026-10-26）は住人の一覧 `residents`（2匹目以降。各住人に `species`: mochi/kotori/tanuki）と、配置物の `placedAt`（迎えた日時。最初からある物と旧版は無し）を追加。v1〜v3 は「もち1匹」として読み、未知の種は読み込みエラーにする（ADR-0009）。
 - 保存場所は App Group `group.com.enludus.hibimachi` の `Hibimachi/world.json`（ウィジェットと共有。使えないときはアプリの Application Support）。ウィジェットは副作用なしの `peek()` で読み、達成だけを書き込む（ADR-0006）。島の絵 `widget-island.png` も同じコンテナに置く。
-- `Wallet` は保存しない。台帳（transactions）の合計から XP ときらめきを算出する。`Unlock` はP1では使わない（すべての建物を共通資源で買える。ADR-0005）。
+- `Wallet` は保存しない。台帳（transactions）の合計から XP ときらめきを算出する。`Unlock` は保存しない。解放は「レベルか発見数」から毎回算出する（`Unlocks`、ADR-0009。ADR-0005 の「すべて買える」を v1.0 で変更）。設定（効果音・音楽・ふるえる）は保存JSONではなく UserDefaults（ADR-0010）。
 
 ## Save/loadの要件
 - Domain modelとSwiftDataのstorage modelは別。storageの都合をDomainへ混ぜない。
