@@ -3,9 +3,10 @@ import HibimachiCore
 
 /// On-disk representation. Kept separate from domain types so storage concerns never leak into rules.
 /// v1 (2026-10-25): island only. v2 (2026-10-26): adds `progress` (goals, quests, rewards, owned buildings).
+/// v3 (2026-10-26): adds `album` (optional memories; photos are separate files).
 struct WorldRecord: Codable, Equatable {
-    static let currentSchemaVersion = 2
-    static let supportedSchemaVersions = 1...2
+    static let currentSchemaVersion = 3
+    static let supportedSchemaVersions = 1...3
 
     struct ObjectRecord: Codable, Equatable {
         var id: UUID
@@ -30,6 +31,8 @@ struct WorldRecord: Codable, Equatable {
     var discoveries: [String]
     /// Absent in v1 files; migrated by `makeSnapshot`.
     var progress: ProgressRecord?
+    /// Absent before v3; an empty album then.
+    var album: AlbumRecord?
 }
 
 /// Only the version field, decoded first so newer files are recognised before full decoding fails.
@@ -57,13 +60,16 @@ extension WorldRecord {
     init(_ snapshot: GameSnapshot) {
         self.init(snapshot.world)
         progress = ProgressRecord(snapshot.progress)
+        album = AlbumRecord(snapshot.album)
     }
 
     /// Builds the saved game. v1 files get fresh progress (owning what is placed, plus the welcome gift).
     func makeSnapshot(migrationDate: Date, makeID: () -> UUID) throws -> GameSnapshot {
         let world = try makeWorld()
         if let progress {
-            return GameSnapshot(world: world, progress: try progress.makeProgress())
+            let restored = try progress.makeProgress()
+            return GameSnapshot(
+                world: world, progress: restored, album: try album?.makeAlbum(progress: restored) ?? Album())
         }
         return GameSnapshot(
             world: world, progress: PlayerProgress.starting(for: world, at: migrationDate, id: makeID()))
@@ -79,6 +85,7 @@ extension WorldRecord {
         // Sorted so identical worlds produce identical files.
         discoveries = world.discoveries.map(\.rawValue).sorted()
         progress = nil
+        album = nil
     }
 
     func makeWorld() throws -> World {

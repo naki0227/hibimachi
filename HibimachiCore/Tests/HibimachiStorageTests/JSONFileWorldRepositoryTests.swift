@@ -136,6 +136,57 @@ struct JSONFileWorldRepositoryTests {
         #expect(names == [JSONFileWorldRepository.fileName])
     }
 
+    @Test func albumRoundTripsAndOldSavesHaveAnEmptyAlbum() throws {
+        var saved = game(sampleWorld())
+        let photo = MediaReference(id: UUID(), fileName: "a.jpg", bytes: 12, createdAt: Date(timeIntervalSince1970: 5))
+        _ = saved.album.add(
+            text: "はじめての記録", photo: photo, completionID: nil, progress: saved.progress,
+            day: LocalDay(year: 2027, month: 1, day: 15), at: Date(timeIntervalSince1970: 5), id: UUID())
+        try repository().save(saved)
+        #expect(repository().peek() == saved)
+        let text = try String(contentsOf: repository().fileURL, encoding: .utf8)
+        #expect(text.contains("\"schemaVersion\":3"))
+
+        // A v2 file (no album key) loads with an empty album.
+        var object = try #require(
+            try JSONSerialization.jsonObject(with: Data(text.utf8)) as? [String: Any])
+        object["album"] = nil
+        object["schemaVersion"] = 2
+        let v2 = try JSONSerialization.data(withJSONObject: object)
+        try write(String(decoding: v2, as: UTF8.self))
+        guard case .loaded(let old) = repository().load() else {
+            Issue.record("expected the v2 file to load")
+            return
+        }
+        #expect(old.album.entries.isEmpty)
+    }
+
+    @Test func photoPathsOutsideTheMediaFolderMakeTheSaveUnreadable() throws {
+        var saved = game(sampleWorld())
+        let photo = MediaReference(id: UUID(), fileName: "a.jpg", bytes: 1, createdAt: Date(timeIntervalSince1970: 5))
+        _ = saved.album.add(
+            text: nil, photo: photo, completionID: nil, progress: saved.progress,
+            day: LocalDay(year: 2027, month: 1, day: 15), at: Date(timeIntervalSince1970: 5), id: UUID())
+        try repository().save(saved)
+        let text = try String(contentsOf: repository().fileURL, encoding: .utf8)
+        try write(text.replacingOccurrences(of: "\"a.jpg\"", with: "\"..\\/world.json\""))
+        guard case .unreadable(let reason, _) = repository().load() else {
+            Issue.record("expected unreadable")
+            return
+        }
+        #expect(reason.contains("unsafe photo file name"))
+    }
+
+    @Test func mediaStoreWritesAndDeletesPhotoFiles() throws {
+        let media = FileMediaStore(directory: directory.appendingPathComponent("media"))
+        let reference = try media.savePhoto(Data([1, 2, 3, 4]), id: UUID(), at: Date(timeIntervalSince1970: 0))
+        #expect(reference.bytes == 4)
+        #expect(try Data(contentsOf: media.url(for: reference)) == Data([1, 2, 3, 4]))
+        try media.delete(reference)
+        #expect(!FileManager.default.fileExists(atPath: media.url(for: reference).path))
+        try media.delete(reference)  // deleting twice is fine
+    }
+
     @Test func progressRoundTripsWithGoalsRewardsAndPurchases() throws {
         let world = sampleWorld()
         var progress = PlayerProgress.starting(for: world, at: Date(timeIntervalSince1970: 0), id: UUID())

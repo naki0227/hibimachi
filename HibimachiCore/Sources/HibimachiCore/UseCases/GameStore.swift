@@ -41,21 +41,28 @@ public final class GameStore {
     public private(set) var lastCompletion: (completionID: UUID, reward: RewardTransaction)?
     /// Why the last goal/quest/purchase action was refused (shown in the quest sheet).
     public private(set) var lastProgressError: ProgressError?
+    /// Optional memories (P2) and why the last album action was refused.
+    public private(set) var album = Album()
+    public private(set) var lastAlbumError: AlbumError?
 
     @ObservationIgnored let repository: any WorldRepository
     @ObservationIgnored private var rng: SeededRandom
     @ObservationIgnored private let makeID: () -> UUID
     @ObservationIgnored private let now: () -> Date
-    @ObservationIgnored private let calendar: Calendar
+    @ObservationIgnored let calendar: Calendar
+    /// Where photos go; `nil` means text-only memories (e.g. tests, or a store without a media folder).
+    @ObservationIgnored let media: (any MediaStore)?
 
     public init(
         repository: any WorldRepository,
         seed: UInt64,
         makeID: @escaping () -> UUID = UUID.init,
         now: @escaping () -> Date = Date.init,
-        calendar: Calendar = .current
+        calendar: Calendar = .current,
+        media: (any MediaStore)? = nil
     ) {
         self.repository = repository
+        self.media = media
         self.rng = SeededRandom(seed: seed)
         self.makeID = makeID
         self.now = now
@@ -64,6 +71,7 @@ public final class GameStore {
         case .loaded(let snapshot):
             editor = WorldEditor(world: snapshot.world)
             progress = snapshot.progress
+            album = snapshot.album
         case .notFound:
             let world = IslandFactory.makeWorld(makeID: makeID)
             editor = WorldEditor(world: world)
@@ -303,6 +311,17 @@ public final class GameStore {
     }
 
     func recordProgressError(_ error: ProgressError) { lastProgressError = error }
+
+    /// Mutates the album and saves (used by GameStore+Album).
+    func updateAlbum(_ change: (inout Album) -> Void) {
+        var copy = album
+        change(&copy)
+        guard copy != album else { return }
+        album = copy
+        persist()
+    }
+
+    func setAlbumError(_ error: AlbumError?) { lastAlbumError = error }
     func clearProgressError() { lastProgressError = nil }
 
     // MARK: Persistence
@@ -310,7 +329,7 @@ public final class GameStore {
     /// Saves the current island. Safe to call repeatedly (e.g. when the app moves to the background).
     public func persist() {
         do {
-            try repository.save(GameSnapshot(world: world, progress: progress))
+            try repository.save(GameSnapshot(world: world, progress: progress, album: album))
             saveErrorMessage = nil
         } catch {
             saveErrorMessage = String(describing: error)

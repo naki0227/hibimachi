@@ -4,10 +4,13 @@ import Foundation
 public struct GameSnapshot: Equatable, Sendable {
     public var world: World
     public var progress: PlayerProgress
+    /// Optional memories (P2, schema v3). Photo bytes live in a `MediaStore`, not in the save.
+    public var album: Album
 
     /// Keeps the two halves consistent (owned buildings always cover the placed ones).
-    public init(world: World, progress: PlayerProgress) {
+    public init(world: World, progress: PlayerProgress, album: Album = Album()) {
         self.world = world
+        self.album = album
         var progress = progress
         progress.reconcileOwnership(with: world)
         self.progress = progress
