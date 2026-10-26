@@ -11,11 +11,11 @@ struct EditBar: View {
 
     /// Shows the price when confirming will buy a new one (nothing is spent until then).
     private var confirmTitle: String {
-        if isMoving { return "ここへ動かす" }
+        if isMoving { return String(localized: "ここへ動かす") }
         if let kind = store.previewKind, store.available(kind) == 0 {
-            return "✨\(RewardRule.price(of: kind))で置く"
+            return String(localized: "✨\(RewardRule.price(of: kind))で置く")
         }
-        return "ここに置く"
+        return String(localized: "ここに置く")
     }
 
     var body: some View {
@@ -23,7 +23,7 @@ struct EditBar: View {
         VStack(spacing: 8) {
             StatusLine(
                 ok: issue == nil,
-                text: issue?.message ?? "ここに置けます（ドラッグかタップで場所を変えられます）")
+                text: issue?.message ?? String(localized: "ここに置けます（ドラッグかタップで場所を変えられます）"))
             HStack(alignment: .center, spacing: 12) {
                 NudgePad(store: store)
                 VStack(spacing: 8) {
@@ -57,7 +57,7 @@ struct PathBar: View {
         VStack(spacing: 8) {
             StatusLine(
                 ok: store.lastRejection == nil,
-                text: store.lastRejection?.message ?? "タップした地面が小道になります（もう一度で草地に戻る）")
+                text: store.lastRejection?.message ?? String(localized: "タップした地面が小道になります（もう一度で草地に戻る）"))
             HStack(spacing: 12) {
                 UndoButton(store: store)
                 Button {
@@ -108,7 +108,7 @@ struct NudgePad: View {
         }
     }
 
-    private func arrow(_ symbol: String, _ label: String, dx: Int, dy: Int) -> some View {
+    private func arrow(_ symbol: String, _ label: LocalizedStringKey, dx: Int, dy: Int) -> some View {
         Button {
             store.nudgePreview(dx: dx, dy: dy)
         } label: {
@@ -164,7 +164,9 @@ struct SelectionBar: View {
         .gameBar()
     }
 
-    private func action(_ title: String, _ symbol: String, _ id: String, run: @escaping () -> Void) -> some View {
+    private func action(_ title: LocalizedStringKey, _ symbol: String, _ id: String, run: @escaping () -> Void)
+        -> some View
+    {
         Button(action: run) {
             VStack(spacing: 2) {
                 Image(systemName: symbol).font(.system(size: 16, weight: .heavy))

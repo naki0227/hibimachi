@@ -56,14 +56,14 @@ struct SettingsPanel: View {
         let info = Bundle.main.infoDictionary
         let version = info?["CFBundleShortVersionString"] as? String ?? "-"
         let build = info?["CFBundleVersion"] as? String ?? "-"
-        return "ひびまち \(version) (\(build))\n絵と音はすべてコードで描いています。© 2026 enludus"
+        return String(localized: "ひびまち \(version) (\(build))\n絵と音はすべてコードで描いています。© 2026 enludus")
     }
 
     private var divider: some View {
         Rectangle().fill(GameColor.line).frame(height: 1.5).padding(.vertical, 4)
     }
 
-    private func row(_ title: String, _ symbol: String, _ value: Binding<Bool>, _ id: String) -> some View {
+    private func row(_ title: LocalizedStringKey, _ symbol: String, _ value: Binding<Bool>, _ id: String) -> some View {
         Toggle(isOn: value) {
             Label(title, systemImage: symbol)
                 .font(GameFont.body(15, weight: .bold))
@@ -96,6 +96,6 @@ struct GameToggleStyle: ToggleStyle {
             .frame(minHeight: 40)
         }
         .buttonStyle(.plain)
-        .accessibilityValue(configuration.isOn ? "オン" : "オフ")
+        .accessibilityValue(configuration.isOn ? String(localized: "オン") : String(localized: "オフ"))
     }
 }

@@ -108,18 +108,18 @@ struct TutorialCard: View {
 
     private var title: String {
         switch step {
-        case .place: "島に、ひとつ置いてみよう"
-        case .discover: "生き物のようすを見てみよう"
-        case .quests: "きょうのことを始めよう"
+        case .place: String(localized: "島に、ひとつ置いてみよう")
+        case .discover: String(localized: "生き物のようすを見てみよう")
+        case .quests: String(localized: "きょうのことを始めよう")
         case .finished: ""
         }
     }
 
     private var message: String {
         switch step {
-        case .place: "下のパレットから選んで、置きたい場所で「ここに置く」。"
-        case .discover: "ベンチや木のそばで、生き物が何かをするかも。見つけると「発見！」になります。"
-        case .quests: "右の ✓ ボタンから目標をえらぶと、小さなクエストで きらめき がもらえます。"
+        case .place: String(localized: "下のパレットから選んで、置きたい場所で「ここに置く」。")
+        case .discover: String(localized: "ベンチや木のそばで、生き物が何かをするかも。見つけると「発見！」になります。")
+        case .quests: String(localized: "右の ✓ ボタンから目標をえらぶと、小さなクエストで きらめき がもらえます。")
         case .finished: ""
         }
     }

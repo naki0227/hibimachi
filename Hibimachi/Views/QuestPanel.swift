@@ -32,7 +32,7 @@ struct QuestPanel: View {
                 }
                 if let category = newGoalCategory {
                     NewGoalForm(category: category, title: $newGoalTitle) {
-                        if store.addGoal(title: newGoalTitle, category: category) {
+                        if store.addGoal(title: newGoalTitle, category: category, language: .current) {
                             newGoalCategory = nil
                             pickingCategory = false
                         }

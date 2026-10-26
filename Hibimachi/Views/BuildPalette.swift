@@ -82,14 +82,15 @@ struct BuildPalette: View {
 
     private func accessibilityLabel(_ kind: ObjectKind) -> String {
         let stock = store.available(kind)
-        if stock > 0 { return "\(kind.displayName)を置く（手持ち\(stock)）" }
+        if stock > 0 { return String(localized: "\(kind.displayName)を置く（手持ち\(stock)）") }
         if isLocked(kind) {
             let requirement = Unlocks.requirement(for: kind)
-            return "\(kind.displayName)（レベル\(requirement.level)か、発見\(requirement.discoveries)つで解放）"
+            return String(localized: "\(kind.displayName)（レベル\(requirement.level)か、発見\(requirement.discoveries)つで解放）")
         }
         let price = RewardRule.price(of: kind)
         return store.canPlaceOrBuy(kind)
-            ? "\(kind.displayName)をきらめき\(price)で置く" : "\(kind.displayName)（きらめき\(price)が必要）"
+            ? String(localized: "\(kind.displayName)をきらめき\(price)で置く")
+            : String(localized: "\(kind.displayName)（きらめき\(price)が必要）")
     }
 }
 

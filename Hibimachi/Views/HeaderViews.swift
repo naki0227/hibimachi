@@ -121,7 +121,7 @@ struct Badge: View {
 
 struct RoundButton: View {
     let systemImage: String
-    let label: String
+    let label: LocalizedStringKey
     let identifier: String
     var tint: Color = GameColor.ink
     let action: () -> Void

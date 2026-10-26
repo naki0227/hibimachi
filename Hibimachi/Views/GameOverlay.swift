@@ -54,8 +54,8 @@ struct ModalLayer<Item: Hashable, Content: View>: View {
 /// Small centered dialog: a big round icon, a title, a message and the game's buttons.
 struct GameDialog<Actions: View>: View {
     let symbol: String
-    let title: String
-    let message: String
+    let title: LocalizedStringKey
+    let message: LocalizedStringKey
     var tint = GameColor.leaf
     var identifier = ""
     @ViewBuilder let actions: () -> Actions
@@ -123,7 +123,7 @@ struct MenuPanel: View {
     }
 
     private func row(
-        _ title: String, _ symbol: String, _ kind: GameButtonStyle.Kind, _ action: @escaping () -> Void
+        _ title: LocalizedStringKey, _ symbol: String, _ kind: GameButtonStyle.Kind, _ action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
             Label(title, systemImage: symbol).frame(maxWidth: .infinity)

@@ -16,6 +16,8 @@ final class IslandUITests: XCTestCase {
         if !tutorial { app.launchEnvironment["HIBIMACHI_TUTORIAL"] = "off" }
         app.launchEnvironment["HIBIMACHI_SEED"] = "2026"
         app.launchEnvironment["HIBIMACHI_DAY_PHASE"] = "day"
+        // The assertions below read Japanese labels; English is covered by EnglishUITests.
+        app.launchArguments += ["-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
         app.launch()
         XCTAssertTrue(app.descendants(matching: .any)["island-view"].waitForExistence(timeout: 15))
         return app

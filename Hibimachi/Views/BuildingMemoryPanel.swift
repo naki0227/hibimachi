@@ -15,7 +15,7 @@ struct BuildingMemoryPanel: View {
                         Image(decorative: IslandArt.sprite(for: object.kind).image, scale: 1)
                             .interpolation(.none).resizable().scaledToFit()
                             .frame(width: 56, height: 56)
-                        Text("\(day.japaneseTitle)に\n\(object.kind.displayName)を迎えた日")
+                        Text("\(day.displayTitle)に\n\(object.kind.displayName)を迎えた日")
                             .font(GameFont.body(16, weight: .heavy))
                             .foregroundStyle(GameColor.ink)
                             .fixedSize(horizontal: false, vertical: true)

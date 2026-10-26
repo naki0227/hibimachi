@@ -4,74 +4,74 @@ import HibimachiCore
 extension ObjectKind {
     var displayName: String {
         switch self {
-        case .roundTree: "まるい木"
-        case .pineTree: "とがった木"
-        case .house: "小さな家"
-        case .bench: "ベンチ"
-        case .flower: "はなやぶ"
-        case .pond: "池"
-        case .lamp: "ランプ"
-        case .sakuraTree: "さくらの木"
-        case .bush: "しげみ"
-        case .rock: "いわ"
-        case .fence: "さく"
-        case .mailbox: "ポスト"
-        case .picnicMat: "ピクニックシート"
-        case .birdhouse: "巣箱"
-        case .swing: "ブランコ"
-        case .campfire: "たき火"
-        case .well: "井戸"
-        case .garden: "はたけ"
-        case .fountain: "ふんすい"
-        case .cafe: "カフェ"
+        case .roundTree: String(localized: "まるい木")
+        case .pineTree: String(localized: "とがった木")
+        case .house: String(localized: "小さな家")
+        case .bench: String(localized: "ベンチ")
+        case .flower: String(localized: "はなやぶ")
+        case .pond: String(localized: "池")
+        case .lamp: String(localized: "ランプ")
+        case .sakuraTree: String(localized: "さくらの木")
+        case .bush: String(localized: "しげみ")
+        case .rock: String(localized: "いわ")
+        case .fence: String(localized: "さく")
+        case .mailbox: String(localized: "ポスト")
+        case .picnicMat: String(localized: "ピクニックシート")
+        case .birdhouse: String(localized: "巣箱")
+        case .swing: String(localized: "ブランコ")
+        case .campfire: String(localized: "たき火")
+        case .well: String(localized: "井戸")
+        case .garden: String(localized: "はたけ")
+        case .fountain: String(localized: "ふんすい")
+        case .cafe: String(localized: "カフェ")
         }
     }
 
     /// What unlocks a kind, for the palette ("Lv2 か 発見3").
     var unlockHint: String {
         let requirement = Unlocks.requirement(for: self)
-        return "Lv\(requirement.level) / 発見\(requirement.discoveries)"
+        return String(localized: "Lv\(requirement.level) / 発見\(requirement.discoveries)")
     }
 }
 
 extension ReactionKind {
     var title: String {
         switch self {
-        case .benchRest: "ベンチでひと休み"
-        case .bloomBench: "花をながめて休む"
-        case .treeNap: "木かげでうたた寝"
-        case .pondVisit: "池をのぞきこむ"
-        case .sakuraViewing: "さくらを見上げる"
-        case .swingPlay: "ブランコでゆらゆら"
-        case .campfireWarm: "たき火でぬくぬく"
-        case .gardenTend: "はたけのお世話"
-        case .fountainSplash: "ふんすいで水あそび"
-        case .cafeVisit: "カフェにより道"
-        case .cafeTerrace: "テラスでひと息"
-        case .picnic: "木かげのピクニック"
-        case .birdWatch: "巣箱のバードウォッチ"
-        case .mailWait: "おてがみ待ち"
-        case .wellPeek: "井戸をのぞく"
+        case .benchRest: String(localized: "ベンチでひと休み")
+        case .bloomBench: String(localized: "花をながめて休む")
+        case .treeNap: String(localized: "木かげでうたた寝")
+        case .pondVisit: String(localized: "池をのぞきこむ")
+        case .sakuraViewing: String(localized: "さくらを見上げる")
+        case .swingPlay: String(localized: "ブランコでゆらゆら")
+        case .campfireWarm: String(localized: "たき火でぬくぬく")
+        case .gardenTend: String(localized: "はたけのお世話")
+        case .fountainSplash: String(localized: "ふんすいで水あそび")
+        case .cafeVisit: String(localized: "カフェにより道")
+        case .cafeTerrace: String(localized: "テラスでひと息")
+        case .picnic: String(localized: "木かげのピクニック")
+        case .birdWatch: String(localized: "巣箱のバードウォッチ")
+        case .mailWait: String(localized: "おてがみ待ち")
+        case .wellPeek: String(localized: "井戸をのぞく")
         }
     }
 
     var detail: String {
         switch self {
-        case .benchRest: "近くにベンチがあると、腰かけてのんびりする。"
-        case .bloomBench: "花のとなりのベンチがお気に入り。いつもよりうれしそう。"
-        case .treeNap: "木のそばに来ると、ころんと横になって眠ってしまう。"
-        case .pondVisit: "池のふちで、水面をじっとのぞきこむ。"
-        case .sakuraViewing: "ひらひら落ちる花びらを、首をかしげて見上げる。"
-        case .swingPlay: "ブランコに乗って、ゆらゆら。ちょっと得意げ。"
-        case .campfireWarm: "火のそばにすわって、手をかざしてぬくぬく。"
-        case .gardenTend: "はたけの葉っぱを一枚ずつ、ていねいに見てまわる。"
-        case .fountainSplash: "ふんすいのしぶきに、ぴょんと飛びはねる。"
-        case .cafeVisit: "カフェの窓をのぞいて、いいにおいをかぐ。"
-        case .cafeTerrace: "カフェの前のベンチで、ひと息ついている。ベンチを置いたからこそ。"
-        case .picnic: "木かげのシートでおべんとう。日なただとやらないみたい。"
-        case .birdWatch: "木のそばの巣箱を、じっと見守る。"
-        case .mailWait: "ポストの前で、だれかからのおてがみを待っている。"
-        case .wellPeek: "井戸の中に向かって「おーい」。こだまが返ってくる。"
+        case .benchRest: String(localized: "近くにベンチがあると、腰かけてのんびりする。")
+        case .bloomBench: String(localized: "花のとなりのベンチがお気に入り。いつもよりうれしそう。")
+        case .treeNap: String(localized: "木のそばに来ると、ころんと横になって眠ってしまう。")
+        case .pondVisit: String(localized: "池のふちで、水面をじっとのぞきこむ。")
+        case .sakuraViewing: String(localized: "ひらひら落ちる花びらを、首をかしげて見上げる。")
+        case .swingPlay: String(localized: "ブランコに乗って、ゆらゆら。ちょっと得意げ。")
+        case .campfireWarm: String(localized: "火のそばにすわって、手をかざしてぬくぬく。")
+        case .gardenTend: String(localized: "はたけの葉っぱを一枚ずつ、ていねいに見てまわる。")
+        case .fountainSplash: String(localized: "ふんすいのしぶきに、ぴょんと飛びはねる。")
+        case .cafeVisit: String(localized: "カフェの窓をのぞいて、いいにおいをかぐ。")
+        case .cafeTerrace: String(localized: "カフェの前のベンチで、ひと息ついている。ベンチを置いたからこそ。")
+        case .picnic: String(localized: "木かげのシートでおべんとう。日なただとやらないみたい。")
+        case .birdWatch: String(localized: "木のそばの巣箱を、じっと見守る。")
+        case .mailWait: String(localized: "ポストの前で、だれかからのおてがみを待っている。")
+        case .wellPeek: String(localized: "井戸の中に向かって「おーい」。こだまが返ってくる。")
         }
     }
 
@@ -88,7 +88,7 @@ extension ReactionKind {
         case .cafeVisit, .cafeTerrace: "☕"
         case .picnic: "♪♪"
         case .mailWait: "?"
-        case .wellPeek: "おーい"
+        case .wellPeek: String(localized: "おーい")
         }
     }
 
@@ -99,18 +99,18 @@ extension ReactionKind {
 extension Species {
     var displayName: String {
         switch self {
-        case .mochi: "もち"
-        case .kotori: "ことり"
-        case .tanuki: "こだぬき"
+        case .mochi: String(localized: "もち")
+        case .kotori: String(localized: "ことり")
+        case .tanuki: String(localized: "こだぬき")
         }
     }
 
     /// One line for the arrival card.
     var arrivalLine: String {
         switch self {
-        case .mochi: "島のさいしょの住人です。"
-        case .kotori: "木や巣箱、水のあるところが好きみたい。"
-        case .tanuki: "たき火やはたけ、ピクニックが好きみたい。"
+        case .mochi: String(localized: "島のさいしょの住人です。")
+        case .kotori: String(localized: "木や巣箱、水のあるところが好きみたい。")
+        case .tanuki: String(localized: "たき火やはたけ、ピクニックが好きみたい。")
         }
     }
 }
@@ -119,21 +119,21 @@ extension ReactionKind {
     /// A soft hint that points at a reaction without spelling it out (shown after finishing a quest).
     var hint: String {
         switch self {
-        case .benchRest: "ベンチのまわりをあけておくと、だれかが座りにくるかも"
-        case .bloomBench: "ベンチのとなりに花があったら…？"
-        case .treeNap: "木のそばは、ひなたぼっこにちょうどよさそう"
-        case .pondVisit: "池のまわりを歩きやすくしてみたら…？"
-        case .sakuraViewing: "さくらの木の下で、だれかが上を見ているかも"
-        case .swingPlay: "ブランコ、だれか乗りにこないかな"
-        case .campfireWarm: "たき火のそばは、あたたかそう"
-        case .gardenTend: "はたけの葉っぱ、だれか気にしているみたい"
-        case .fountainSplash: "ふんすいのしぶき、気になる子がいるかも"
-        case .cafeVisit: "カフェから、いいにおいがしてきそう"
-        case .cafeTerrace: "カフェの前に、すわれる場所があったら…？"
-        case .picnic: "ピクニックシートは、日なたより木かげが好きみたい"
-        case .birdWatch: "巣箱は、木のそばにあると落ち着くみたい"
-        case .mailWait: "ポストの前で、だれかが待っているかも"
-        case .wellPeek: "井戸の中から、何か聞こえるかも"
+        case .benchRest: String(localized: "ベンチのまわりをあけておくと、だれかが座りにくるかも")
+        case .bloomBench: String(localized: "ベンチのとなりに花があったら…？")
+        case .treeNap: String(localized: "木のそばは、ひなたぼっこにちょうどよさそう")
+        case .pondVisit: String(localized: "池のまわりを歩きやすくしてみたら…？")
+        case .sakuraViewing: String(localized: "さくらの木の下で、だれかが上を見ているかも")
+        case .swingPlay: String(localized: "ブランコ、だれか乗りにこないかな")
+        case .campfireWarm: String(localized: "たき火のそばは、あたたかそう")
+        case .gardenTend: String(localized: "はたけの葉っぱ、だれか気にしているみたい")
+        case .fountainSplash: String(localized: "ふんすいのしぶき、気になる子がいるかも")
+        case .cafeVisit: String(localized: "カフェから、いいにおいがしてきそう")
+        case .cafeTerrace: String(localized: "カフェの前に、すわれる場所があったら…？")
+        case .picnic: String(localized: "ピクニックシートは、日なたより木かげが好きみたい")
+        case .birdWatch: String(localized: "巣箱は、木のそばにあると落ち着くみたい")
+        case .mailWait: String(localized: "ポストの前で、だれかが待っているかも")
+        case .wellPeek: String(localized: "井戸の中から、何か聞こえるかも")
         }
     }
 }
@@ -141,10 +141,10 @@ extension ReactionKind {
 extension NextStep {
     var message: String {
         switch self {
-        case .canBuild(let kind): "\(kind.displayName)を置いてみると、だれかが寄ってくるかも"
+        case .canBuild(let kind): String(localized: "\(kind.displayName)を置いてみると、だれかが寄ってくるかも")
         case .tryReaction(let reaction): reaction.hint
         case .unlocksSoon(let kind, let requirement):
-            "Lv\(requirement.level)か、発見\(requirement.discoveries)つで\(kind.displayName)が置けるように"
+            String(localized: "Lv\(requirement.level)か、発見\(requirement.discoveries)つで\(kind.displayName)が置けるように")
         }
     }
 
