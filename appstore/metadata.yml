@@ -14,7 +14,7 @@ app:
     secondary: LIFESTYLE
 
 version:
-  version_string: "0.1.0"        # アプリの MARKETING_VERSION と同じにする（validate が確認する）
+  version_string: "1.0.0"        # アプリの MARKETING_VERSION と同じにする（validate が確認する）
   copyright: "2026 enludus"    # 著作権
   release_type: MANUAL           # 審査通過後: MANUAL=自分で公開 / AFTER_APPROVAL=自動で公開
 
