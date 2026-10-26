@@ -25,7 +25,9 @@
 ## 要確認（TestFlight・本人の作業）
 - [ ] Apple Developer Program 登録、App Store Connect でアプリ作成（バンドルID `com.enludus.hibimachi`）。
 - [ ] App Store Connect API キー（App Manager）を作り、GitHub Secrets に `ASC_KEY_ID` / `ASC_ISSUER_ID` / `ASC_KEY_P8` / `APPLE_TEAM_ID` を登録 → Actions の「TestFlight」を手動実行（未実行）。
-- [ ] 写真をiCloudバックアップに含めるか（PRD未決事項）。
+- [x] 写真はiCloudバックアップに含める（ユーザー決定 2026-10-26、標準のまま）。
+- [ ] `appstore/metadata.yml` の TODO（著作権・プライバシーポリシーURL・サポートURL）と審査連絡先の Secrets（`ASC_REVIEW_*`）→ Actions「App Store metadata」を plan で実行（未実行、ADR-0008）。
+- [ ] App Store Connect で「App のプライバシー」（データを収集していません）と価格・配信国を手で設定。
 
 ## 要確認（ウィジェット）
 - [ ] 実機・署名付きビルドで App Group を有効にし、ウィジェット表示と○タップでの達成を確認（CIは署名なしのため未検証）。

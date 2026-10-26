@@ -63,7 +63,8 @@ jobs:
             -project Hibimachi.xcodeproj -scheme Hibimachi \
             -destination "$DESTINATION" -derivedDataPath build/DerivedData \
             -resultBundlePath build/Hibimachi.xcresult \
-            -skip-testing:HibimachiUITests/DemoUITests
+            -skip-testing:HibimachiUITests/DemoUITests \
+            -skip-testing:HibimachiUITests/AppStoreScreenshotTests
       - name: Export UI test screenshots
         if: always()
         run: |
