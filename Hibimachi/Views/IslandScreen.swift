@@ -17,6 +17,7 @@ struct IslandScreen: View {
     @State private var album: DiscoveryAlbum
     @State private var tab: PaletteTab = .build
     @State private var phaseOverride: DayPhase?
+    @State private var showsQuests = false
     @State private var showsFieldGuide = false
     @State private var showsObjectList = false
     @State private var confirmsReset = false
@@ -58,6 +59,9 @@ struct IslandScreen: View {
                     Spacer()
                     SideButtons(
                         phase: shownPhase,
+                        questsLeft: store.progress.activeGoals.isEmpty ? 1 : store.todaysQuests.count,
+                        objectCount: store.world.objects.count,
+                        showsQuests: $showsQuests,
                         showsFieldGuide: $showsFieldGuide,
                         showsObjectList: $showsObjectList
                     ) { phaseOverride = shownPhase.next }
@@ -73,6 +77,9 @@ struct IslandScreen: View {
         .sensoryFeedback(.success, trigger: store.objectsRevision)
         .sensoryFeedback(.selection, trigger: store.terrainRevision)
         .sensoryFeedback(.error, trigger: store.lastRejection) { _, new in new != nil }
+        .sheet(isPresented: $showsQuests) {
+            QuestSheet(store: store)
+        }
         .sheet(isPresented: $showsFieldGuide) {
             FieldGuideView(discoveries: store.world.discoveries, images: album.images)
         }

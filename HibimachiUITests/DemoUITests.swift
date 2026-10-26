@@ -15,6 +15,20 @@ final class DemoUITests: XCTestCase {
         // 1. Watch the island and the creature; the first discovery usually appears within seconds.
         pause(8)
 
+        // 1b. Life side: pick a goal, finish a small quest, receive XP and きらめき.
+        app.buttons["quests"].tap()
+        pause(1.5)
+        app.buttons["goal-category-tidy"].tap()
+        pause(1.5)
+        app.buttons["create-goal"].tap()
+        pause(2)
+        app.buttons["quest-done-0"].tap()
+        pause(2.5)
+        app.buttons["quest-done-0"].tap()
+        pause(2.5)
+        app.buttons["閉じる"].tap()
+        pause(2)
+
         // 2. Zoom in, then back to the whole island.
         app.descendants(matching: .any)["island-view"].pinch(withScale: 2.0, velocity: 1)
         pause(4)

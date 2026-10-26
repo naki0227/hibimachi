@@ -26,6 +26,11 @@ final class IslandUITests: XCTestCase {
     }
 
     @MainActor
+    private func sparkles(_ app: XCUIApplication) -> String {
+        app.descendants(matching: .any)["sparkle-balance"].label
+    }
+
+    @MainActor
     private func screenshot(_ app: XCUIApplication, _ name: String) {
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = name
@@ -50,15 +55,23 @@ final class IslandUITests: XCTestCase {
         app.buttons["undo"].firstMatch.tap()
         XCTAssertEqual(objectCount(app), "置いたもの 6こ")
 
-        app.buttons["tab-build"].tap()
-        app.buttons["palette-house-small"].tap()
+        // The undone flower went back to storage, so placing it again is free; then buy a bench (✨10).
+        XCTAssertEqual(sparkles(app), "きらめき 25")
+        app.buttons["palette-flower"].tap()
         app.buttons["confirm-edit"].tap()
-        XCTAssertEqual(objectCount(app), "置いたもの 7こ")
-        screenshot(app, "03-placed-house")
+        XCTAssertEqual(sparkles(app), "きらめき 25")
+        app.buttons["deselect"].tap()
+        app.buttons["tab-build"].tap()
+        app.buttons["palette-bench"].tap()
+        app.buttons["confirm-edit"].tap()
+        XCTAssertEqual(objectCount(app), "置いたもの 8こ")
+        XCTAssertEqual(sparkles(app), "きらめき 15")
+        screenshot(app, "03-placed-bench")
 
         app.terminate()
         app = launch()
-        XCTAssertEqual(objectCount(app), "置いたもの 7こ", "layout should be restored after relaunch")
+        XCTAssertEqual(objectCount(app), "置いたもの 8こ", "layout should be restored after relaunch")
+        XCTAssertEqual(sparkles(app), "きらめき 15", "spending should be restored after relaunch")
         screenshot(app, "04-after-relaunch")
     }
 
@@ -84,6 +97,28 @@ final class IslandUITests: XCTestCase {
         XCTAssertEqual(objectCount(app), "置いたもの 5こ")
         app.buttons["undo"].firstMatch.tap()
         XCTAssertEqual(objectCount(app), "置いたもの 6こ")
+    }
+
+    @MainActor
+    func testQuestCompletionRewardsAndCanBeUndone() {
+        let app = launch()
+        XCTAssertEqual(sparkles(app), "きらめき 30")
+        app.buttons["quests"].tap()
+        app.buttons["goal-category-tidy"].tap()
+        XCTAssertTrue(app.buttons["create-goal"].waitForExistence(timeout: 5))
+        app.buttons["create-goal"].tap()
+        XCTAssertTrue(app.buttons["quest-done-0"].waitForExistence(timeout: 5))
+        screenshot(app, "09-quests")
+        app.buttons["quest-done-0"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["reward-banner"].waitForExistence(timeout: 5))
+        screenshot(app, "10-reward")
+        app.buttons["閉じる"].tap()
+        XCTAssertEqual(sparkles(app), "きらめき 35")
+        XCTAssertEqual(app.descendants(matching: .any)["level"].label, "レベル 1")
+        app.buttons["quests"].tap()
+        app.buttons["undo-completion"].tap()
+        app.buttons["閉じる"].tap()
+        XCTAssertEqual(sparkles(app), "きらめき 30")
     }
 
     @MainActor

@@ -52,7 +52,10 @@ struct BuildPalette: View {
                             }
                         }
                         ForEach(tab.kinds, id: \.self) { kind in
-                            PaletteCard(title: kind.displayName, identifier: "palette-\(kind.rawValue)") {
+                            PaletteCard(
+                                title: kind.displayName, identifier: "palette-\(kind.rawValue)",
+                                cost: costLabel(kind), enabled: store.canPlaceOrBuy(kind)
+                            ) {
                                 Image(decorative: IslandArt.sprite(for: kind).image, scale: 1)
                                     .interpolation(.none)
                                     .resizable()
@@ -60,7 +63,7 @@ struct BuildPalette: View {
                             } action: {
                                 store.beginPlacing(kind)
                             }
-                            .accessibilityLabel("\(kind.displayName)を置く")
+                            .accessibilityLabel(accessibilityLabel(kind))
                         }
                     }
                     .padding(2)
@@ -70,27 +73,50 @@ struct BuildPalette: View {
         }
         .panel()
     }
+
+    /// "×2" when owned copies are in storage, otherwise the price in きらめき.
+    private func costLabel(_ kind: ObjectKind) -> String {
+        let stock = store.available(kind)
+        return stock > 0 ? "×\(stock)" : "✨\(RewardRule.price(of: kind))"
+    }
+
+    private func accessibilityLabel(_ kind: ObjectKind) -> String {
+        let stock = store.available(kind)
+        if stock > 0 { return "\(kind.displayName)を置く（手持ち\(stock)）" }
+        let price = RewardRule.price(of: kind)
+        return store.canPlaceOrBuy(kind)
+            ? "\(kind.displayName)をきらめき\(price)で置く" : "\(kind.displayName)（きらめき\(price)が必要）"
+    }
 }
 
 struct PaletteCard<Icon: View>: View {
     let title: String
     let identifier: String
+    var cost: String?
+    var enabled = true
     @ViewBuilder let icon: () -> Icon
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 4) {
-                icon().frame(width: 52, height: 52)
+            VStack(spacing: 2) {
+                icon().frame(width: 48, height: 48)
                 Text(title)
                     .font(.system(.caption, design: .rounded).weight(.semibold))
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
+                if let cost {
+                    Text(cost)
+                        .font(.system(.caption2, design: .rounded).weight(.bold))
+                        .foregroundStyle(enabled ? Color.orange : Color.secondary)
+                }
             }
-            .frame(width: 76, height: 86)
+            .frame(width: 76, height: 92)
             .background(Color.white.opacity(0.85), in: RoundedRectangle(cornerRadius: 16))
+            .opacity(enabled ? 1 : 0.5)
         }
         .buttonStyle(.plain)
+        .disabled(!enabled)
         .accessibilityIdentifier(identifier)
     }
 }
@@ -125,6 +151,15 @@ struct EditBar: View {
         if case .moving = store.mode { true } else { false }
     }
 
+    /// Shows the price when confirming will buy a new one (nothing is spent until then).
+    private var confirmTitle: String {
+        if isMoving { return "ここへ動かす" }
+        if let kind = store.previewKind, store.available(kind) == 0 {
+            return "✨\(RewardRule.price(of: kind))で置く"
+        }
+        return "ここに置く"
+    }
+
     var body: some View {
         let issue = store.previewIssue
         VStack(spacing: 8) {
@@ -134,7 +169,7 @@ struct EditBar: View {
             HStack(alignment: .center, spacing: 12) {
                 NudgePad(store: store)
                 VStack(spacing: 8) {
-                    Button(isMoving ? "ここへ動かす" : "ここに置く") { store.confirmPreview() }
+                    Button(confirmTitle) { store.confirmPreview() }
                         .buttonStyle(.borderedProminent)
                         .tint(.green)
                         .frame(maxWidth: .infinity, minHeight: 44)

@@ -21,11 +21,12 @@ struct HeaderBar: View {
             .shadow(color: .black.opacity(0.25), radius: 2, y: 1)
             .accessibilityElement(children: .combine)
             Spacer(minLength: 4)
-            StatusChip(systemImage: "square.grid.2x2.fill", value: store.world.objects.count, tint: .orange)
-                .accessibilityLabel("置いたもの \(store.world.objects.count)こ")
-                .accessibilityIdentifier("object-count")
-            StatusChip(systemImage: "book.fill", value: store.world.discoveries.count, tint: .pink)
-                .accessibilityLabel("発見 \(store.world.discoveries.count)件")
+            StatusChip(systemImage: "sparkles", text: "\(store.progress.sparkles)", tint: .yellow)
+                .accessibilityLabel("きらめき \(store.progress.sparkles)")
+                .accessibilityIdentifier("sparkle-balance")
+            StatusChip(systemImage: "leaf.fill", text: "Lv\(store.progress.level)", tint: .green)
+                .accessibilityLabel("レベル \(store.progress.level)")
+                .accessibilityIdentifier("level")
             Menu {
                 Button("島全体を表示", systemImage: "arrow.up.left.and.arrow.down.right") { scene.resetCamera() }
                 Button("時間帯を端末の時刻に戻す", systemImage: "clock") { phaseOverride = nil }
@@ -46,13 +47,13 @@ struct HeaderBar: View {
 
 struct StatusChip: View {
     let systemImage: String
-    let value: Int
+    let text: String
     let tint: Color
 
     var body: some View {
         HStack(spacing: 4) {
             Image(systemName: systemImage).foregroundStyle(tint)
-            Text("\(value)").monospacedDigit()
+            Text(text).monospacedDigit().contentTransition(.numericText())
         }
         .font(.system(.subheadline, design: .rounded).weight(.bold))
         .foregroundStyle(.white)
@@ -63,24 +64,55 @@ struct StatusChip: View {
     }
 }
 
-/// Round buttons on the right edge: field guide, object list and time-of-day preview.
+/// Round buttons on the right edge: today's quests, field guide, object list and time-of-day preview.
 struct SideButtons: View {
     let phase: DayPhase
+    let questsLeft: Int
+    let objectCount: Int
+    @Binding var showsQuests: Bool
     @Binding var showsFieldGuide: Bool
     @Binding var showsObjectList: Bool
     let cyclePhase: () -> Void
 
     var body: some View {
         VStack(spacing: 10) {
+            RoundButton(
+                systemImage: "checklist", label: "きょうのこと（のこり\(questsLeft)）", identifier: "quests",
+                tint: .green
+            ) {
+                showsQuests = true
+            }
+            .overlay(alignment: .topTrailing) { Badge(text: questsLeft > 0 ? "\(questsLeft)" : nil) }
             RoundButton(systemImage: "book.closed.fill", label: "図鑑", identifier: "field-guide") {
                 showsFieldGuide = true
             }
             RoundButton(systemImage: "list.bullet", label: "配置物の一覧", identifier: "object-list") {
                 showsObjectList = true
             }
+            .overlay(alignment: .topTrailing) {
+                Badge(text: "\(objectCount)")
+                    .accessibilityLabel("置いたもの \(objectCount)こ")
+                    .accessibilityIdentifier("object-count")
+            }
             RoundButton(
                 systemImage: phase.symbolName, label: "時間帯: \(phase.title)（タップで切り替え）",
                 identifier: "day-phase", tint: phase == .night ? .indigo : .orange, action: cyclePhase)
+        }
+    }
+}
+
+struct Badge: View {
+    let text: String?
+
+    var body: some View {
+        if let text {
+            Text(text)
+                .font(.caption2.weight(.bold)).monospacedDigit()
+                .foregroundStyle(.white)
+                .padding(.horizontal, 5)
+                .frame(minWidth: 18, minHeight: 18)
+                .background(Color.orange, in: Capsule())
+                .offset(x: 4, y: -4)
         }
     }
 }
