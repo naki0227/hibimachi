@@ -1,3 +1,4 @@
+import Foundation
 import HibimachiCore
 
 /// Player-facing names for what lives on the island (objects, reactions, residents).

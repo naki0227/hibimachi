@@ -1,3 +1,4 @@
+import Foundation
 import HibimachiCore
 
 /// Player-facing copy. Japanese is the source language; translations live in Shared/Localizable.xcstrings.
