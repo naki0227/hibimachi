@@ -40,9 +40,12 @@ enum AppComposition {
             FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? FileManager.default.temporaryDirectory
         // The save lives in the App Group so the widget can read it; without the group, in the app's own folder.
-        let legacy = appSupport.appendingPathComponent(folder, isDirectory: true)
-        let directory = SharedContainer.groupURL.map { saveDirectory(in: $0, folder: folder, legacy: legacy) } ?? legacy
-        return GameStore(repository: JSONFileWorldRepository(directory: directory), seed: seed)
+        let appFolder = appSupport.appendingPathComponent(folder, isDirectory: true)
+        let directory =
+            SharedContainer.groupURL.map { saveDirectory(in: $0, folder: folder, legacy: appFolder) } ?? appFolder
+        // Photos stay in the app's own folder: the widget never needs them, so they are not shared with it.
+        let media = FileMediaStore(directory: appFolder.appendingPathComponent("media", isDirectory: true))
+        return GameStore(repository: JSONFileWorldRepository(directory: directory), seed: seed, media: media)
     }
 
     /// Saves made before the widget live in Application Support; they move into the group once, never over a

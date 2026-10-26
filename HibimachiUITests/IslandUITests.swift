@@ -192,4 +192,22 @@ final class IslandUITests: XCTestCase {
             app.descendants(matching: .any)["tutorial-card"].waitForExistence(timeout: 3),
             "a skipped tutorial stays skipped")
     }
+
+    @MainActor
+    func testAlbumKeepsAndDeletesAMemory() {
+        let app = launch()
+        app.buttons["album"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["album-panel"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["save-memory"].isEnabled, "an empty memory can't be saved")
+        let field = app.descendants(matching: .any)["memory-text"].firstMatch
+        field.tap()
+        field.typeText("first memory")
+        app.buttons["save-memory"].tap()
+        let row = app.descendants(matching: .any)["memory-row"]
+        XCTAssertTrue(row.waitForExistence(timeout: 5))
+        screenshot(app, "14-album")
+        app.buttons["この記録をけす"].tap()
+        app.buttons["本当にこの記録をけす"].tap()
+        XCTAssertFalse(row.waitForExistence(timeout: 2))
+    }
 }

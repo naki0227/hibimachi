@@ -131,6 +131,8 @@ struct IslandScreen: View {
             FieldGuidePanel(discoveries: store.world.discoveries, images: album.images, close: close)
         case .objectList:
             ObjectListPanel(store: store, close: close)
+        case .album:
+            AlbumPanel(store: store, close: close)
         case .resetConfirm:
             GameDialog(
                 symbol: "arrow.counterclockwise", title: "島をはじめからにしますか？",

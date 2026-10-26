@@ -106,6 +106,17 @@ final class DemoUITests: XCTestCase {
         app.buttons["閉じる"].tap()
         pause(3)
 
+        // 8b. Album: a short memory for today (photos come from the system picker, not scripted here).
+        app.buttons["album"].tap()
+        pause(1.5)
+        app.descendants(matching: .any)["memory-text"].firstMatch.tap()
+        app.descendants(matching: .any)["memory-text"].firstMatch.typeText("first memory on the island")
+        pause(1)
+        app.buttons["save-memory"].tap()
+        pause(3)
+        app.buttons["閉じる"].tap()
+        pause(1.5)
+
         // 9. Home-screen widget (debug preview with live data): island + today's quests.
         app.buttons["メニュー"].tap()
         pause(1)

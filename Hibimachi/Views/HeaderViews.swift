@@ -84,6 +84,9 @@ struct SideButtons: View {
             RoundButton(systemImage: "book.closed.fill", label: "図鑑", identifier: "field-guide") {
                 open(.fieldGuide)
             }
+            RoundButton(systemImage: "photo.on.rectangle.angled", label: "アルバム", identifier: "album") {
+                open(.album)
+            }
             RoundButton(systemImage: "list.bullet", label: "配置物の一覧", identifier: "object-list") {
                 open(.objectList)
             }

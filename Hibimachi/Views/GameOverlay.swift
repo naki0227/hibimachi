@@ -7,6 +7,7 @@ enum IslandOverlay: Hashable {
     case quests
     case fieldGuide
     case objectList
+    case album
     case resetConfirm
     case startupNotice
     /// Debug builds only: the home-screen widget with live data.
