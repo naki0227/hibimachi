@@ -145,7 +145,7 @@ final class IslandUITests: XCTestCase {
         XCTAssertTrue(toast.waitForExistence(timeout: 60), "the creature should react to something within a minute")
         screenshot(app, "06-discovery")
         app.buttons["field-guide"].tap()
-        XCTAssertTrue(app.navigationBars["図鑑"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.descendants(matching: .any)["field-guide-panel"].waitForExistence(timeout: 5))
         screenshot(app, "07-field-guide")
     }
 }

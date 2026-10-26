@@ -17,10 +17,7 @@ struct IslandScreen: View {
     @State private var album: DiscoveryAlbum
     @State private var tab: PaletteTab = .build
     @State private var phaseOverride: DayPhase?
-    @State private var showsQuests = false
-    @State private var showsFieldGuide = false
-    @State private var showsObjectList = false
-    @State private var confirmsReset = false
+    @State private var overlay: IslandOverlay?
 
     init(store: GameStore, initialPhase: DayPhase? = nil) {
         self.store = store
@@ -47,7 +44,7 @@ struct IslandScreen: View {
                 .accessibilityIdentifier("island-view")
 
             VStack(spacing: 10) {
-                HeaderBar(store: store, confirmsReset: $confirmsReset, phaseOverride: $phaseOverride, scene: scene)
+                HeaderBar(store: store) { overlay = .menu }
                 if let message = store.saveErrorMessage {
                     SaveErrorBanner(message: message) { store.persist() }
                 }
@@ -65,9 +62,7 @@ struct IslandScreen: View {
                         phase: shownPhase,
                         questsLeft: store.progress.activeGoals.isEmpty ? 1 : store.todaysQuests.count,
                         objectCount: store.world.objects.count,
-                        showsQuests: $showsQuests,
-                        showsFieldGuide: $showsFieldGuide,
-                        showsObjectList: $showsObjectList
+                        open: { overlay = $0 }
                     ) { phaseOverride = shownPhase.next }
                 }
                 Spacer()
@@ -81,27 +76,67 @@ struct IslandScreen: View {
         .sensoryFeedback(.success, trigger: store.objectsRevision)
         .sensoryFeedback(.selection, trigger: store.terrainRevision)
         .sensoryFeedback(.error, trigger: store.lastRejection) { _, new in new != nil }
-        .sheet(isPresented: $showsQuests) {
-            QuestSheet(store: store)
+        .overlay {
+            ModalLayer(item: shownOverlay) { overlay in overlayContent(overlay) }
         }
-        .sheet(isPresented: $showsFieldGuide) {
-            FieldGuideView(discoveries: store.world.discoveries, images: album.images)
-        }
-        .sheet(isPresented: $showsObjectList) {
-            ObjectListView(store: store)
-        }
-        .confirmationDialog("島をはじめからにしますか？", isPresented: $confirmsReset, titleVisibility: .visible) {
-            Button("はじめから", role: .destructive) { store.resetIsland() }
-        } message: {
-            Text("置いたもの・小道・図鑑の記録が最初の状態に戻ります。")
-        }
-        .alert(
-            "保存データを読み込めませんでした",
-            isPresented: Binding(get: { store.startupNotice != nil }, set: { if !$0 { store.dismissStartupNotice() } })
-        ) {
-            Button("OK") { store.dismissStartupNotice() }
-        } message: {
-            Text("新しい島ではじめます。読めなかったデータは別名で端末内に残してあります。")
+    }
+
+    /// A save that could not be read is announced before anything else.
+    private var shownOverlay: Binding<IslandOverlay?> {
+        Binding(
+            get: { store.startupNotice != nil ? .startupNotice : overlay },
+            set: { newValue in
+                if newValue == nil, store.startupNotice != nil {
+                    store.dismissStartupNotice()
+                } else {
+                    overlay = newValue
+                }
+            })
+    }
+
+    @ViewBuilder
+    private func overlayContent(_ item: IslandOverlay) -> some View {
+        let close = { overlay = nil }
+        switch item {
+        case .menu:
+            MenuPanel(
+                showWholeIsland: {
+                    scene.resetCamera()
+                    close()
+                },
+                followDeviceClock: {
+                    phaseOverride = nil
+                    close()
+                },
+                askReset: { overlay = .resetConfirm },
+                close: close)
+        case .quests:
+            QuestPanel(store: store, close: close)
+        case .fieldGuide:
+            FieldGuidePanel(discoveries: store.world.discoveries, images: album.images, close: close)
+        case .objectList:
+            ObjectListPanel(store: store, close: close)
+        case .resetConfirm:
+            GameDialog(
+                symbol: "arrow.counterclockwise", title: "島をはじめからにしますか？",
+                message: "置いたもの・小道・図鑑の記録が最初の状態に戻ります。", tint: GameColor.berry,
+                identifier: "reset-dialog"
+            ) {
+                Button("やめておく", action: close).buttonStyle(.game(.secondary))
+                Button("はじめから") {
+                    store.resetIsland()
+                    close()
+                }
+                .buttonStyle(.game(.danger))
+            }
+        case .startupNotice:
+            GameDialog(
+                symbol: "exclamationmark.triangle.fill", title: "保存データを読み込めませんでした",
+                message: "新しい島ではじめます。読めなかったデータは別名で端末内に残してあります。", tint: GameColor.sun,
+                identifier: "startup-notice"
+            ) {
+                Button("OK") { store.dismissStartupNotice() }.buttonStyle(.game)
+            }
         }
     }
 

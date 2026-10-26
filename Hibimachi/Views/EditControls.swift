@@ -1,20 +1,6 @@
 import HibimachiCore
 import SwiftUI
 
-/// Card style shared by the bottom panels (white, rounded, soft shadow as in the mockup).
-private struct PanelBackground: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .padding(10)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 22))
-            .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
-    }
-}
-
-extension View {
-    fileprivate func panel() -> some View { modifier(PanelBackground()) }
-}
-
 /// Bottom palette in browse mode: category tabs, item cards with their pixel art, and undo.
 struct BuildPalette: View {
     let store: GameStore
@@ -28,13 +14,12 @@ struct BuildPalette: View {
                         tab = item
                     } label: {
                         Label(item.title, systemImage: item.symbolName)
-                            .font(.system(.footnote, design: .rounded).weight(.bold))
+                            .font(GameFont.body(13, weight: .heavy))
                             .lineLimit(1)
+                            .minimumScaleFactor(0.8)
                             .frame(maxWidth: .infinity, minHeight: 36)
-                            .background(
-                                tab == item ? Color.white : Color.clear, in: RoundedRectangle(cornerRadius: 12)
-                            )
-                            .foregroundStyle(tab == item ? Color.green : Color.secondary)
+                            .background(tab == item ? GameColor.leaf : GameColor.cream, in: Capsule())
+                            .foregroundStyle(tab == item ? Color.white : GameColor.inkSoft)
                     }
                     .buttonStyle(.plain)
                     .accessibilityAddTraits(tab == item ? .isSelected : [])
@@ -46,7 +31,7 @@ struct BuildPalette: View {
                     HStack(spacing: 8) {
                         if tab == .path {
                             PaletteCard(title: "小道をひく", identifier: "palette-path") {
-                                Image(systemName: "road.lanes").font(.largeTitle).foregroundStyle(.brown)
+                                Image(systemName: "road.lanes").font(.largeTitle).foregroundStyle(GameColor.wood)
                             } action: {
                                 store.beginPaintingPath()
                             }
@@ -71,7 +56,7 @@ struct BuildPalette: View {
                 UndoButton(store: store)
             }
         }
-        .panel()
+        .gameBar()
     }
 
     /// "×2" when owned copies are in storage, otherwise the price in きらめき.
@@ -102,17 +87,20 @@ struct PaletteCard<Icon: View>: View {
             VStack(spacing: 2) {
                 icon().frame(width: 48, height: 48)
                 Text(title)
-                    .font(.system(.caption, design: .rounded).weight(.semibold))
+                    .font(GameFont.body(12, weight: .bold))
+                    .foregroundStyle(GameColor.ink)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
                 if let cost {
                     Text(cost)
-                        .font(.system(.caption2, design: .rounded).weight(.bold))
-                        .foregroundStyle(enabled ? Color.orange : Color.secondary)
+                        .font(GameFont.body(11, weight: .heavy))
+                        .foregroundStyle(enabled ? GameColor.wood : GameColor.inkSoft)
+                        .padding(.horizontal, 6)
+                        .background(GameColor.cream, in: Capsule())
                 }
             }
-            .frame(width: 76, height: 92)
-            .background(Color.white.opacity(0.85), in: RoundedRectangle(cornerRadius: 16))
+            .frame(width: 76, height: 94)
+            .gameTile()
             .opacity(enabled ? 1 : 0.5)
         }
         .buttonStyle(.plain)
@@ -129,14 +117,14 @@ struct UndoButton: View {
             store.undo()
         } label: {
             VStack(spacing: 2) {
-                Image(systemName: "arrow.uturn.backward").font(.title3.weight(.semibold))
-                Text("もどす").font(.system(.caption2, design: .rounded))
+                Image(systemName: "arrow.uturn.backward").font(.system(size: 18, weight: .heavy))
+                Text("もどす").font(GameFont.body(11, weight: .bold))
             }
             .frame(width: 56, height: 60)
-            .background(Color.white.opacity(0.85), in: RoundedRectangle(cornerRadius: 16))
+            .gameTile()
         }
         .buttonStyle(.plain)
-        .foregroundStyle(store.canUndo ? Color.primary : Color.secondary.opacity(0.5))
+        .foregroundStyle(store.canUndo ? GameColor.ink : GameColor.inkSoft.opacity(0.4))
         .disabled(!store.canUndo)
         .accessibilityLabel("ひとつ戻す")
         .accessibilityIdentifier("undo")
@@ -169,22 +157,25 @@ struct EditBar: View {
             HStack(alignment: .center, spacing: 12) {
                 NudgePad(store: store)
                 VStack(spacing: 8) {
-                    Button(confirmTitle) { store.confirmPreview() }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.green)
-                        .frame(maxWidth: .infinity, minHeight: 44)
-                        .disabled(issue != nil)
-                        .accessibilityIdentifier("confirm-edit")
-                    Button("やめる", role: .cancel) { store.cancelEdit() }
-                        .buttonStyle(.bordered)
-                        .frame(maxWidth: .infinity, minHeight: 44)
-                        .accessibilityIdentifier("cancel-edit")
+                    Button {
+                        store.confirmPreview()
+                    } label: {
+                        Text(confirmTitle).frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.game)
+                    .disabled(issue != nil)
+                    .accessibilityIdentifier("confirm-edit")
+                    Button(role: .cancel) {
+                        store.cancelEdit()
+                    } label: {
+                        Text("やめる").frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.game(.secondary))
+                    .accessibilityIdentifier("cancel-edit")
                 }
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
             }
         }
-        .panel()
+        .gameBar()
     }
 }
 
@@ -199,14 +190,16 @@ struct PathBar: View {
                 text: store.lastRejection?.message ?? "タップした地面が小道になります（もう一度で草地に戻る）")
             HStack(spacing: 12) {
                 UndoButton(store: store)
-                Button("できた") { store.cancelEdit() }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.green)
-                    .frame(maxWidth: .infinity, minHeight: 44)
-                    .accessibilityIdentifier("finish-path")
+                Button {
+                    store.cancelEdit()
+                } label: {
+                    Text("できた").frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.game)
+                .accessibilityIdentifier("finish-path")
             }
         }
-        .panel()
+        .gameBar()
     }
 }
 
@@ -217,9 +210,10 @@ struct StatusLine: View {
     var body: some View {
         HStack {
             Image(systemName: ok ? "checkmark.circle.fill" : "xmark.octagon.fill")
-                .foregroundStyle(ok ? Color.teal : Color.red)
+                .foregroundStyle(ok ? GameColor.leaf : GameColor.berry)
             Text(text)
-                .font(.footnote)
+                .font(GameFont.body(13))
+                .foregroundStyle(GameColor.ink)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 0)
         }
@@ -249,9 +243,10 @@ struct NudgePad: View {
             store.nudgePreview(dx: dx, dy: dy)
         } label: {
             Image(systemName: symbol)
-                .font(.body.weight(.semibold))
+                .font(.system(size: 16, weight: .heavy))
+                .foregroundStyle(GameColor.ink)
                 .frame(width: 44, height: 44)
-                .background(Color.white.opacity(0.85), in: RoundedRectangle(cornerRadius: 10))
+                .gameTile(radius: 12)
         }
         .buttonStyle(.plain)
         .accessibilityLabel(label)
@@ -266,7 +261,8 @@ struct SelectionBar: View {
     var body: some View {
         HStack(spacing: 6) {
             Text(object.kind.displayName)
-                .font(.system(.headline, design: .rounded))
+                .font(GameFont.body(17, weight: .heavy))
+                .foregroundStyle(GameColor.ink)
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
                 .layoutPriority(1)
@@ -279,17 +275,18 @@ struct SelectionBar: View {
             action("とじる", "xmark", "deselect") { store.select(nil) }
             UndoButton(store: store)
         }
-        .panel()
+        .gameBar()
     }
 
     private func action(_ title: String, _ symbol: String, _ id: String, run: @escaping () -> Void) -> some View {
         Button(action: run) {
             VStack(spacing: 2) {
-                Image(systemName: symbol).font(.body.weight(.semibold))
-                Text(title).font(.system(.caption2, design: .rounded)).lineLimit(1).fixedSize()
+                Image(systemName: symbol).font(.system(size: 16, weight: .heavy))
+                Text(title).font(GameFont.body(11, weight: .bold)).lineLimit(1).fixedSize()
             }
+            .foregroundStyle(GameColor.ink)
             .frame(width: 48, height: 52)
-            .background(Color.white.opacity(0.85), in: RoundedRectangle(cornerRadius: 14))
+            .gameTile(radius: 14)
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier(id)
