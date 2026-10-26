@@ -59,12 +59,22 @@ final class EnglishUITests: XCTestCase {
         attachment.name = "en-\(screen)"
         attachment.lifetime = .keepAlways
         add(attachment)
-        let elements = app.staticTexts.allElementsBoundByIndex + app.buttons.allElementsBoundByIndex
-        let japanese = elements.map(\.label).filter { label in
+        // One snapshot of the whole tree: querying elements one by one races with toasts and animations.
+        guard let root = try? app.snapshot() else {
+            XCTFail("No accessibility snapshot on the \(screen) screen")
+            return
+        }
+        let japanese = labels(in: root).filter { label in
             label.unicodeScalars.contains {
                 (0x3040...0x30FF).contains($0.value) || (0x4E00...0x9FFF).contains($0.value)
             }
         }
         XCTAssertEqual(japanese, [], "Japanese text on the \(screen) screen")
+    }
+
+    /// Labels and text values (e.g. a toggle's spoken state) of every element in the tree.
+    @MainActor
+    private func labels(in snapshot: XCUIElementSnapshot) -> [String] {
+        [snapshot.label, snapshot.value as? String ?? ""] + snapshot.children.flatMap { labels(in: $0) }
     }
 }
