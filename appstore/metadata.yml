@@ -15,15 +15,15 @@ app:
 
 version:
   version_string: "0.1.0"        # アプリの MARKETING_VERSION と同じにする（validate が確認する）
-  copyright: "TODO: 例「2026 enludus」"    # 著作権
+  copyright: "2026 enludus"    # 著作権
   release_type: MANUAL           # 審査通過後: MANUAL=自分で公開 / AFTER_APPROVAL=自動で公開
 
 localizations:
   ja:
     name: ひびまち                               # App 名（30字）
     subtitle: 小さな島に、日々が育つ               # サブタイトル（30字）
-    privacy_policy_url: "TODO: https://..."    # プライバシーポリシー URL（必須）
-    support_url: "TODO: https://..."           # サポート URL（必須）
+    privacy_policy_url: https://enludus.com/products/hibimachi-privacy   # プライバシーポリシー URL（必須）
+    support_url: https://enludus.com/products/hibimachi                 # サポート URL（必須）
     # marketing_url: https://...               # マーケティング URL（任意）
     keywords: 箱庭,島,街づくり,ドット絵,癒し,習慣,目標,ToDo,ウィジェット,アルバム,のんびり   # キーワード（100字、カンマ区切り）
     promotional_text: >-                       # プロモーションテキスト（170字、審査なしでいつでも変更可）
@@ -96,7 +96,7 @@ testflight:      # TestFlight（外部テスト時に必要。内部テストだ
     ja:
       description: 小さな島を作る箱庭ゲームです。置いたものに生き物が反応します。今日のクエストを「やった！」にすると、島の資源がもらえます。
       feedback_email: ${ASC_REVIEW_EMAIL}
-      privacy_policy_url: "TODO: https://..."
+      privacy_policy_url: https://enludus.com/products/hibimachi-privacy
   review:
     contact_first_name: ${ASC_REVIEW_FIRST_NAME}
     contact_last_name: ${ASC_REVIEW_LAST_NAME}
