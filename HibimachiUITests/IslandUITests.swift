@@ -23,6 +23,16 @@ final class IslandUITests: XCTestCase {
         return app
     }
 
+    /// Opens today's quests. On a loaded CI simulator the first tap is sometimes synthesized while the app is
+    /// still busy and gets lost, so wait for the panel and tap once more if it did not open.
+    @MainActor
+    private func openQuests(_ app: XCUIApplication) {
+        let panel = app.descendants(matching: .any)["quest-panel"]
+        app.buttons["quests"].tap()
+        if !panel.waitForExistence(timeout: 5) { app.buttons["quests"].tap() }
+        XCTAssertTrue(panel.waitForExistence(timeout: 10))
+    }
+
     @MainActor
     private func objectCount(_ app: XCUIApplication) -> String {
         app.descendants(matching: .any)["object-count"].label
@@ -106,7 +116,7 @@ final class IslandUITests: XCTestCase {
     func testQuestCompletionRewardsAndCanBeUndone() {
         let app = launch()
         XCTAssertEqual(sparkles(app), "きらめき 30")
-        app.buttons["quests"].tap()
+        openQuests(app)
         app.buttons["goal-category-tidy"].tap()
         XCTAssertTrue(app.buttons["create-goal"].waitForExistence(timeout: 5))
         app.buttons["create-goal"].tap()
@@ -118,7 +128,7 @@ final class IslandUITests: XCTestCase {
         app.buttons["閉じる"].tap()
         XCTAssertEqual(sparkles(app), "きらめき 35")
         XCTAssertEqual(app.descendants(matching: .any)["level"].label, "レベル 1")
-        app.buttons["quests"].tap()
+        openQuests(app)
         app.buttons["undo-completion"].tap()
         app.buttons["閉じる"].tap()
         XCTAssertEqual(sparkles(app), "きらめき 30")
@@ -155,7 +165,7 @@ final class IslandUITests: XCTestCase {
     @MainActor
     func testWidgetPreviewShowsIslandAndTodaysQuests() {
         let app = launch()
-        app.buttons["quests"].tap()
+        openQuests(app)
         app.buttons["goal-category-tidy"].tap()
         app.buttons["create-goal"].tap()
         XCTAssertTrue(app.buttons["quest-done-0"].waitForExistence(timeout: 5))
@@ -216,7 +226,7 @@ final class IslandUITests: XCTestCase {
     @MainActor
     func testPlacedObjectOpensTheMemoryOfItsDayAndQuestsSuggestANextStep() {
         let app = launch()
-        app.buttons["quests"].tap()
+        openQuests(app)
         app.buttons["goal-category-tidy"].tap()
         app.buttons["create-goal"].tap()
         XCTAssertTrue(app.buttons["quest-done-0"].waitForExistence(timeout: 5))
