@@ -33,6 +33,17 @@ public enum ReactionKind: String, CaseIterable, Sendable {
     case mailWait = "mail-wait"
     /// Peeks into the well.
     case wellPeek = "well-peek"
+    // Time-of-day discoveries (2026-10-26): only when the island shows that time.
+    /// Watches fireflies over a pond with flowers beside it (night).
+    case fireflies = "fireflies"
+    /// Watches the little lights drawn to a lamp among flowers (night).
+    case lampGlow = "lamp-glow"
+    /// Lies on a picnic blanket under the open sky, away from trees (night).
+    case stargazing = "stargazing"
+    /// Sits around the campfire on a bench next to it (evening and night).
+    case campfireCircle = "campfire-circle"
+    /// Draws water from the well (morning).
+    case morningWater = "morning-water"
 }
 
 /// Tunable parameters of one reaction. Values are provisional (docs/GAME-DESIGN.md) and in simulation ticks.
@@ -42,8 +53,12 @@ public struct ReactionRule: Sendable {
     public let weight: Int
     public let duration: ClosedRange<Int>
     public let cooldown: Int
+    /// Times of day when the reaction can start (an ongoing one finishes even if the time changes).
+    public var phases: Set<DayPhase> = Set(DayPhase.allCases)
     /// Extra placement condition beyond the target kind (e.g. "a flower is next to the bench").
     let condition: @Sendable (WorldObject, World) -> Bool
+
+    public func canStart(during phase: DayPhase) -> Bool { phases.contains(phase) }
 
     public func accepts(_ object: WorldObject, in world: World) -> Bool {
         targetKinds.contains(object.kind) && condition(object, world)
@@ -75,7 +90,7 @@ extension ReactionRule {
             condition: { _, _ in true }),
         ReactionRule(
             kind: .campfireWarm, targetKinds: [.campfire], weight: 3, duration: 12...16, cooldown: 50,
-            condition: { _, _ in true }),
+            condition: { fire, world in !has(.bench, near: fire, in: world) }),
         ReactionRule(
             kind: .gardenTend, targetKinds: [.garden], weight: 2, duration: 10...14, cooldown: 45,
             condition: { _, _ in true }),
@@ -90,6 +105,7 @@ extension ReactionRule {
             condition: { cafe, world in has(.bench, near: cafe, in: world) }),
         ReactionRule(
             kind: .picnic, targetKinds: [.picnicMat], weight: 4, duration: 12...16, cooldown: 50,
+            phases: [.morning, .day, .evening],
             condition: { mat, world in hasTree(near: mat, in: world) }),
         ReactionRule(
             kind: .birdWatch, targetKinds: [.birdhouse], weight: 3, duration: 10...14, cooldown: 45,
@@ -99,7 +115,22 @@ extension ReactionRule {
             condition: { _, _ in true }),
         ReactionRule(
             kind: .wellPeek, targetKinds: [.well], weight: 2, duration: 8...12, cooldown: 45,
-            condition: { _, _ in true }),
+            phases: [.day, .evening, .night], condition: { _, _ in true }),
+        ReactionRule(
+            kind: .fireflies, targetKinds: [.pond], weight: 5, duration: 12...16, cooldown: 50,
+            phases: [.night], condition: { pond, world in hasFlower(near: pond, in: world) }),
+        ReactionRule(
+            kind: .lampGlow, targetKinds: [.lamp], weight: 4, duration: 10...14, cooldown: 50,
+            phases: [.night], condition: { lamp, world in hasFlower(near: lamp, in: world) }),
+        ReactionRule(
+            kind: .stargazing, targetKinds: [.picnicMat], weight: 5, duration: 14...18, cooldown: 60,
+            phases: [.night], condition: { mat, world in !hasTree(near: mat, in: world) }),
+        ReactionRule(
+            kind: .campfireCircle, targetKinds: [.campfire], weight: 5, duration: 14...18, cooldown: 50,
+            phases: [.evening, .night], condition: { fire, world in has(.bench, near: fire, in: world) }),
+        ReactionRule(
+            kind: .morningWater, targetKinds: [.well], weight: 4, duration: 8...12, cooldown: 60,
+            phases: [.morning], condition: { _, _ in true }),
     ]
 
     public static func rule(for kind: ReactionKind) -> ReactionRule {

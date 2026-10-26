@@ -1,22 +1,24 @@
 import Foundation
 
-/// Advances every resident's state machine by one tick, in order. Pure function of (world, rng):
-/// the same seed and edits always produce the same behaviour.
+/// Advances every resident's state machine by one tick, in order. Pure function of (world, phase, rng):
+/// the same seed, edits and time of day always produce the same behaviour.
 public enum CreatureBrain {
     static let wanderRadius = 4
     static let wanderWeight = 2
     static let idleTicks = 2...4
 
-    public static func step<R: RandomNumberGenerator>(world: inout World, rng: inout R) -> [WorldEvent] {
+    public static func step<R: RandomNumberGenerator>(
+        world: inout World, phase: DayPhase = .day, rng: inout R
+    ) -> [WorldEvent] {
         var events: [WorldEvent] = []
         for index in world.residents.indices {
-            step(residentAt: index, world: &world, rng: &rng, events: &events)
+            step(residentAt: index, world: &world, phase: phase, rng: &rng, events: &events)
         }
         return events
     }
 
     private static func step<R: RandomNumberGenerator>(
-        residentAt index: Int, world: inout World, rng: inout R, events: inout [WorldEvent]
+        residentAt index: Int, world: inout World, phase: DayPhase, rng: inout R, events: inout [WorldEvent]
     ) {
         var creature = world.residents[index]
         let me = creature.id
@@ -25,7 +27,8 @@ public enum CreatureBrain {
         switch creature.activity {
         case .idle(let ticksLeft):
             creature.activity =
-                ticksLeft > 1 ? .idle(ticksLeft: ticksLeft - 1) : decide(for: creature, in: world, rng: &rng)
+                ticksLeft > 1
+                ? .idle(ticksLeft: ticksLeft - 1) : decide(for: creature, in: world, phase: phase, rng: &rng)
 
         case .wandering(let path):
             creature.activity =
@@ -112,10 +115,11 @@ public enum CreatureBrain {
     private static func decide<R: RandomNumberGenerator>(
         for creature: Creature,
         in world: World,
+        phase: DayPhase,
         rng: inout R
     ) -> CreatureActivity {
         var candidates: [Candidate] = []
-        for rule in ReactionRule.all where creature.cooldowns[rule.kind] == nil {
+        for rule in ReactionRule.all where creature.cooldowns[rule.kind] == nil && rule.canStart(during: phase) {
             for target in world.objects
             where target.distance(from: creature.position) <= ReactionRule.perceptionRadius
                 && rule.accepts(target, in: world)

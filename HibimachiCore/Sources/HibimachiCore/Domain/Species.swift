@@ -21,10 +21,13 @@ public enum Species: String, CaseIterable, Sendable {
     public func preference(for reaction: ReactionKind) -> Int {
         switch (self, reaction) {
         case (.mochi, .benchRest), (.mochi, .bloomBench), (.mochi, .cafeTerrace), (.mochi, .swingPlay): 2
+        case (.mochi, .lampGlow): 2
         case (.kotori, .birdWatch): 4
         case (.kotori, .sakuraViewing): 3
         case (.kotori, .treeNap), (.kotori, .fountainSplash), (.kotori, .wellPeek): 2
-        case (.tanuki, .campfireWarm): 4
+        case (.kotori, .stargazing), (.kotori, .morningWater): 2
+        case (.tanuki, .campfireWarm), (.tanuki, .campfireCircle): 4
+        case (.tanuki, .fireflies): 2
         case (.tanuki, .gardenTend), (.tanuki, .picnic): 3
         case (.tanuki, .pondVisit), (.tanuki, .cafeVisit): 2
         default: 1

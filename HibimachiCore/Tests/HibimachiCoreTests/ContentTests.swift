@@ -11,7 +11,7 @@ struct ContentTests {
             #expect(Unlocks.requirement(for: kind).level >= 1)
         }
         #expect(Set(ReactionRule.all.map(\.kind)) == Set(ReactionKind.allCases))
-        #expect(ReactionKind.allCases.count == 15)
+        #expect(ReactionKind.allCases.count == 20)
     }
 
     @Test func kindsUnlockByLevelOrByDiscoveries() {

@@ -46,6 +46,8 @@ public final class GameStore {
     /// Optional memories (P2) and why the last album action was refused.
     public private(set) var album = Album()
     public private(set) var lastAlbumError: AlbumError?
+    /// The time of day the island shows; some reactions only start then. Set by the app (clock or preview).
+    public var dayPhase: DayPhase = .day
 
     @ObservationIgnored let repository: any WorldRepository
     @ObservationIgnored private var rng: SeededRandom
@@ -282,7 +284,7 @@ public final class GameStore {
     /// Advances the residents by one step. New discoveries and newcomers are queued for the UI and saved.
     @discardableResult
     public func tick() -> [WorldEvent] {
-        var events = CreatureBrain.step(world: &editor.world, rng: &rng)
+        var events = CreatureBrain.step(world: &editor.world, phase: dayPhase, rng: &rng)
         let discovered = events.compactMap { event -> ReactionKind? in
             if case .discovered(let kind, _) = event { return kind }
             return nil

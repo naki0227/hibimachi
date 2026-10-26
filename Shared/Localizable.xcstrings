@@ -611,6 +611,16 @@
         }
       }
     },
+    "たき火のそばにベンチがあったら、夜が楽しそう": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A bench by the campfire would make for a nice evening"
+          }
+        }
+      }
+    },
     "たき火のそばは、あたたかそう": {
       "localizations": {
         "en": {
@@ -627,6 +637,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Seems to like campfires, gardens and picnics."
+          }
+        }
+      }
+    },
+    "たき火をかこむ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Around the campfire"
           }
         }
       }
@@ -997,6 +1017,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Show another quest"
+          }
+        }
+      }
+    },
+    "ほたるの池": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Firefly pond"
           }
         }
       }
@@ -1451,6 +1481,16 @@
         }
       }
     },
+    "ランプのひかり": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lamp lights"
+          }
+        }
+      }
+    },
     "レベル %lld": {
       "localizations": {
         "en": {
@@ -1761,12 +1801,62 @@
         }
       }
     },
+    "夕方から夜、たき火のそばのベンチで、ぱちぱちという音を聞いている。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From evening into night, sits on the bench by the fire, listening to it crackle."
+          }
+        }
+      }
+    },
     "夜": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Night"
+          }
+        }
+      }
+    },
+    "夜、木のないところにシートを広げてみたら…？": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What if you spread a blanket away from trees at night…?"
+          }
+        }
+      }
+    },
+    "夜、花にかこまれたランプには何かが集まるかも": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At night, something may gather at a lamp among flowers"
+          }
+        }
+      }
+    },
+    "夜、花のそばの池に、ほたるがふわりと集まる。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At night, fireflies gather over a pond with flowers beside it."
+          }
+        }
+      }
+    },
+    "夜の池のそばに花があったら…？": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What if there were flowers by the pond at night…?"
           }
         }
       }
@@ -2041,6 +2131,16 @@
         }
       }
     },
+    "星をながめる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stargazing"
+          }
+        }
+      }
+    },
     "昼": {
       "localizations": {
         "en": {
@@ -2121,6 +2221,36 @@
         }
       }
     },
+    "朝いちばんに、井戸で水をくむ。ひんやり気持ちいい。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Draws water from the well first thing in the morning. Nice and cool."
+          }
+        }
+      }
+    },
+    "朝の井戸に、だれかが来るかも": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Someone may come to the well in the morning"
+          }
+        }
+      }
+    },
+    "朝の水くみ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Morning water"
+          }
+        }
+      }
+    },
     "木かげでうたた寝": {
       "localizations": {
         "en": {
@@ -2177,6 +2307,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "The spot by a tree looks perfect for a nap"
+          }
+        }
+      }
+    },
+    "木のない空の下、シートに寝ころんで星をかぞえる。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lies on a blanket under an open sky and counts the stars."
           }
         }
       }
@@ -2427,6 +2567,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Add your own quest"
+          }
+        }
+      }
+    },
+    "花にかこまれたランプのまわりを、小さなひかりが舞う。夜だけの景色。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Little lights dance around a lamp among flowers. A night-only sight."
           }
         }
       }

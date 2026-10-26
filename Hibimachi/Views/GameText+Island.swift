@@ -53,6 +53,11 @@ extension ReactionKind {
         case .birdWatch: String(localized: "巣箱のバードウォッチ")
         case .mailWait: String(localized: "おてがみ待ち")
         case .wellPeek: String(localized: "井戸をのぞく")
+        case .fireflies: String(localized: "ほたるの池")
+        case .lampGlow: String(localized: "ランプのひかり")
+        case .stargazing: String(localized: "星をながめる")
+        case .campfireCircle: String(localized: "たき火をかこむ")
+        case .morningWater: String(localized: "朝の水くみ")
         }
     }
 
@@ -73,6 +78,11 @@ extension ReactionKind {
         case .birdWatch: String(localized: "木のそばの巣箱を、じっと見守る。")
         case .mailWait: String(localized: "ポストの前で、だれかからのおてがみを待っている。")
         case .wellPeek: String(localized: "井戸の中に向かって「おーい」。こだまが返ってくる。")
+        case .fireflies: String(localized: "夜、花のそばの池に、ほたるがふわりと集まる。")
+        case .lampGlow: String(localized: "花にかこまれたランプのまわりを、小さなひかりが舞う。夜だけの景色。")
+        case .stargazing: String(localized: "木のない空の下、シートに寝ころんで星をかぞえる。")
+        case .campfireCircle: String(localized: "夕方から夜、たき火のそばのベンチで、ぱちぱちという音を聞いている。")
+        case .morningWater: String(localized: "朝いちばんに、井戸で水をくむ。ひんやり気持ちいい。")
         }
     }
 
@@ -90,6 +100,10 @@ extension ReactionKind {
         case .picnic: "♪♪"
         case .mailWait: "?"
         case .wellPeek: String(localized: "おーい")
+        case .fireflies, .lampGlow: "✧"
+        case .stargazing: "☆"
+        case .campfireCircle: "♪"
+        case .morningWater: "～"
         }
     }
 
@@ -135,6 +149,11 @@ extension ReactionKind {
         case .birdWatch: String(localized: "巣箱は、木のそばにあると落ち着くみたい")
         case .mailWait: String(localized: "ポストの前で、だれかが待っているかも")
         case .wellPeek: String(localized: "井戸の中から、何か聞こえるかも")
+        case .fireflies: String(localized: "夜の池のそばに花があったら…？")
+        case .lampGlow: String(localized: "夜、花にかこまれたランプには何かが集まるかも")
+        case .stargazing: String(localized: "夜、木のないところにシートを広げてみたら…？")
+        case .campfireCircle: String(localized: "たき火のそばにベンチがあったら、夜が楽しそう")
+        case .morningWater: String(localized: "朝の井戸に、だれかが来るかも")
         }
     }
 }

@@ -83,6 +83,8 @@ extension IslandScene {
         guard phase != dayPhase || !dayPhaseApplied else { return }
         dayPhase = phase
         dayPhaseApplied = true
+        // Some discoveries only happen at the time of day the player is looking at.
+        store.dayPhase = phase
         let (color, alpha): (SKColor, CGFloat) =
             switch phase {
             case .morning: (SKColor(hex: 0xFFC48A), 0.12)
@@ -135,7 +137,11 @@ extension IslandScene {
                 guard let node = residentNodes[id] else { break }
                 sparkle(at: node.position)
                 node.flash("♪", reduceMotion: reduceMotion)
-            case .creatureMoved, .reactionStarted:
+            case .reactionStarted(let kind, let objectID, _):
+                if let mote = NightMotes.color(for: kind), let target = objectNodes[objectID] {
+                    showMotes(around: target.position, color: mote)
+                }
+            case .creatureMoved:
                 break
             }
         }

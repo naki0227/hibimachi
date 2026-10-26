@@ -47,13 +47,14 @@ enum TestWorlds {
 func simulate(
     _ world: inout World,
     seed: UInt64 = 42,
+    phase: DayPhase = .day,
     limit: Int = 400,
     until stop: (WorldEvent) -> Bool = { _ in false }
 ) -> [WorldEvent] {
     var rng = SeededRandom(seed: seed)
     var all: [WorldEvent] = []
     for _ in 0..<limit {
-        let events = CreatureBrain.step(world: &world, rng: &rng)
+        let events = CreatureBrain.step(world: &world, phase: phase, rng: &rng)
         all.append(contentsOf: events)
         if events.contains(where: stop) { break }
     }
