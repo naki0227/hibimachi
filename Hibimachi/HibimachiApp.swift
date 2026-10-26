@@ -5,11 +5,12 @@ import SwiftUI
 @main
 struct HibimachiApp: App {
     @State private var store = AppComposition.makeStore()
+    @State private var tutorial = AppComposition.makeTutorial()
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
         WindowGroup {
-            IslandScreen(store: store, initialPhase: AppComposition.dayPhaseOverride())
+            IslandScreen(store: store, tutorial: tutorial, initialPhase: AppComposition.dayPhaseOverride())
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
@@ -61,6 +62,13 @@ enum AppComposition {
         } catch {
             return legacy
         }
+    }
+
+    /// UI tests that are not about the tutorial turn it off with HIBIMACHI_TUTORIAL=off.
+    static func makeTutorial(environment: [String: String] = ProcessInfo.processInfo.environment) -> TutorialCoach {
+        TutorialCoach(
+            storageName: environment["HIBIMACHI_STORAGE_NAME"] ?? SharedContainer.saveFolder,
+            enabled: environment["HIBIMACHI_TUTORIAL"] != "off")
     }
 
     /// Demos and UI tests pin the time of day (CI simulators run on UTC, which is often "night").

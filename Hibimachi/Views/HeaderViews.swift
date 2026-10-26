@@ -66,6 +66,8 @@ struct SideButtons: View {
     let phase: DayPhase
     let questsLeft: Int
     let objectCount: Int
+    /// The tutorial's quests step points here.
+    var highlightsQuests = false
     let open: (IslandOverlay) -> Void
     let cyclePhase: () -> Void
 
@@ -77,6 +79,7 @@ struct SideButtons: View {
             ) {
                 open(.quests)
             }
+            .modifier(TutorialPulse(active: highlightsQuests))
             .overlay(alignment: .topTrailing) { Badge(text: questsLeft > 0 ? "\(questsLeft)" : nil) }
             RoundButton(systemImage: "book.closed.fill", label: "図鑑", identifier: "field-guide") {
                 open(.fieldGuide)

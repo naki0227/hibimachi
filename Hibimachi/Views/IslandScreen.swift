@@ -13,6 +13,7 @@ final class DiscoveryAlbum {
 /// The island screen: the world fills the display; header, side buttons and palette float above it.
 struct IslandScreen: View {
     let store: GameStore
+    let tutorial: TutorialCoach
     @State private var scene: IslandScene
     @State private var album: DiscoveryAlbum
     @State private var tab: PaletteTab = .build
@@ -20,8 +21,9 @@ struct IslandScreen: View {
     @State private var overlay: IslandOverlay?
     @Environment(\.scenePhase) private var scenePhase
 
-    init(store: GameStore, initialPhase: DayPhase? = nil) {
+    init(store: GameStore, tutorial: TutorialCoach, initialPhase: DayPhase? = nil) {
         self.store = store
+        self.tutorial = tutorial
         let scene = IslandScene(store: store)
         scene.dayPhaseOverride = initialPhase
         _phaseOverride = State(initialValue: initialPhase)
@@ -63,16 +65,23 @@ struct IslandScreen: View {
                         phase: shownPhase,
                         questsLeft: store.progress.activeGoals.isEmpty ? 1 : store.todaysQuests.count,
                         objectCount: store.world.objects.count,
+                        highlightsQuests: tutorial.guide.step == .quests && overlay == nil,
                         open: { overlay = $0 }
                     ) { phaseOverride = shownPhase.next }
                 }
                 Spacer()
+                if tutorial.guide.isActive, store.mode == .browse, store.selectedObject == nil {
+                    TutorialCard(step: tutorial.guide.step) { tutorial.skip() }
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
                 bottomControls
             }
             .padding(.horizontal, 12)
             .padding(.bottom, 8)
             .animation(.easeOut(duration: 0.25), value: store.pendingDiscoveries.first)
+            .animation(.easeOut(duration: 0.25), value: tutorial.guide.step)
         }
+        .modifier(TutorialSignals(store: store, coach: tutorial))
         .onChange(of: phaseOverride) { _, phase in scene.dayPhaseOverride = phase }
         .onChange(of: scenePhase) { _, phase in
             // Leaving the app: the island is still on screen, so this is the moment to picture it for the widget.

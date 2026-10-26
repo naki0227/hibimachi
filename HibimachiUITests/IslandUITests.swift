@@ -10,9 +10,10 @@ final class IslandUITests: XCTestCase {
     }
 
     @MainActor
-    private func launch() -> XCUIApplication {
+    private func launch(tutorial: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchEnvironment["HIBIMACHI_STORAGE_NAME"] = storageName
+        if !tutorial { app.launchEnvironment["HIBIMACHI_TUTORIAL"] = "off" }
         app.launchEnvironment["HIBIMACHI_SEED"] = "2026"
         app.launchEnvironment["HIBIMACHI_DAY_PHASE"] = "day"
         app.launch()
@@ -167,5 +168,28 @@ final class IslandUITests: XCTestCase {
         screenshot(app, "11-widget-large")
         preview.swipeUp()
         screenshot(app, "12-widget-medium-small")
+    }
+
+    @MainActor
+    func testTutorialGuidesThenCanBeSkippedForGood() {
+        var app = launch(tutorial: true)
+        let card = app.descendants(matching: .any)["tutorial-card"]
+        XCTAssertTrue(card.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["島に、ひとつ置いてみよう"].exists)
+        screenshot(app, "13-tutorial")
+        app.buttons["tab-nature"].tap()
+        app.buttons["palette-flower"].tap()
+        app.buttons["confirm-edit"].tap()
+        app.buttons["deselect"].tap()
+        // Placing moved the guide on (to the reaction step, or further if the creature already reacted).
+        XCTAssertTrue(card.waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["島に、ひとつ置いてみよう"].exists)
+        app.buttons["案内をとばす"].tap()
+        XCTAssertFalse(card.waitForExistence(timeout: 2))
+        app.terminate()
+        app = launch(tutorial: true)
+        XCTAssertFalse(
+            app.descendants(matching: .any)["tutorial-card"].waitForExistence(timeout: 3),
+            "a skipped tutorial stays skipped")
     }
 }
