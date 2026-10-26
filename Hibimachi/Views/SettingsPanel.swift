@@ -96,6 +96,5 @@ struct GameToggleStyle: ToggleStyle {
             .frame(minHeight: 40)
         }
         .buttonStyle(.plain)
-        .accessibilityValue(configuration.isOn ? String(localized: "オン") : String(localized: "オフ"))
     }
 }

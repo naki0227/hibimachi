@@ -1141,26 +1141,6 @@
         }
       }
     },
-    "オフ": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Off"
-          }
-        }
-      }
-    },
-    "オン": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "On"
-          }
-        }
-      }
-    },
     "カフェ": {
       "localizations": {
         "en": {

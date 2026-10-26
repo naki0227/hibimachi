@@ -241,9 +241,10 @@ final class IslandUITests: XCTestCase {
         app.buttons["せってい"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["settings-panel"].waitForExistence(timeout: 5))
         let music = app.descendants(matching: .any)["setting-music"].firstMatch
-        XCTAssertEqual(music.value as? String, "オン")
+        // The Toggle reports the system switch value (VoiceOver reads it as on/off in the user's language).
+        XCTAssertEqual(music.value as? String, "1")
         music.tap()
-        XCTAssertEqual(music.value as? String, "オフ")
+        XCTAssertEqual(music.value as? String, "0")
         screenshot(app, "16-settings")
         app.buttons["replay-tutorial"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["tutorial-card"].waitForExistence(timeout: 5))

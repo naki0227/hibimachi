@@ -48,7 +48,7 @@ final class EnglishUITests: XCTestCase {
         assertNoJapanese(app, "menu")
         app.buttons["Settings"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["settings-panel"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.descendants(matching: .any)["setting-music"].firstMatch.value as? String, "On")
+        XCTAssertEqual(app.descendants(matching: .any)["setting-music"].firstMatch.value as? String, "1")
         assertNoJapanese(app, "settings")
     }
 
