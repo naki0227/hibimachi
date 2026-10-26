@@ -11,6 +11,16 @@
         }
       }
     },
+    "%@と%@になった": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Now %2$@ with %1$@"
+          }
+        }
+      }
+    },
     "%@に\n%@を迎えた日": {
       "localizations": {
         "en": {
@@ -197,6 +207,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "You'll get 3 small \"%@\" quests. You can add your own later."
+          }
+        }
+      }
+    },
+    "いつもうれしそう。ハートを見せてくれる。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Always happy to see you, with a heart to show it."
           }
         }
       }
@@ -651,6 +671,16 @@
         }
       }
     },
+    "だいすき": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Best friends"
+          }
+        }
+      }
+    },
     "ちゃんと休む": {
       "localizations": {
         "en": {
@@ -701,6 +731,16 @@
         }
       }
     },
+    "ときどき、うれしそうにはねるようになった。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Now and then, it hops for joy."
+          }
+        }
+      }
+    },
     "とじています": {
       "localizations": {
         "en": {
@@ -737,6 +777,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "What would you like to grow?"
+          }
+        }
+      }
+    },
+    "なかよし": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Friends"
           }
         }
       }
@@ -787,6 +837,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Here from the start"
+          }
+        }
+      }
+    },
+    "はじめまして": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Just met"
           }
         }
       }
@@ -1271,6 +1331,16 @@
         }
       }
     },
+    "タップすると、なでられます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a resident to pet it."
+          }
+        }
+      }
+    },
     "タップで閉じます": {
       "localizations": {
         "en": {
@@ -1587,6 +1657,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rest"
+          }
+        }
+      }
+    },
+    "住人をタップすると、なでられます。なかよくなると…？": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a resident to pet it. What happens as you become friends…?"
           }
         }
       }
@@ -2107,16 +2187,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "New resident!"
-          }
-        }
-      }
-    },
-    "新しい住人！ %@がやってきた": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "New resident! %@ moved in"
           }
         }
       }

@@ -1,4 +1,5 @@
 import HibimachiCore
+import QuartzCore
 import SpriteKit
 
 /// Renders a resident's position, pose and emotes. Holds no rules: it only mirrors `Creature` state.
@@ -8,6 +9,8 @@ final class CreatureNode: SKNode {
     private let body: SKSpriteNode
     private let emote = SKLabelNode(fontNamed: "HiraginoSans-W6")
     private var shownActivityKey = ""
+    /// When the next friendly gesture is due (seconds, `CACurrentMediaTime` clock).
+    private var nextCheerAt: TimeInterval?
     /// Last position we started moving to. Starting a new move only when it changes matters:
     /// restarting the action every frame means SpriteKit never advances it and the creature looks frozen.
     private(set) var movingTarget: CGPoint?
@@ -54,15 +57,37 @@ final class CreatureNode: SKNode {
             }
         }
         showPose(for: creature.activity, reduceMotion: reduceMotion)
+        let idle = if case .idle = creature.activity { true } else { false }
+        showFriendship(creature.friendship.level, idle: idle, reduceMotion: reduceMotion)
     }
 
-    /// Short, one-off emote (e.g. "?" when its target vanished, "!" when tapped).
-    func flash(_ text: String, reduceMotion: Bool) {
-        emote.text = text
-        emote.removeAllActions()
-        emote.alpha = 1
-        emote.run(.sequence([.wait(forDuration: 1.2), .fadeOut(withDuration: 0.3)]))
-        if !reduceMotion { hop(height: 8) }
+    /// Feedback for a tap: a heart when it counted toward friendship, a happy note otherwise.
+    func showPet(_ outcome: PetOutcome, reduceMotion: Bool) {
+        switch outcome {
+        case .counted(let level, _): flash(level == .bestFriend ? "♡♡" : "♡", reduceMotion: reduceMotion)
+        case .notCounted: flash("♪", reduceMotion: reduceMotion)
+        case .unknownResident: break
+        }
+    }
+
+    /// Closer residents now and then do a little double hop while idle (best friends add a heart).
+    /// Called every frame; the gesture is scheduled by time and skipped while the resident is busy.
+    private func showFriendship(_ level: Friendship.Level, idle: Bool, reduceMotion: Bool) {
+        guard level >= .friend, !reduceMotion else { return }
+        let now = CACurrentMediaTime()
+        let interval: ClosedRange<TimeInterval> = level == .bestFriend ? 6...12 : 10...20
+        guard let due = nextCheerAt else {
+            nextCheerAt = now + .random(in: interval)
+            return
+        }
+        guard now >= due, idle else { return }
+        nextCheerAt = now + .random(in: interval)
+        body.removeAction(forKey: "hop")
+        body.position = .zero
+        let up = SKAction.moveBy(x: 0, y: 5, duration: 0.12)
+        let down = SKAction.moveBy(x: 0, y: -5, duration: 0.12)
+        body.run(.sequence([up, down, up, down]), withKey: "hop")
+        if level == .bestFriend, emote.alpha == 0 { flash("♡", reduceMotion: true) }
     }
 
     private func showPose(for activity: CreatureActivity, reduceMotion: Bool) {

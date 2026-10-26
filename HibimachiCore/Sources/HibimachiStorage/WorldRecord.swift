@@ -5,9 +5,10 @@ import HibimachiCore
 /// v1 (2026-10-25): island only. v2 (2026-10-26): adds `progress` (goals, quests, rewards, owned buildings).
 /// v3 (2026-10-26): adds `album` (optional memories; photos are separate files).
 /// v4 (2026-10-26): adds `residents` (newcomers) and a `species` on every creature record.
+/// v5 (2026-10-26): adds `friendship` on creature records.
 struct WorldRecord: Codable, Equatable {
-    static let currentSchemaVersion = 4
-    static let supportedSchemaVersions = 1...4
+    static let currentSchemaVersion = 5
+    static let supportedSchemaVersions = 1...5
 
     struct ObjectRecord: Codable, Equatable {
         var id: UUID
@@ -24,6 +25,14 @@ struct WorldRecord: Codable, Equatable {
         var y: Int
         /// Absent before v4: the original mochi.
         var species: String?
+        /// Absent before v5: no friendship yet.
+        var friendship: FriendshipRecord?
+    }
+
+    struct FriendshipRecord: Codable, Equatable {
+        var points: Int
+        var petDay: String?
+        var petsOnPetDay: Int
     }
 
     var schemaVersion: Int
@@ -53,6 +62,7 @@ enum WorldRecordError: Error, Equatable, CustomStringConvertible {
     case unknownObjectKind(String)
     case invalidWorld(WorldValidationError)
     case unknownSpecies(String)
+    case badPetDay(String)
 
     var description: String {
         switch self {
@@ -61,6 +71,7 @@ enum WorldRecordError: Error, Equatable, CustomStringConvertible {
         case .unknownObjectKind(let kind): "unknown object kind '\(kind)'"
         case .invalidWorld(let error): "invalid world: \(error)"
         case .unknownSpecies(let species): "unknown species '\(species)'"
+        case .badPetDay(let day): "bad pet day '\(day)'"
         }
     }
 }
@@ -137,13 +148,27 @@ extension WorldRecord {
 
 extension WorldRecord.CreatureRecord {
     init(_ creature: Creature) {
-        self.init(id: creature.id, x: creature.position.x, y: creature.position.y, species: creature.species.rawValue)
+        let friendship = creature.friendship
+        self.init(
+            id: creature.id, x: creature.position.x, y: creature.position.y, species: creature.species.rawValue,
+            friendship: friendship == Friendship()
+                ? nil
+                : WorldRecord.FriendshipRecord(
+                    points: friendship.points, petDay: friendship.petDay?.description,
+                    petsOnPetDay: friendship.petsOnPetDay))
     }
 
     func makeCreature() throws -> Creature {
         guard let species = Species(rawValue: species ?? Species.mochi.rawValue) else {
             throw WorldRecordError.unknownSpecies(species ?? "")
         }
-        return Creature(id: id, species: species, position: TileCoord(x: x, y: y))
+        var petDay: LocalDay?
+        if let stored = friendship?.petDay {
+            guard let day = LocalDay(string: stored) else { throw WorldRecordError.badPetDay(stored) }
+            petDay = day
+        }
+        let bond = Friendship(
+            points: friendship?.points ?? 0, petDay: petDay, petsOnPetDay: friendship?.petsOnPetDay ?? 0)
+        return Creature(id: id, species: species, position: TileCoord(x: x, y: y), friendship: bond)
     }
 }

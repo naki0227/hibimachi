@@ -6,9 +6,10 @@ extension GameStore {
     @discardableResult
     public func tick() -> [WorldEvent] {
         var events = CreatureBrain.step(world: &editor.world, phase: dayPhase, rng: &rng)
-        let discovered = events.compactMap { event -> ReactionKind? in
-            if case .discovered(let kind, _) = event { return kind }
-            return nil
+        var discovered: [ReactionKind] = []
+        for case .discovered(let kind, let who) in events {
+            discovered.append(kind)
+            _ = creditDiscovery(by: who)
         }
         let arrived = editor.world.welcomeResidentsIfDue(makeID: makeID)
         events += arrived.map { .residentArrived($0.species, id: $0.id) }

@@ -7,7 +7,7 @@ struct FieldGuidePanel: View {
     /// Snapshots taken this session; entries without one show an icon.
     var images: [ReactionKind: CGImage] = [:]
     /// Who lives on the island now (newcomers appear as the island gets livelier).
-    var residents: [Species] = [.mochi]
+    var residents: [Creature] = []
     let close: () -> Void
 
     var body: some View {
@@ -15,13 +15,14 @@ struct FieldGuidePanel: View {
             VStack(spacing: 10) {
                 Text("島の住人").gameSectionTitle()
                 HStack(spacing: 10) {
-                    ForEach(residents, id: \.self) { species in
+                    ForEach(residents, id: \.id) { resident in
                         VStack(spacing: 4) {
-                            Image(decorative: IslandArt.creatureImage(species), scale: 1)
+                            Image(decorative: IslandArt.creatureImage(resident.species), scale: 1)
                                 .interpolation(.none).resizable().scaledToFit()
                                 .frame(width: 44, height: 40)
-                            Text(species.displayName).font(GameFont.body(12, weight: .bold))
+                            Text(resident.species.displayName).font(GameFont.body(12, weight: .bold))
                                 .foregroundStyle(GameColor.ink)
+                            FriendshipHearts(friendship: resident.friendship)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 8)
@@ -30,6 +31,10 @@ struct FieldGuidePanel: View {
                         .accessibilityElement(children: .combine)
                     }
                 }
+                Text("住人をタップすると、なでられます。なかよくなると…？")
+                    .font(GameFont.caption(11))
+                    .foregroundStyle(GameColor.inkSoft)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 Text("見つけた姿").gameSectionTitle()
                 if discoveries.isEmpty {
                     Text("まだ何も見つけていません。生き物のそばに、いろいろなものを置いてみましょう。")

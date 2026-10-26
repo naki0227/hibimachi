@@ -61,7 +61,10 @@ struct IslandScreen: View {
                             DiscoveryCard(kind: kind, image: album.images[kind]) { store.dismissDiscovery() }
                                 .transition(.move(edge: .top).combined(with: .opacity))
                         } else if let species = store.pendingArrivals.first {
-                            ArrivalCard(species: species) { store.dismissArrival() }
+                            ResidentCard.arrival(species) { store.dismissArrival() }
+                                .transition(.move(edge: .top).combined(with: .opacity))
+                        } else if let notice = store.pendingFriendships.first {
+                            ResidentCard.friendship(notice) { store.dismissFriendship() }
                                 .transition(.move(edge: .top).combined(with: .opacity))
                         }
                     }
@@ -87,6 +90,7 @@ struct IslandScreen: View {
             .ignoresSafeArea(.keyboard)
             .animation(.easeOut(duration: 0.25), value: store.pendingDiscoveries.first)
             .animation(.easeOut(duration: 0.25), value: store.pendingArrivals.first)
+            .animation(.easeOut(duration: 0.25), value: store.pendingFriendships.first)
             .animation(.easeOut(duration: 0.25), value: tutorial.guide.step)
         }
         .modifier(TutorialSignals(store: store, coach: tutorial))
@@ -140,7 +144,7 @@ struct IslandScreen: View {
         case .fieldGuide:
             FieldGuidePanel(
                 discoveries: store.world.discoveries, images: album.images,
-                residents: store.world.residents.map(\.species), close: close)
+                residents: store.world.residents, close: close)
         case .objectList:
             ObjectListPanel(store: store, close: close)
         case .album:

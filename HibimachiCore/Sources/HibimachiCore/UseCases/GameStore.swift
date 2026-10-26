@@ -31,6 +31,8 @@ public final class GameStore {
     public internal(set) var pendingDiscoveries: [ReactionKind] = []
     /// Newcomers waiting to be announced ("新しい住人がやってきた").
     public internal(set) var pendingArrivals: [Species] = []
+    /// Residents who just became closer ("なかよしになった"), oldest first.
+    public internal(set) var pendingFriendships: [FriendshipNotice] = []
     public private(set) var saveErrorMessage: String?
     public internal(set) var startupNotice: StartupNotice?
     /// Bumped whenever the set or position of objects changes, so renderers can diff cheaply.
@@ -244,6 +246,7 @@ public final class GameStore {
         selectedObjectID = nil
         pendingDiscoveries = []
         pendingArrivals = []
+        pendingFriendships = []
         terrainRevision += 1
         objectsDidChange()
     }

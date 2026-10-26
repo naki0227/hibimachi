@@ -59,7 +59,9 @@ extension IslandScene: UIGestureRecognizerDelegate {
             return
         }
         for resident in store.world.residents where resident.position == tile {
-            residentNodes[resident.id]?.flash("!", reduceMotion: reduceMotion)
+            let outcome = store.pet(resident.id)
+            residentNodes[resident.id]?.showPet(outcome, reduceMotion: reduceMotion)
+            SoundPlayer.shared.play(.tap)
         }
         store.selectObject(at: tile)
     }
