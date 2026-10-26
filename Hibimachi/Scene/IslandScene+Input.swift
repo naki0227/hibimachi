@@ -3,7 +3,8 @@ import SpriteKit
 import UIKit
 
 /// Touch handling. Rules for which gesture does what (kept simple to avoid mis-placement on small phones):
-/// - Tap: browse → select the object under the finger; editing → move the preview there (never commits).
+/// - Tap: browse → select the object under the finger; editing → move the preview there (never commits);
+///   path mode → switch that tile between grass and path (one undo step per tap).
 /// - One/two-finger drag: pans the camera, except a drag that *starts on the preview* moves the preview.
 /// - Pinch: zoom, clamped so the island stays visible.
 /// Committing always requires the explicit SwiftUI "ここに置く" button.
@@ -44,10 +45,14 @@ extension IslandScene: UIGestureRecognizerDelegate {
         guard let view = recognizer.view else { return }
         let point = convertPoint(fromView: recognizer.location(in: view))
         if let kind = store.previewKind {
-            store.setPreviewOrigin(geometry.origin(for: kind.footprint, centeredAt: point.scenePoint))
+            store.setPreviewOrigin(grid.origin(for: kind.footprint, centeredAt: point.scenePoint))
             return
         }
-        guard let tile = geometry.tile(at: point.scenePoint) else {
+        if store.mode == .paintingPath {
+            if let tile = grid.tile(at: point.scenePoint) { store.togglePath(at: tile) }
+            return
+        }
+        guard let tile = grid.tile(at: point.scenePoint) else {
             store.select(nil)
             return
         }
@@ -68,7 +73,7 @@ extension IslandScene: UIGestureRecognizerDelegate {
             case .preview:
                 guard let kind = store.previewKind else { return }
                 let point = convertPoint(fromView: recognizer.location(in: view)).scenePoint
-                store.setPreviewOrigin(geometry.origin(for: kind.footprint, centeredAt: point))
+                store.setPreviewOrigin(grid.origin(for: kind.footprint, centeredAt: point))
             case .camera:
                 let translation = recognizer.translation(in: view)
                 cameraNode.position.x -= translation.x * cameraNode.xScale
@@ -92,7 +97,7 @@ extension IslandScene: UIGestureRecognizerDelegate {
     }
 
     private func isOnPreview(_ point: ScenePoint) -> Bool {
-        guard let kind = store.previewKind, let origin = store.previewOrigin, let tile = geometry.tile(at: point)
+        guard let kind = store.previewKind, let origin = store.previewOrigin, let tile = grid.tile(at: point)
         else { return false }
         // One tile of slack makes the ghost easy to grab with a thumb.
         return kind.footprint.tiles(at: origin).contains { $0.chebyshevDistance(to: tile) <= 1 }
@@ -101,7 +106,7 @@ extension IslandScene: UIGestureRecognizerDelegate {
     /// Fits the whole island on screen, centered.
     func resetCamera() {
         cameraNode.setScale(CGFloat(cameraBounds.fittingScale(for: viewportSize)))
-        cameraNode.position = CGPoint(x: geometry.mapSize.width / 2, y: geometry.mapSize.height / 2)
+        cameraNode.position = CGPoint(x: grid.mapSize.width / 2, y: grid.mapSize.height / 2)
         clampCamera()
     }
 

@@ -1,114 +1,117 @@
 import HibimachiCore
 import SpriteKit
 
-/// Placeholder "soft pixel" art built from colored rectangles (docs/VISUAL-DIRECTION.md, direction A palette).
-/// Each tile is a 16×16 grid of 2pt "pixels". Replace with original sprite assets later; node names stay stable.
+/// Original code-drawn pixel art (docs/VISUAL-DIRECTION.md direction A, isometric per ADR-0004).
+/// One art pixel = `pixel` scene units. Object art is anchored at the footprint's front (bottom) vertex.
+/// Replace with hand-made sprite assets later: node names and `ObjectKind` raw values stay stable.
 @MainActor
 enum IslandArt {
     static let pixel: CGFloat = 2
 
     enum Palette {
-        static let water = SKColor(hex: 0x79BDD5)
-        static let waterDeep = SKColor(hex: 0x5FA7C2)
-        static let grass = SKColor(hex: 0x91BFA0)
-        static let grassLight = SKColor(hex: 0x9DC8AA)
-        static let path = SKColor(hex: 0xF5D99B)
-        static let pathDark = SKColor(hex: 0xE9C985)
+        static let sea = SKColor(hex: 0x3E9DCB)
+        static let seaDeep = SKColor(hex: 0x2F86B8)
+        static let seaWave = SKColor(hex: 0x6CC2E2)
+        static let shallow = SKColor(hex: 0x6FD0D3)
+        static let shallowLight = SKColor(hex: 0x9BE3DE)
+        static let foam = SKColor(hex: 0xF4FBF8)
+        static let grass = SKColor(hex: 0x8FCB6B)
+        static let grassAlt = SKColor(hex: 0x86C364)
+        static let grassDark = SKColor(hex: 0x6EAA55)
+        static let grassLight = SKColor(hex: 0xB2DE86)
+        static let path = SKColor(hex: 0xE8CF9C)
+        static let pathAlt = SKColor(hex: 0xE0C38C)
+        static let stone = SKColor(hex: 0xCDB58A)
+        static let stoneLight = SKColor(hex: 0xF4E3BD)
+        static let cliffLight = SKColor(hex: 0xC99F78)
+        static let cliffDark = SKColor(hex: 0xA77E5C)
+        static let cliffShade = SKColor(hex: 0x8A6549)
         static let cream = SKColor(hex: 0xFAF7EF)
-        static let apricot = SKColor(hex: 0xEDAD94)
-        static let ink = SKColor(hex: 0x263747)
-        static let leaf = SKColor(hex: 0x5E9A72)
-        static let leafDark = SKColor(hex: 0x4A7F5C)
+        static let wall = SKColor(hex: 0xF3E9D8)
+        static let wallShade = SKColor(hex: 0xDCCAB0)
+        static let roof = SKColor(hex: 0xE46F4F)
+        static let roofShade = SKColor(hex: 0xBE4F3A)
+        static let brick = SKColor(hex: 0xA65A44)
+        static let window = SKColor(hex: 0x86C5E0)
+        static let windowLit = SKColor(hex: 0xFFD27A)
         static let wood = SKColor(hex: 0x9C6B4E)
+        static let woodDark = SKColor(hex: 0x7A4F38)
         static let woodLight = SKColor(hex: 0xC08A63)
-        static let roof = SKColor(hex: 0xD9785F)
-        static let petal = SKColor(hex: 0xF3A6B8)
+        static let leaf = SKColor(hex: 0x5DA35A)
+        static let leafDark = SKColor(hex: 0x3F7F45)
+        static let leafLight = SKColor(hex: 0x8CCB6B)
+        static let pine = SKColor(hex: 0x3F8A5A)
+        static let pineDark = SKColor(hex: 0x2B6847)
+        static let petalPink = SKColor(hex: 0xF3A6B8)
+        static let petalWhite = SKColor(hex: 0xFFFDF5)
+        static let petalYellow = SKColor(hex: 0xF7D774)
+        static let petalPurple = SKColor(hex: 0xC8A2E0)
+        static let rock = SKColor(hex: 0xB9B2A6)
+        static let rockDark = SKColor(hex: 0x8E887E)
+        static let pond = SKColor(hex: 0x5BB6DA)
+        static let pondDeep = SKColor(hex: 0x3E98C4)
+        static let iron = SKColor(hex: 0x3B3B46)
+        static let ink = SKColor(hex: 0x263747)
+        static let shadow = SKColor(hex: 0x2E5E3A, alpha: 0.35)
         static let valid = SKColor(hex: 0x79BDD5)
         static let invalid = SKColor(hex: 0xE0705A)
+        static let apricot = SKColor(hex: 0xEDAD94)
     }
 
-    /// A rectangle in "pixel" units relative to the bottom-left of a node's footprint.
-    static func px(_ x: Int, _ y: Int, _ w: Int, _ h: Int, _ color: SKColor) -> SKSpriteNode {
-        let node = SKSpriteNode(color: color, size: CGSize(width: CGFloat(w) * pixel, height: CGFloat(h) * pixel))
-        node.anchorPoint = .zero
-        node.position = CGPoint(x: CGFloat(x) * pixel, y: CGFloat(y) * pixel)
-        return node
+    struct Sprite {
+        let texture: SKTexture
+        let image: CGImage
+        /// Anchor in unit coordinates: where the footprint's front vertex sits inside the image.
+        let anchor: CGPoint
     }
 
-    static func terrainTile(_ terrain: Terrain, at tile: TileCoord, size: CGFloat) -> SKSpriteNode {
-        let checker = (tile.x + tile.y).isMultiple(of: 2)
-        let color: SKColor =
-            switch terrain {
-            case .grass: checker ? Palette.grass : Palette.grassLight
-            case .path: checker ? Palette.path : Palette.pathDark
-            case .water: checker ? Palette.water : Palette.waterDeep
-            }
-        let node = SKSpriteNode(color: color, size: CGSize(width: size, height: size))
-        node.anchorPoint = .zero
-        node.position = CGPoint(x: CGFloat(tile.x) * size, y: CGFloat(tile.y) * size)
-        return node
-    }
+    private static var cache: [String: Sprite] = [:]
 
-    /// Object art with its origin at the footprint's bottom-left corner.
-    static func objectNode(_ kind: ObjectKind) -> SKNode {
-        let node = SKNode()
-        let parts: [SKSpriteNode] =
+    static func sprite(for kind: ObjectKind, lit: Bool = false) -> Sprite {
+        let key = "\(kind.rawValue)-\(lit)"
+        if let cached = cache[key] { return cached }
+        let (canvas, anchorX): (PixelCanvas, Double) =
             switch kind {
-            case .roundTree:
-                [
-                    px(4, 0, 8, 2, Palette.leafDark.withAlphaComponent(0.4)), px(7, 1, 2, 5, Palette.wood),
-                    px(3, 5, 10, 7, Palette.leaf), px(4, 12, 8, 2, Palette.leaf), px(2, 7, 1, 3, Palette.leaf),
-                    px(13, 7, 1, 3, Palette.leaf), px(5, 9, 2, 2, Palette.grassLight),
-                ]
-            case .pineTree:
-                [
-                    px(4, 0, 8, 2, Palette.leafDark.withAlphaComponent(0.4)), px(7, 1, 2, 3, Palette.wood),
-                    px(3, 3, 10, 3, Palette.leafDark), px(4, 6, 8, 3, Palette.leafDark),
-                    px(5, 9, 6, 3, Palette.leafDark),
-                    px(6, 12, 4, 2, Palette.leafDark), px(7, 14, 2, 1, Palette.leafDark), px(5, 7, 2, 1, Palette.leaf),
-                ]
-            case .house:
-                [
-                    px(3, 0, 26, 2, Palette.leafDark.withAlphaComponent(0.35)), px(4, 1, 24, 14, Palette.cream),
-                    px(2, 15, 28, 3, Palette.roof), px(4, 18, 24, 3, Palette.roof), px(7, 21, 18, 3, Palette.roof),
-                    px(11, 24, 10, 2, Palette.roof), px(13, 1, 6, 9, Palette.wood), px(17, 5, 1, 1, Palette.path),
-                    px(6, 7, 5, 4, Palette.water), px(21, 7, 5, 4, Palette.water), px(22, 24, 3, 5, Palette.woodLight),
-                ]
-            case .bench:
-                [
-                    px(2, 0, 12, 1, Palette.leafDark.withAlphaComponent(0.35)), px(3, 1, 1, 4, Palette.wood),
-                    px(12, 1, 1, 4, Palette.wood), px(2, 5, 12, 2, Palette.woodLight),
-                    px(2, 9, 12, 2, Palette.woodLight),
-                    px(3, 7, 1, 2, Palette.wood), px(12, 7, 1, 2, Palette.wood),
-                ]
-            case .flower:
-                [
-                    px(7, 1, 2, 6, Palette.leafDark), px(9, 3, 2, 2, Palette.leaf), px(6, 7, 4, 4, Palette.petal),
-                    px(5, 8, 6, 2, Palette.petal), px(7, 8, 2, 2, Palette.path),
-                ]
-            case .pond:
-                [
-                    px(3, 2, 26, 26, Palette.cream), px(2, 4, 28, 22, Palette.cream), px(4, 3, 24, 24, Palette.water),
-                    px(3, 5, 26, 20, Palette.water), px(8, 8, 16, 12, Palette.waterDeep),
-                    px(10, 20, 6, 1, Palette.cream),
-                    px(20, 10, 3, 3, Palette.leaf),
-                ]
+            case .roundTree: (ObjectSprites.roundTree(), 16)
+            case .pineTree: (ObjectSprites.pineTree(), 14)
+            case .house: (ObjectSprites.house(lit: lit), 32)
+            case .bench: (ObjectSprites.bench(), 16)
+            case .flower: (ObjectSprites.flowerBush(), 16)
+            case .pond: (ObjectSprites.pond(), 32)
+            case .lamp: (ObjectSprites.lamp(lit: lit), 8)
             }
-        parts.forEach(node.addChild)
+        let sprite = Sprite(
+            texture: canvas.makeTexture(), image: canvas.makeImage(),
+            anchor: CGPoint(x: anchorX / Double(canvas.width), y: 0))
+        cache[key] = sprite
+        return sprite
+    }
+
+    /// A node for an object; its position must be the footprint's front vertex.
+    static func objectNode(_ kind: ObjectKind, lit: Bool = false) -> SKSpriteNode {
+        let sprite = sprite(for: kind, lit: lit)
+        let node = SKSpriteNode(texture: sprite.texture)
+        node.anchorPoint = sprite.anchor
+        node.size = CGSize(width: sprite.texture.size().width * pixel, height: sprite.texture.size().height * pixel)
         return node
     }
 
-    /// The creature: a round cream blob with apricot cheeks. Anchored at its feet center.
-    static func creatureBody() -> SKNode {
-        let body = SKNode()
-        [
-            px(-5, -1, 10, 1, Palette.leafDark.withAlphaComponent(0.4)), px(-5, 0, 10, 8, Palette.cream),
-            px(-6, 1, 12, 6, Palette.cream), px(-4, 8, 8, 2, Palette.cream), px(-3, 10, 2, 2, Palette.cream),
-            px(1, 10, 2, 2, Palette.cream), px(-3, 4, 1, 2, Palette.ink), px(2, 4, 1, 2, Palette.ink),
-            px(-5, 3, 2, 1, Palette.apricot), px(3, 3, 2, 1, Palette.apricot),
-        ].forEach(body.addChild)
-        return body
+    static func creatureTexture(sleeping: Bool) -> SKTexture {
+        let key = "creature-\(sleeping)"
+        if let cached = cache[key] { return cached.texture }
+        let canvas = ObjectSprites.creature(sleeping: sleeping)
+        let texture = canvas.makeTexture()
+        cache[key] = Sprite(texture: texture, image: canvas.makeImage(), anchor: CGPoint(x: 0.5, y: 0.1))
+        return texture
     }
+
+    static let glowTexture: SKTexture = {
+        let canvas = PixelCanvas(width: 64, height: 64)
+        canvas.radialGlow(SKColor(hex: 0xFFD98A, alpha: 0.9))
+        let texture = canvas.makeTexture()
+        texture.filteringMode = .linear
+        return texture
+    }()
 }
 
 extension SKColor {

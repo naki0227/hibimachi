@@ -8,8 +8,9 @@ extension ObjectKind {
         case .pineTree: "とがった木"
         case .house: "小さな家"
         case .bench: "ベンチ"
-        case .flower: "花"
+        case .flower: "はなやぶ"
         case .pond: "池"
+        case .lamp: "ランプ"
         }
     }
 
@@ -21,6 +22,64 @@ extension ObjectKind {
         case .bench: "chair.lounge.fill"
         case .flower: "camera.macro"
         case .pond: "drop.fill"
+        case .lamp: "lamp.floor.fill"
+        }
+    }
+}
+
+/// Bottom palette tabs (mockup: 建てる / かざる / みち / しぜん). "みち" is a painting tool, not an object.
+enum PaletteTab: String, CaseIterable, Identifiable {
+    case build
+    case decor
+    case path
+    case nature
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .build: "建てる"
+        case .decor: "かざる"
+        case .path: "みち"
+        case .nature: "しぜん"
+        }
+    }
+
+    var symbolName: String {
+        switch self {
+        case .build: "house"
+        case .decor: "sparkles"
+        case .path: "road.lanes"
+        case .nature: "leaf"
+        }
+    }
+
+    var kinds: [ObjectKind] {
+        switch self {
+        case .build: [.house]
+        case .decor: [.bench, .lamp]
+        case .path: []
+        case .nature: [.roundTree, .pineTree, .flower, .pond]
+        }
+    }
+}
+
+extension DayPhase {
+    var title: String {
+        switch self {
+        case .morning: "朝"
+        case .day: "昼"
+        case .evening: "夕方"
+        case .night: "夜"
+        }
+    }
+
+    var symbolName: String {
+        switch self {
+        case .morning: "sunrise.fill"
+        case .day: "sun.max.fill"
+        case .evening: "sunset.fill"
+        case .night: "moon.stars.fill"
         }
     }
 }

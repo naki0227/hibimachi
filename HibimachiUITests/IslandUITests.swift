@@ -38,16 +38,18 @@ final class IslandUITests: XCTestCase {
         XCTAssertEqual(objectCount(app), "置いたもの 6こ")
         screenshot(app, "01-start")
 
+        app.buttons["tab-nature"].tap()
         app.buttons["palette-flower"].tap()
         XCTAssertTrue(app.buttons["confirm-edit"].waitForExistence(timeout: 5))
         screenshot(app, "02-preview")
         app.buttons["confirm-edit"].tap()
         XCTAssertEqual(objectCount(app), "置いたもの 7こ")
-        XCTAssertEqual(app.staticTexts["selection-name"].label, "花")
+        XCTAssertEqual(app.staticTexts["selection-name"].label, "はなやぶ")
 
         app.buttons["undo"].firstMatch.tap()
         XCTAssertEqual(objectCount(app), "置いたもの 6こ")
 
+        app.buttons["tab-build"].tap()
         app.buttons["palette-house-small"].tap()
         app.buttons["confirm-edit"].tap()
         XCTAssertEqual(objectCount(app), "置いたもの 7こ")
@@ -69,7 +71,7 @@ final class IslandUITests: XCTestCase {
 
         XCTAssertEqual(app.staticTexts["selection-name"].label, "ベンチ")
         app.buttons["move-selection"].tap()
-        app.buttons["右へ"].tap()
+        app.buttons["右上へ"].tap()
         let status = app.descendants(matching: .any)["placement-status"]
         XCTAssertTrue(status.waitForExistence(timeout: 5))
         screenshot(app, "05-moving-bench")
@@ -81,6 +83,23 @@ final class IslandUITests: XCTestCase {
         XCTAssertEqual(objectCount(app), "置いたもの 5こ")
         app.buttons["undo"].firstMatch.tap()
         XCTAssertEqual(objectCount(app), "置いたもの 6こ")
+    }
+
+    @MainActor
+    func testPathPaintingAndUndo() {
+        let app = launch()
+        app.buttons["tab-path"].tap()
+        app.buttons["palette-path"].tap()
+        XCTAssertTrue(app.buttons["finish-path"].waitForExistence(timeout: 5))
+        let island = app.descendants(matching: .any)["island-view"]
+        // Center of the screen is the island's middle: always land on the default island.
+        island.coordinate(withNormalizedOffset: CGVector(dx: 0.45, dy: 0.42)).tap()
+        XCTAssertTrue(app.buttons["undo"].isEnabled, "painting a tile should be undoable")
+        screenshot(app, "08-path")
+        app.buttons["undo"].tap()
+        XCTAssertFalse(app.buttons["undo"].isEnabled)
+        app.buttons["finish-path"].tap()
+        XCTAssertTrue(app.buttons["tab-path"].waitForExistence(timeout: 5))
     }
 
     @MainActor

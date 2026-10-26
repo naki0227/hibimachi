@@ -61,6 +61,23 @@ struct IslandSceneTests {
         #expect(nodes(named: "object-*", in: scene) == 6)
     }
 
+    @Test func pathPaintingAndNightLightsDoNotLeakNodes() {
+        let (store, scene) = makeScene()
+        scene.dayPhaseOverride = .day
+        scene.syncWithStore(animated: false)
+        let before = nodes(named: "*", in: scene)
+        store.beginPaintingPath()
+        for x in 2...6 { store.togglePath(at: TileCoord(x: x, y: 3)) }
+        scene.syncWithStore(animated: false)
+        scene.dayPhaseOverride = .night
+        // One glow per lit building (the starting island has one house and no lamps).
+        #expect(scene.glowLayer.children.count == 1)
+        scene.dayPhaseOverride = .day
+        #expect(scene.glowLayer.children.isEmpty)
+        #expect(nodes(named: "*", in: scene) >= before - 1)
+        #expect(nodes(named: "*", in: scene) <= before + 1)
+    }
+
     @Test func manyTicksDoNotGrowTheNodeTree() {
         let (store, scene) = makeScene()
         scene.syncWithStore(animated: false)
@@ -78,17 +95,17 @@ struct IslandSceneTests {
 struct CreatureNodeTests {
     @Test func moveActionIsStartedOncePerNewTile() throws {
         let world = IslandFactory.makeWorld()
-        let geometry = GridGeometry(tileSize: 32, columns: world.width, rows: world.height)
+        let grid = IsoGrid(columns: world.width, rows: world.height)
         let node = CreatureNode()
-        node.show(world.creature, in: world, geometry: geometry, animated: false, reduceMotion: true)
+        node.show(world.creature, in: world, grid: grid, animated: false, reduceMotion: true)
         #expect(node.action(forKey: "move") == nil)
 
         var moved = world
         moved.creature.position = moved.creature.position.offset(dx: 1, dy: 0)
-        node.show(moved.creature, in: moved, geometry: geometry, animated: true, reduceMotion: true)
+        node.show(moved.creature, in: moved, grid: grid, animated: true, reduceMotion: true)
         let firstAction = try #require(node.action(forKey: "move"))
         // Rendering the same state again (next frame) must not restart the running move.
-        node.show(moved.creature, in: moved, geometry: geometry, animated: true, reduceMotion: true)
+        node.show(moved.creature, in: moved, grid: grid, animated: true, reduceMotion: true)
         #expect(node.action(forKey: "move") === firstAction)
     }
 }

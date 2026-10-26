@@ -6,30 +6,46 @@ import UIKit
 /// placement checks, reactions and saving are all in HibimachiCore.
 @MainActor
 final class IslandScene: SKScene {
-    static let tileSize = 32.0
     /// Real seconds per simulation tick. One creature step per tick.
     static let tickInterval: TimeInterval = 0.45
 
     let store: GameStore
-    let geometry: GridGeometry
+    let grid: IsoGrid
     let cameraBounds: CameraBounds
     let cameraNode = SKCameraNode()
     let creatureNode = CreatureNode()
+    /// Called with a snapshot around the creature shortly after a first-time discovery.
+    var onDiscoverySnapshot: (@MainActor (ReactionKind, CGImage) -> Void)?
+    /// Manual time-of-day preview; `nil` follows the device clock.
+    var dayPhaseOverride: DayPhase? {
+        didSet { refreshDayPhase() }
+    }
+    /// Currently shown lighting; changed by `refreshDayPhase()`.
+    var dayPhase: DayPhase = .day
+    var dayPhaseApplied = false
 
-    private let terrainLayer = SKNode()
+    private let terrainNode = SKSpriteNode()
+    let backdropLayer = SKNode()
     private let objectLayer = SKNode()
     private let overlayLayer = SKNode()
-    private let gridOverlay = SKNode()
-    private(set) var objectNodes: [UUID: SKNode] = [:]
+    let gridOverlay = SKNode()
+    let glowLayer = SKNode()
+    let tint = SKSpriteNode(color: .clear, size: CGSize(width: 8_000, height: 8_000))
+    private(set) var objectNodes: [UUID: SKSpriteNode] = [:]
     private var previewNode: SKNode?
     private var selectionNode: SKNode?
+    /// Cached for ambient water sparkles; refreshed with the terrain texture.
+    var waterTiles: [TileCoord] = []
 
     private var renderedRevision = -1
+    private var renderedTerrainRevision = -1
     private var renderedMode: EditMode?
     private var renderedSelection: UUID?
     private var renderedPreviewValid: Bool?
     private var lastUpdateTime: TimeInterval?
     private var tickAccumulator: TimeInterval = 0
+    private var ambientAccumulator: TimeInterval = 0
+    private var clockAccumulator: TimeInterval = 0
 
     /// Pan/pinch state lives in the input extension; stored here because extensions cannot add storage.
     var panMode: PanMode = .none
@@ -39,20 +55,28 @@ final class IslandScene: SKScene {
 
     init(store: GameStore) {
         self.store = store
-        geometry = GridGeometry(tileSize: Self.tileSize, columns: store.world.width, rows: store.world.height)
-        cameraBounds = CameraBounds(mapSize: geometry.mapSize)
+        grid = IsoGrid(columns: store.world.width, rows: store.world.height)
+        cameraBounds = CameraBounds(mapSize: grid.mapSize, minScale: 0.6, maxScale: 3.2, margin: 24)
         super.init(size: CGSize(width: 390, height: 844))
         scaleMode = .resizeFill
         anchorPoint = .zero
-        backgroundColor = IslandArt.Palette.water
+        backgroundColor = IslandArt.Palette.sea
         camera = cameraNode
         addChild(cameraNode)
-        objectLayer.zPosition = 5
-        overlayLayer.zPosition = 20
-        gridOverlay.zPosition = 2
-        [terrainLayer, gridOverlay, objectLayer, overlayLayer].forEach(addChild)
+        terrainNode.anchorPoint = .zero
+        backdropLayer.zPosition = -10
+        terrainNode.zPosition = 0
+        gridOverlay.zPosition = 1
+        objectLayer.zPosition = 10
+        tint.zPosition = 800
+        glowLayer.zPosition = 850
+        overlayLayer.zPosition = 900
+        [backdropLayer, terrainNode, gridOverlay, objectLayer, glowLayer, overlayLayer].forEach(addChild)
+        cameraNode.addChild(tint)
         objectLayer.addChild(creatureNode)
-        buildTerrain()
+        buildBackdrop()
+        buildGridOverlay()
+        refreshDayPhase()
         syncWithStore(animated: false)
     }
 
@@ -84,6 +108,16 @@ final class IslandScene: SKScene {
             tickAccumulator -= Self.tickInterval
             handle(store.tick())
         }
+        ambientAccumulator += delta
+        if ambientAccumulator >= 0.35 {
+            ambientAccumulator = 0
+            spawnSparkle()
+        }
+        clockAccumulator += delta
+        if clockAccumulator >= 10 {
+            clockAccumulator = 0
+            refreshDayPhase()
+        }
         syncWithStore(animated: true)
     }
 
@@ -91,12 +125,16 @@ final class IslandScene: SKScene {
 
     /// Cheap per-frame diff: only rebuilds what changed since the last frame.
     func syncWithStore(animated: Bool) {
+        if store.terrainRevision != renderedTerrainRevision {
+            renderedTerrainRevision = store.terrainRevision
+            renderTerrain()
+        }
         if store.objectsRevision != renderedRevision {
             renderedRevision = store.objectsRevision
             syncObjects()
         }
         let world = store.world
-        creatureNode.show(world.creature, in: world, geometry: geometry, animated: animated, reduceMotion: reduceMotion)
+        creatureNode.show(world.creature, in: world, grid: grid, animated: animated, reduceMotion: reduceMotion)
         let previewValid = store.previewIssue == nil
         if store.mode != renderedMode || previewValid != renderedPreviewValid {
             renderedMode = store.mode
@@ -109,30 +147,15 @@ final class IslandScene: SKScene {
         }
     }
 
-    private func buildTerrain() {
-        let world = store.world
-        for y in 0..<world.height {
-            for x in 0..<world.width {
-                let tile = TileCoord(x: x, y: y)
-                guard let terrain = world.terrain(at: tile) else { continue }
-                terrainLayer.addChild(IslandArt.terrainTile(terrain, at: tile, size: Self.tileSize))
+    private func renderTerrain() {
+        let texture = TerrainArt.texture(for: store.world)
+        terrainNode.texture = texture
+        terrainNode.size = CGSize(width: grid.mapSize.width, height: grid.mapSize.height)
+        waterTiles = (0..<store.world.width).flatMap { x in
+            (0..<store.world.height).compactMap { y in
+                store.world.terrain(at: TileCoord(x: x, y: y)) == .water ? TileCoord(x: x, y: y) : nil
             }
         }
-        let path = CGMutablePath()
-        let size = geometry.mapSize
-        for column in 0...world.width {
-            path.move(to: CGPoint(x: Double(column) * Self.tileSize, y: 0))
-            path.addLine(to: CGPoint(x: Double(column) * Self.tileSize, y: size.height))
-        }
-        for row in 0...world.height {
-            path.move(to: CGPoint(x: 0, y: Double(row) * Self.tileSize))
-            path.addLine(to: CGPoint(x: size.width, y: Double(row) * Self.tileSize))
-        }
-        let lines = SKShapeNode(path: path)
-        lines.strokeColor = IslandArt.Palette.ink.withAlphaComponent(0.12)
-        lines.lineWidth = 1
-        gridOverlay.addChild(lines)
-        gridOverlay.isHidden = true
     }
 
     private func syncObjects() {
@@ -144,29 +167,36 @@ final class IslandScene: SKScene {
         }
         for object in objects {
             let node = objectNodes[object.id] ?? makeObjectNode(object)
-            let target = scenePosition(for: object.kind, at: object.origin)
+            let target = grid.frontVertex(at: object.origin).cgPoint
             if node.position != target {
                 node.position = target
                 if !reduceMotion {
                     node.run(.sequence([.scale(to: 1.08, duration: 0.08), .scale(to: 1, duration: 0.1)]))
                 }
             }
-            // Lower objects are drawn in front, giving the 3/4 view its depth.
-            node.zPosition = CGFloat(store.world.height - object.origin.y)
+            node.zPosition = CGFloat(grid.depth(of: object.kind.footprint, at: object.origin)) * 10
         }
         syncSelection()
+        applyLights()
     }
 
-    private func makeObjectNode(_ object: WorldObject) -> SKNode {
-        let node = IslandArt.objectNode(object.kind)
+    private func makeObjectNode(_ object: WorldObject) -> SKSpriteNode {
+        let node = IslandArt.objectNode(object.kind, lit: dayPhase.lightsOn)
         node.name = "object-\(object.kind.rawValue)"
         objectLayer.addChild(node)
         objectNodes[object.id] = node
         return node
     }
 
-    private func scenePosition(for kind: ObjectKind, at origin: TileCoord) -> CGPoint {
-        CGPoint(x: Double(origin.x) * Self.tileSize, y: Double(origin.y) * Self.tileSize)
+    private func footprintShape(_ footprint: Footprint, at origin: TileCoord) -> SKShapeNode {
+        var points = [
+            grid.point(x: Double(origin.x), y: Double(origin.y)),
+            grid.point(x: Double(origin.x + footprint.width), y: Double(origin.y)),
+            grid.point(x: Double(origin.x + footprint.width), y: Double(origin.y + footprint.height)),
+            grid.point(x: Double(origin.x), y: Double(origin.y + footprint.height)),
+        ].map(\.cgPoint)
+        points.append(points[0])
+        return SKShapeNode(points: &points, count: points.count)
     }
 
     private func syncPreview() {
@@ -177,23 +207,22 @@ final class IslandScene: SKScene {
         let valid = store.previewIssue == nil
         let container = SKNode()
         container.name = "preview"
-        container.position = scenePosition(for: kind, at: origin)
-        let footprint = CGSize(
-            width: Double(kind.footprint.width) * Self.tileSize, height: Double(kind.footprint.height) * Self.tileSize)
-        let tint = SKShapeNode(rect: CGRect(origin: .zero, size: footprint), cornerRadius: 4)
-        tint.fillColor = (valid ? IslandArt.Palette.valid : IslandArt.Palette.invalid).withAlphaComponent(0.45)
-        tint.strokeColor = valid ? IslandArt.Palette.cream : IslandArt.Palette.invalid
-        tint.lineWidth = 2
-        container.addChild(tint)
+        let tintShape = footprintShape(kind.footprint, at: origin)
+        tintShape.fillColor = (valid ? IslandArt.Palette.valid : IslandArt.Palette.invalid).withAlphaComponent(0.5)
+        tintShape.strokeColor = valid ? IslandArt.Palette.cream : IslandArt.Palette.invalid
+        tintShape.lineWidth = 3
+        container.addChild(tintShape)
         let ghost = IslandArt.objectNode(kind)
-        ghost.alpha = 0.7
+        ghost.alpha = 0.75
+        ghost.position = grid.frontVertex(at: origin).cgPoint
         container.addChild(ghost)
         // Shape cue in addition to color, for color-blind players: ○ = OK, × = blocked.
         let mark = SKLabelNode(text: valid ? "○" : "×")
         mark.fontName = "HiraginoSans-W6"
-        mark.fontSize = 14
+        mark.fontSize = 22
         mark.fontColor = valid ? IslandArt.Palette.ink : IslandArt.Palette.invalid
-        mark.position = CGPoint(x: footprint.width - 6, y: footprint.height - 2)
+        let back = grid.point(x: Double(origin.x + kind.footprint.width), y: Double(origin.y + kind.footprint.height))
+        mark.position = CGPoint(x: back.x, y: back.y + 6)
         container.addChild(mark)
         overlayLayer.addChild(container)
         previewNode = container
@@ -203,13 +232,10 @@ final class IslandScene: SKScene {
         selectionNode?.removeFromParent()
         selectionNode = nil
         guard let object = store.selectedObject else { return }
-        let size = CGSize(
-            width: Double(object.kind.footprint.width) * Self.tileSize,
-            height: Double(object.kind.footprint.height) * Self.tileSize)
-        let outline = SKShapeNode(rect: CGRect(origin: .zero, size: size).insetBy(dx: -2, dy: -2), cornerRadius: 5)
+        let outline = footprintShape(object.kind.footprint, at: object.origin)
         outline.strokeColor = IslandArt.Palette.cream
+        outline.fillColor = IslandArt.Palette.cream.withAlphaComponent(0.15)
         outline.lineWidth = 3
-        outline.position = scenePosition(for: object.kind, at: object.origin)
         outline.name = "selection"
         if !reduceMotion {
             outline.run(
@@ -217,33 +243,5 @@ final class IslandScene: SKScene {
         }
         overlayLayer.addChild(outline)
         selectionNode = outline
-    }
-
-    // MARK: Events → effects
-
-    private func handle(_ events: [WorldEvent]) {
-        for event in events {
-            switch event {
-            case .reactionInterrupted:
-                creatureNode.flash("?", reduceMotion: reduceMotion)
-            case .discovered:
-                sparkle(at: creatureNode.position)
-            case .creatureMoved, .reactionStarted:
-                break
-            }
-        }
-    }
-
-    private func sparkle(at point: CGPoint) {
-        guard !reduceMotion else { return }
-        for index in 0..<6 {
-            let star = IslandArt.px(0, 0, 2, 2, IslandArt.Palette.path)
-            star.position = CGPoint(x: point.x, y: point.y + 20)
-            star.zPosition = 30
-            addChild(star)
-            let angle = Double(index) / 6 * 2 * .pi
-            let move = SKAction.moveBy(x: cos(angle) * 22, y: sin(angle) * 22, duration: 0.5)
-            star.run(.sequence([.group([move, .fadeOut(withDuration: 0.5)]), .removeFromParent()]))
-        }
     }
 }

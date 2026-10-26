@@ -4,7 +4,7 @@ import SpriteKit
 /// Renders the creature's position, pose and emotes. Holds no rules: it only mirrors `Creature` state.
 @MainActor
 final class CreatureNode: SKNode {
-    private let body = IslandArt.creatureBody()
+    private let body = SKSpriteNode(texture: IslandArt.creatureTexture(sleeping: false))
     private let emote = SKLabelNode(fontNamed: "HiraginoSans-W6")
     private var shownActivityKey = ""
     /// Last position we started moving to. Starting a new move only when it changes matters:
@@ -14,13 +14,14 @@ final class CreatureNode: SKNode {
     override init() {
         super.init()
         name = "creature"
+        body.anchorPoint = CGPoint(x: 0.5, y: 0.1)
+        body.size = CGSize(width: 22 * IslandArt.pixel, height: 20 * IslandArt.pixel)
         addChild(body)
-        emote.fontSize = 13
+        emote.fontSize = 18
         emote.fontColor = IslandArt.Palette.ink
-        emote.position = CGPoint(x: 0, y: 30)
+        emote.position = CGPoint(x: 6, y: 44)
         emote.alpha = 0
         addChild(emote)
-        zPosition = 10
     }
 
     @available(*, unavailable)
@@ -28,21 +29,22 @@ final class CreatureNode: SKNode {
         fatalError("init(coder:) is not supported")
     }
 
-    func show(_ creature: Creature, in world: World, geometry: GridGeometry, animated: Bool, reduceMotion: Bool) {
-        var target = geometry.center(of: creature.position).cgPoint
-        target.y -= CGFloat(geometry.tileSize) * 0.3
-        // While reacting, lean half a tile towards the object so the interaction reads clearly.
+    func show(_ creature: Creature, in world: World, grid: IsoGrid, animated: Bool, reduceMotion: Bool) {
+        var target = grid.center(of: creature.position).cgPoint
+        // While reacting, lean towards the object so the interaction reads clearly.
         if case .interacting(_, let id, _) = creature.activity, let object = world.object(withID: id) {
-            let objectCenter = geometry.center(of: object.kind.footprint, at: object.origin).cgPoint
+            let objectCenter = grid.center(of: object.kind.footprint, at: object.origin).cgPoint
             target.x += (objectCenter.x - target.x) * 0.3
-            target.y += (objectCenter.y - target.y) * 0.2
+            target.y += (objectCenter.y - target.y) * 0.3
         }
+        zPosition = CGFloat(grid.depth(of: Footprint(width: 1, height: 1), at: creature.position)) * 10 + 5
         if target != movingTarget {
+            if let previous = movingTarget { body.xScale = target.x < previous.x ? -1 : 1 }
             movingTarget = target
             removeAction(forKey: "move")
             if animated {
                 run(.move(to: target, duration: 0.4), withKey: "move")
-                if !reduceMotion && creature.activity.reaction == nil { hop(height: 3) }
+                if !reduceMotion && creature.activity.reaction == nil { hop(height: 4) }
             } else {
                 position = target
             }
@@ -56,7 +58,7 @@ final class CreatureNode: SKNode {
         emote.removeAllActions()
         emote.alpha = 1
         emote.run(.sequence([.wait(forDuration: 1.2), .fadeOut(withDuration: 0.3)]))
-        if !reduceMotion { hop(height: 6) }
+        if !reduceMotion { hop(height: 8) }
     }
 
     private func showPose(for activity: CreatureActivity, reduceMotion: Bool) {
@@ -66,25 +68,18 @@ final class CreatureNode: SKNode {
         shownActivityKey = key
         body.removeAction(forKey: "pose")
         body.yScale = 1
-        body.xScale = 1
         guard case .interacting(let kind, _, _) = activity else {
+            body.texture = IslandArt.creatureTexture(sleeping: false)
             emote.run(.fadeOut(withDuration: 0.3))
             return
         }
         emote.removeAllActions()
         emote.text = kind.emote
         emote.alpha = 1
-        switch kind {
-        case .treeNap:
-            body.yScale = 0.8
-        case .benchRest, .bloomBench, .pondVisit:
-            break
-        }
+        body.texture = IslandArt.creatureTexture(sleeping: kind == .treeNap || kind == .bloomBench)
         guard !reduceMotion else { return }
-        let bob = SKAction.sequence([
-            .scaleY(to: body.yScale * 0.94, duration: 0.6), .scaleY(to: body.yScale, duration: 0.6),
-        ])
-        body.run(.repeatForever(bob), withKey: "pose")
+        let breathe = SKAction.sequence([.scaleY(to: 0.94, duration: 0.7), .scaleY(to: 1, duration: 0.7)])
+        body.run(.repeatForever(breathe), withKey: "pose")
     }
 
     private func hop(height: CGFloat) {
