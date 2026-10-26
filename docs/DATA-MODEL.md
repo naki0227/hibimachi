@@ -32,6 +32,7 @@
 - schema v4（2026-10-26）は住人の一覧 `residents`（2匹目以降。各住人に `species`: mochi/kotori/tanuki）と、配置物の `placedAt`（迎えた日時。最初からある物と旧版は無し）を追加。v1〜v3 は「もち1匹」として読み、未知の種は読み込みエラーにする（ADR-0009）。
 - schema v5（2026-10-26）は住人記録に `friendship`（points, petDay, petsOnPetDay）を追加。v1〜v4 は0から（ADR-0013）。報酬規則は v2（所要時間で変わる。ADR-0012）。
 - schema v6（2026-10-26）は `growthStage` を追加し、地図は 20x20。v5 以前の 16x16 の保存は読み込み時に (+2, +2) ずらして中央へ移す（ADR-0014）。
+- 同じ v6 の範囲で、クエスト記録に `retired`（もう出さない。履歴があるとき）、アルバムの記録に `beforeEntryID`（Before/After のつながり）を追加した。どちらも省略可で、古い保存はそのまま読める。
 - 保存場所は App Group `group.com.enludus.hibimachi` の `Hibimachi/world.json`（ウィジェットと共有。使えないときはアプリの Application Support）。ウィジェットは副作用なしの `peek()` で読み、達成だけを書き込む（ADR-0006）。島の絵 `widget-island.png` も同じコンテナに置く。
 - `Wallet` は保存しない。台帳（transactions）の合計から XP ときらめきを算出する。`Unlock` は保存しない。解放は「レベルか発見数」から毎回算出する（`Unlocks`、ADR-0009。ADR-0005 の「すべて買える」を v1.0 で変更）。設定（効果音・音楽・ふるえる）は保存JSONではなく UserDefaults（ADR-0010）。
 
