@@ -148,4 +148,24 @@ final class IslandUITests: XCTestCase {
         XCTAssertTrue(app.descendants(matching: .any)["field-guide-panel"].waitForExistence(timeout: 5))
         screenshot(app, "07-field-guide")
     }
+
+    @MainActor
+    func testWidgetPreviewShowsIslandAndTodaysQuests() {
+        let app = launch()
+        app.buttons["quests"].tap()
+        app.buttons["goal-category-tidy"].tap()
+        app.buttons["create-goal"].tap()
+        XCTAssertTrue(app.buttons["quest-done-0"].waitForExistence(timeout: 5))
+        app.buttons["quest-done-0"].tap()
+        app.buttons["閉じる"].tap()
+        app.buttons["メニュー"].tap()
+        app.buttons["ウィジェットのプレビュー"].tap()
+        let preview = app.descendants(matching: .any)["widget-preview"]
+        XCTAssertTrue(preview.waitForExistence(timeout: 5))
+        // Two open quests remain as "やった！" buttons; the finished one is listed as done.
+        XCTAssertTrue(app.staticTexts["のこり2"].firstMatch.exists)
+        screenshot(app, "11-widget-large")
+        preview.swipeUp()
+        screenshot(app, "12-widget-medium-small")
+    }
 }

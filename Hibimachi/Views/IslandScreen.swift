@@ -18,6 +18,7 @@ struct IslandScreen: View {
     @State private var tab: PaletteTab = .build
     @State private var phaseOverride: DayPhase?
     @State private var overlay: IslandOverlay?
+    @Environment(\.scenePhase) private var scenePhase
 
     init(store: GameStore, initialPhase: DayPhase? = nil) {
         self.store = store
@@ -73,6 +74,10 @@ struct IslandScreen: View {
             .animation(.easeOut(duration: 0.25), value: store.pendingDiscoveries.first)
         }
         .onChange(of: phaseOverride) { _, phase in scene.dayPhaseOverride = phase }
+        .onChange(of: scenePhase) { _, phase in
+            // Leaving the app: the island is still on screen, so this is the moment to picture it for the widget.
+            if phase == .inactive { WidgetSync.exportIsland(scene.islandPicture()) }
+        }
         .sensoryFeedback(.success, trigger: store.objectsRevision)
         .sensoryFeedback(.selection, trigger: store.terrainRevision)
         .sensoryFeedback(.error, trigger: store.lastRejection) { _, new in new != nil }
@@ -109,6 +114,7 @@ struct IslandScreen: View {
                     close()
                 },
                 askReset: { overlay = .resetConfirm },
+                previewWidget: Self.widgetPreviewAction { overlay = .widgetPreview },
                 close: close)
         case .quests:
             QuestPanel(store: store, close: close)
@@ -129,6 +135,12 @@ struct IslandScreen: View {
                 }
                 .buttonStyle(.game(.danger))
             }
+        case .widgetPreview:
+            #if DEBUG
+                WidgetPreviewPanel(store: store, scene: scene, close: close)
+            #else
+                EmptyView()
+            #endif
         case .startupNotice:
             GameDialog(
                 symbol: "exclamationmark.triangle.fill", title: "保存データを読み込めませんでした",
@@ -138,6 +150,14 @@ struct IslandScreen: View {
                 Button("OK") { store.dismissStartupNotice() }.buttonStyle(.game)
             }
         }
+    }
+
+    private static func widgetPreviewAction(_ open: @escaping () -> Void) -> (() -> Void)? {
+        #if DEBUG
+            return open
+        #else
+            return nil
+        #endif
     }
 
     @ViewBuilder

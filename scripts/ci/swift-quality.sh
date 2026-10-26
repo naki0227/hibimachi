@@ -9,7 +9,7 @@ SWIFT_FORMAT=(swift format)
 if ! swift format --version >/dev/null 2>&1; then
     SWIFT_FORMAT=(xcrun swift-format)
 fi
-PATHS=(Hibimachi HibimachiTests HibimachiUITests HibimachiCore/Package.swift HibimachiCore/Sources HibimachiCore/Tests)
+PATHS=(Hibimachi HibimachiWidget Shared HibimachiTests HibimachiUITests HibimachiCore/Package.swift HibimachiCore/Sources HibimachiCore/Tests)
 
 case "${1:-}" in
     format)

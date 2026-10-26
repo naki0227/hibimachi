@@ -103,7 +103,17 @@ final class DemoUITests: XCTestCase {
         app.buttons["field-guide"].tap()
         pause(4)
         app.buttons["閉じる"].tap()
-        pause(6)
+        pause(3)
+
+        // 9. Home-screen widget (debug preview with live data): island + today's quests.
+        app.buttons["メニュー"].tap()
+        pause(1)
+        app.buttons["ウィジェットのプレビュー"].tap()
+        pause(5)
+        app.descendants(matching: .any)["widget-preview"].swipeUp()
+        pause(4)
+        app.buttons["閉じる"].tap()
+        pause(3)
     }
 
     /// Screen point of a tile's center. Mirrors IslandScene.resetCamera + IsoGrid (64x32 tiles, 48pt base,

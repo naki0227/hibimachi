@@ -9,6 +9,8 @@ enum IslandOverlay: Hashable {
     case objectList
     case resetConfirm
     case startupNotice
+    /// Debug builds only: the home-screen widget with live data.
+    case widgetPreview
 }
 
 /// Dimmed backdrop (tap to close) plus the panel sliding up from the bottom. Replaces `.sheet` / `.alert`.
@@ -94,6 +96,8 @@ struct MenuPanel: View {
     let showWholeIsland: () -> Void
     let followDeviceClock: () -> Void
     let askReset: () -> Void
+    /// Debug builds pass this to show the widget preview row.
+    var previewWidget: (() -> Void)?
     let close: () -> Void
 
     var body: some View {
@@ -101,6 +105,9 @@ struct MenuPanel: View {
             VStack(spacing: 10) {
                 row("島全体を表示", "arrow.up.left.and.arrow.down.right", .secondary, showWholeIsland)
                 row("時間帯を端末の時刻に戻す", "clock", .secondary, followDeviceClock)
+                if let previewWidget {
+                    row("ウィジェットのプレビュー", "square.grid.2x2", .secondary, previewWidget)
+                }
                 row("島をはじめからにする", "arrow.counterclockwise", .danger, askReset)
             }
         }

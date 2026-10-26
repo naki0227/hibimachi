@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		A90000000000000000000021 /* HibimachiCore in Frameworks */ = {isa = PBXBuildFile; productRef = A90000000000000000000011 /* HibimachiCore */; };
 		A90000000000000000000022 /* HibimachiStorage in Frameworks */ = {isa = PBXBuildFile; productRef = A90000000000000000000012 /* HibimachiStorage */; };
+		A90000000000000000000023 /* HibimachiCore in Frameworks */ = {isa = PBXBuildFile; productRef = A90000000000000000000013 /* HibimachiCore */; };
+		A90000000000000000000024 /* HibimachiStorage in Frameworks */ = {isa = PBXBuildFile; productRef = A90000000000000000000014 /* HibimachiStorage */; };
+		A90000000000000000000031 /* HibimachiWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A20000000000000000000004 /* HibimachiWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,12 +29,34 @@
 			remoteGlobalIDString = A10000000000000000000001;
 			remoteInfo = Hibimachi;
 		};
+		A50000000000000000000004 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A00000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A10000000000000000000004;
+			remoteInfo = HibimachiWidgetExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A40000000000000000000031 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A90000000000000000000031 /* HibimachiWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		A20000000000000000000001 /* Hibimachi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hibimachi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20000000000000000000002 /* HibimachiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HibimachiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20000000000000000000003 /* HibimachiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HibimachiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20000000000000000000004 /* HibimachiWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = HibimachiWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -48,6 +73,16 @@
 		A30000000000000000000003 /* HibimachiUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = HibimachiUITests;
+			sourceTree = "<group>";
+		};
+		A30000000000000000000004 /* HibimachiWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = HibimachiWidget;
+			sourceTree = "<group>";
+		};
+		A30000000000000000000005 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -76,6 +111,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A40000000000000000000014 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A90000000000000000000023 /* HibimachiCore in Frameworks */,
+				A90000000000000000000024 /* HibimachiStorage in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -85,6 +129,8 @@
 				A30000000000000000000001 /* Hibimachi */,
 				A30000000000000000000002 /* HibimachiTests */,
 				A30000000000000000000003 /* HibimachiUITests */,
+				A30000000000000000000004 /* HibimachiWidget */,
+				A30000000000000000000005 /* Shared */,
 				A00000000000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -95,6 +141,7 @@
 				A20000000000000000000001 /* Hibimachi.app */,
 				A20000000000000000000002 /* HibimachiTests.xctest */,
 				A20000000000000000000003 /* HibimachiUITests.xctest */,
+				A20000000000000000000004 /* HibimachiWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -109,13 +156,16 @@
 				A40000000000000000000001 /* Sources */,
 				A40000000000000000000011 /* Frameworks */,
 				A40000000000000000000021 /* Resources */,
+				A40000000000000000000031 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				A60000000000000000000004 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				A30000000000000000000001 /* Hibimachi */,
+				A30000000000000000000005 /* Shared */,
 			);
 			name = Hibimachi;
 			packageProductDependencies = (
@@ -168,6 +218,31 @@
 			productReference = A20000000000000000000003 /* HibimachiUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		A10000000000000000000004 /* HibimachiWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A70000000000000000000004 /* Build configuration list for PBXNativeTarget "HibimachiWidgetExtension" */;
+			buildPhases = (
+				A40000000000000000000004 /* Sources */,
+				A40000000000000000000014 /* Frameworks */,
+				A40000000000000000000024 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A30000000000000000000004 /* HibimachiWidget */,
+				A30000000000000000000005 /* Shared */,
+			);
+			name = HibimachiWidgetExtension;
+			packageProductDependencies = (
+				A90000000000000000000013 /* HibimachiCore */,
+				A90000000000000000000014 /* HibimachiStorage */,
+			);
+			productName = HibimachiWidgetExtension;
+			productReference = A20000000000000000000004 /* HibimachiWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -188,6 +263,9 @@
 					A10000000000000000000003 = {
 						CreatedOnToolsVersion = 26.5;
 						TestTargetID = A10000000000000000000001;
+					};
+					A10000000000000000000004 = {
+						CreatedOnToolsVersion = 26.5;
 					};
 				};
 			};
@@ -211,6 +289,7 @@
 				A10000000000000000000001 /* Hibimachi */,
 				A10000000000000000000002 /* HibimachiTests */,
 				A10000000000000000000003 /* HibimachiUITests */,
+				A10000000000000000000004 /* HibimachiWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -231,6 +310,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A40000000000000000000023 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A40000000000000000000024 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -261,6 +347,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A40000000000000000000004 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -273,6 +366,11 @@
 			isa = PBXTargetDependency;
 			target = A10000000000000000000001 /* Hibimachi */;
 			targetProxy = A50000000000000000000003 /* PBXContainerItemProxy */;
+		};
+		A60000000000000000000004 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A10000000000000000000004 /* HibimachiWidgetExtension */;
+			targetProxy = A50000000000000000000004 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -373,6 +471,7 @@
 		A80000000000000000000010 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Support/Hibimachi.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
@@ -398,6 +497,7 @@
 		A80000000000000000000011 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Support/Hibimachi.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
@@ -482,6 +582,52 @@
 			};
 			name = Release;
 		};
+		A80000000000000000000040 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Support/HibimachiWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Support/HibimachiWidget-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "ひびまち";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.naki0227.hibimachi.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		A80000000000000000000041 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Support/HibimachiWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Support/HibimachiWidget-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "ひびまち";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.naki0227.hibimachi.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -521,6 +667,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		A70000000000000000000004 /* Build configuration list for PBXNativeTarget "HibimachiWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A80000000000000000000040 /* Debug */,
+				A80000000000000000000041 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
@@ -536,6 +691,14 @@
 			productName = HibimachiCore;
 		};
 		A90000000000000000000012 /* HibimachiStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HibimachiStorage;
+		};
+		A90000000000000000000013 /* HibimachiCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HibimachiCore;
+		};
+		A90000000000000000000014 /* HibimachiStorage */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = HibimachiStorage;
 		};

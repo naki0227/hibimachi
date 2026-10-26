@@ -12,8 +12,18 @@ struct HibimachiApp: App {
             IslandScreen(store: store, initialPhase: AppComposition.dayPhaseOverride())
         }
         .onChange(of: scenePhase) { _, phase in
-            // Edits are saved immediately; this also captures the creature's position before suspension.
-            if phase != .active { store.persist() }
+            switch phase {
+            case .active:
+                // The widget may have completed quests while the app was away.
+                store.reloadProgressFromStorage()
+            case .background:
+                // Edits are saved immediately; this also captures the creature's position before suspension.
+                // Only on .background: saving on the way back (.inactive) would overwrite the widget's changes.
+                store.persist()
+                WidgetSync.reloadWidgets()
+            default:
+                break
+            }
         }
     }
 }
@@ -23,13 +33,34 @@ struct HibimachiApp: App {
 enum AppComposition {
     static func makeStore(environment: [String: String] = ProcessInfo.processInfo.environment) -> GameStore {
         // UI tests pass a unique folder name and a fixed seed so each run is isolated and reproducible.
-        let folder = environment["HIBIMACHI_STORAGE_NAME"] ?? "Hibimachi"
+        let folder = environment["HIBIMACHI_STORAGE_NAME"] ?? SharedContainer.saveFolder
         let seed = environment["HIBIMACHI_SEED"].flatMap(UInt64.init) ?? UInt64.random(in: .min ... .max)
-        let base =
+        let appSupport =
             FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? FileManager.default.temporaryDirectory
-        let repository = JSONFileWorldRepository(directory: base.appendingPathComponent(folder, isDirectory: true))
-        return GameStore(repository: repository, seed: seed)
+        // The save lives in the App Group so the widget can read it; without the group, in the app's own folder.
+        let legacy = appSupport.appendingPathComponent(folder, isDirectory: true)
+        let directory = SharedContainer.groupURL.map { saveDirectory(in: $0, folder: folder, legacy: legacy) } ?? legacy
+        return GameStore(repository: JSONFileWorldRepository(directory: directory), seed: seed)
+    }
+
+    /// Saves made before the widget live in Application Support; they move into the group once, never over a
+    /// newer save. If the move fails the game keeps using the old folder, so nothing looks lost.
+    private static func saveDirectory(in group: URL, folder: String, legacy: URL) -> URL {
+        let fileManager = FileManager.default
+        let shared = group.appendingPathComponent(folder, isDirectory: true)
+        let oldFile = legacy.appendingPathComponent(JSONFileWorldRepository.fileName)
+        let newFile = shared.appendingPathComponent(JSONFileWorldRepository.fileName)
+        guard fileManager.fileExists(atPath: oldFile.path), !fileManager.fileExists(atPath: newFile.path) else {
+            return shared
+        }
+        do {
+            try fileManager.createDirectory(at: shared, withIntermediateDirectories: true)
+            try fileManager.moveItem(at: oldFile, to: newFile)
+            return shared
+        } catch {
+            return legacy
+        }
     }
 
     /// Demos and UI tests pin the time of day (CI simulators run on UTC, which is often "night").
