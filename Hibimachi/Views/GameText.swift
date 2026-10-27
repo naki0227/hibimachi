@@ -123,6 +123,7 @@ extension ProgressError {
         case .notEnoughSparkles(let needed, let balance): String(localized: "きらめきが足りません（\(balance) / \(needed)）")
         case .invalidMinutes: String(localized: "時間は1〜60分にしてください")
         case .incompleteRecord: String(localized: "記録がまだそろっていません")
+        case .invalidPlan: String(localized: "ステップは2〜5個、それぞれにクエストを1〜3個にしてください")
         case .duplicateID, .negativeBalance: String(localized: "記録に問題があります")
         }
     }

@@ -130,7 +130,9 @@ struct QuestPanel: View {
         Text("目標").gameSectionTitle()
         VStack(spacing: 8) {
             ForEach(store.progress.activeGoals) { goal in
-                GoalRow(goal: goal, quests: store.progress.activeQuests(of: goal.id), actions: actions(for: goal))
+                GoalRow(
+                    goal: goal, quests: store.progress.activeQuests(of: goal.id),
+                    steps: store.progress.stepStatuses(of: goal.id), actions: actions(for: goal))
             }
             if store.progress.activeGoals.count < PlayerProgress.activeGoalLimit {
                 Button {
@@ -172,7 +174,9 @@ struct QuestPanel: View {
             editQuest: { id, title, minutes in store.editQuest(id, title: title, minutes: minutes) },
             removeQuest: { id in store.removeQuest(id) },
             rename: { title in store.renameGoal(goal.id, to: title) },
-            rest: { store.archiveGoal(goal.id) })
+            rest: { store.archiveGoal(goal.id) },
+            makePlan: { await PlanCoach.draft(for: goal, aiAllowed: aiCoach) },
+            applyPlan: { draft in store.applyPlan(draft, to: goal.id) })
     }
 }
 
@@ -194,7 +198,7 @@ struct NewGoalForm: View {
                 .foregroundStyle(GameColor.leafDark)
             GameTextField(placeholder: "目標の名前", text: $title)
                 .accessibilityIdentifier("goal-title")
-            Text("「\(category.title)」の小さなクエストが3つ用意されます。あとで自分のクエストも足せます。")
+            Text("「\(category.title)」の小さなクエストが3つ用意されます。目標を開くと、ステップに分けることもできます。")
                 .font(GameFont.caption())
                 .foregroundStyle(GameColor.inkSoft)
                 .fixedSize(horizontal: false, vertical: true)

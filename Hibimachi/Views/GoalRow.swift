@@ -8,15 +8,20 @@ struct GoalActions {
     let removeQuest: (UUID) -> Bool
     let rename: (String) -> Bool
     let rest: () -> Void
+    /// A proposed breakdown (AI or template) and applying the accepted one (ADR-0016).
+    let makePlan: @MainActor () async -> (draft: PlanDraft, byAI: Bool)
+    let applyPlan: (PlanDraft) -> Bool
 }
 
-/// Goal card that opens to show its quests: rename the goal, edit or retire a quest, add the player's own,
-/// or rest the goal ("おやすみ").
+/// Goal card that opens to show its steps and quests: break it into steps, rename the goal, edit or retire a
+/// quest, add the player's own, or rest the goal ("おやすみ").
 struct GoalRow: View {
     let goal: Goal
     let quests: [QuestTemplate]
+    var steps: [StepStatus] = []
     let actions: GoalActions
     @State private var expanded = false
+    @State private var planning = false
     @State private var renaming = false
     @State private var newTitle = ""
     @State private var editingQuest: UUID?
@@ -43,6 +48,7 @@ struct GoalRow: View {
             .buttonStyle(.plain)
             .accessibilityValue(expanded ? String(localized: "ひらいています") : String(localized: "とじています"))
             .accessibilityIdentifier("goal-row")
+            StepSummary(statuses: steps)
             if expanded { details }
         }
         .gameCard()
@@ -60,7 +66,24 @@ struct GoalRow: View {
                     .accessibilityIdentifier("rename-goal-save")
             }
         }
-        ForEach(quests) { quest in
+        if planning {
+            PlanEditor(goal: goal, makeDraft: actions.makePlan, apply: actions.applyPlan) { planning = false }
+        } else {
+            if !steps.isEmpty { StepList(statuses: steps, quests: quests) }
+            Button {
+                planning = true
+            } label: {
+                Label(
+                    steps.isEmpty ? LocalizedStringKey("ステップに分ける") : LocalizedStringKey("ステップを作り直す"),
+                    systemImage: "list.number")
+            }
+            .buttonStyle(.game(.secondary, compact: true))
+            .accessibilityIdentifier("plan-goal")
+        }
+        if !steps.isEmpty {
+            Text("いつものクエスト").font(GameFont.caption()).foregroundStyle(GameColor.inkSoft)
+        }
+        ForEach(quests.filter { $0.stepID == nil }) { quest in
             if editingQuest == quest.id {
                 QuestEditor(quest: quest, actions: actions) { editingQuest = nil }
             } else {
