@@ -34,6 +34,21 @@ struct TaskSessionTests {
         #expect(TaskAmount(value: 0, unit: .times) == nil && TaskAmount(value: 1000, unit: .times) == nil)
     }
 
+    @Test func theRuleCoachReactsToWhatWasRecorded() throws {
+        let ten = try #require(TaskAmount(value: 10, unit: .pages))
+        func check(_ style: RecordStyle, after: Bool = false, amount: TaskAmount? = nil, note: String? = nil)
+            -> RecordCheck
+        {
+            RecordCheck(style: style, hasBeforePhoto: after, hasAfterPhoto: after, amount: amount, note: note)
+        }
+        #expect(CoachLine.line(for: check(.beforeAfter, after: true)) == .tidied)
+        #expect(CoachLine.line(for: check(.result, note: "カレー")) == .made)
+        #expect(CoachLine.line(for: check(.amount, amount: ten)) == .did(ten))
+        #expect(CoachLine.line(for: check(.amount, note: "がんばった")) == .recorded)
+        #expect(CoachLine.line(for: check(.feeling, note: "すっきり")) == .rested)
+        #expect(CoachLine.line(for: check(.result)) == .finished, "nothing recorded is still a finish")
+    }
+
     @MainActor
     private func store() throws -> (GameStore, FakeRepository, FakeMediaStore, QuestTemplate) {
         let repository = FakeRepository(.loaded(snapshot(try TestWorlds.grass())))

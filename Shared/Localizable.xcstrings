@@ -161,6 +161,16 @@
         }
       }
     },
+    "%lld、おつかれさま！": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld done. Nice work!"
+          }
+        }
+      }
+    },
     "%lldページ": {
       "localizations": {
         "en": {
@@ -217,6 +227,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Arrived on %1$lld/%2$lld. See the memory of that day"
+          }
+        }
+      }
+    },
+    "AIのひとこと": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI comments"
           }
         }
       }
@@ -291,6 +311,16 @@
         }
       }
     },
+    "いいものができたね。残せてよかった。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That turned out nicely. Glad you kept it."
+          }
+        }
+      }
+    },
     "いつもうれしそう。ハートを見せてくれる。": {
       "localizations": {
         "en": {
@@ -327,6 +357,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rock"
+          }
+        }
+      }
+    },
+    "おつかれさま。島でひと休みしよう。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nice work. Take a little rest on the island."
           }
         }
       }
@@ -591,6 +631,16 @@
         }
       }
     },
+    "この端末では AI が使えないため、決まったひとことになります。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI isn't available on this device, so comments are fixed phrases."
+          }
+        }
+      }
+    },
     "この記録はもう受け取り済みです": {
       "localizations": {
         "en": {
@@ -687,6 +737,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Store"
+          }
+        }
+      }
+    },
+    "すっきりしたね。島のみんなも気持ちよさそう。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "So much tidier! Everyone on the island feels it too."
           }
         }
       }
@@ -1471,6 +1531,16 @@
         }
       }
     },
+    "ゆっくりできたなら、それがいちばん。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If you got to slow down, that's what matters."
+          }
+        }
+      }
+    },
     "アプリで目標をえらぶと、ここに今日のクエストが並びます": {
       "localizations": {
         "en": {
@@ -1637,6 +1707,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Share"
+          }
+        }
+      }
+    },
+    "タスクのあとのひとことを、この端末の中だけで作ります（送信しません）。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Writes the comment after a task on this device only (nothing is sent)."
           }
         }
       }
@@ -3227,6 +3307,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "The record is not complete yet"
+          }
+        }
+      }
+    },
+    "記録できたね。あとで見返すのが楽しみ。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recorded. It will be fun to look back on."
           }
         }
       }

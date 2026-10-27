@@ -14,6 +14,14 @@ public struct FinishedTask: Equatable, Sendable {
     /// The album entry holding the record (`nil` when nothing was recorded).
     public let entryID: UUID?
     public let bonus: RewardTransaction?
+
+    public init(completionID: UUID, questTitle: String, check: RecordCheck, entryID: UUID?, bonus: RewardTransaction?) {
+        self.completionID = completionID
+        self.questTitle = questTitle
+        self.check = check
+        self.entryID = entryID
+        self.bonus = bonus
+    }
 }
 
 /// "今からやる → おわった" (ADR-0015): start a quest, take photos that fit it, then finish it with a record.

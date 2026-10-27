@@ -103,3 +103,24 @@ public struct RecordCheck: Equatable, Sendable {
     /// Nothing at all was recorded (finishing still counts; there is just nothing to keep).
     public var isEmpty: Bool { !hasBeforePhoto && !hasAfterPhoto && amount == nil && note == nil }
 }
+
+/// The rule-based coach line for a finished quest: what the game says when on-device AI is off or unavailable
+/// (ADR-0015). It reacts to what was recorded, never judges how well it was done.
+public enum CoachLine: Equatable, Sendable {
+    case tidied
+    case made
+    case did(TaskAmount)
+    case rested
+    case recorded
+    case finished
+
+    public static func line(for check: RecordCheck) -> CoachLine {
+        if check.isEmpty { return .finished }
+        switch check.style {
+        case .beforeAfter: return check.isComplete ? .tidied : .recorded
+        case .result: return check.isComplete ? .made : .recorded
+        case .amount: return check.amount.map(CoachLine.did) ?? .recorded
+        case .feeling: return check.note != nil ? .rested : .recorded
+        }
+    }
+}

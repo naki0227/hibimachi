@@ -18,6 +18,17 @@ struct SettingsPanel: View {
                     row("音楽", "music.note", $settings.music, "setting-music")
                     divider
                     row("ふるえる", "iphone.radiowaves.left.and.right", $settings.haptics, "setting-haptics")
+                    divider
+                    row("AIのひとこと", "sparkle", $settings.aiCoach, "setting-ai-coach")
+                    Text(
+                        AppleIntelligenceCoach.isAvailable
+                            ? String(localized: "タスクのあとのひとことを、この端末の中だけで作ります（送信しません）。")
+                            : String(localized: "この端末では AI が使えないため、決まったひとことになります。")
+                    )
+                    .font(GameFont.caption(11))
+                    .foregroundStyle(GameColor.inkSoft)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
                 }
                 .gameCard()
                 Button {

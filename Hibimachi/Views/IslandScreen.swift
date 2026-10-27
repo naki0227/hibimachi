@@ -168,7 +168,7 @@ struct IslandScreen: View {
                 previewWidget: Self.widgetPreviewAction { overlay = .widgetPreview },
                 close: close)
         case .quests:
-            QuestPanel(store: store, close: close)
+            QuestPanel(store: store, aiCoach: settings.aiCoach, close: close)
         case .fieldGuide:
             FieldGuidePanel(
                 discoveries: store.world.discoveries, images: album.images,

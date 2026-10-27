@@ -20,7 +20,7 @@ struct FinishedTaskCard: View {
                     .accessibilityIdentifier("record-bonus")
             }
             if let entry { RecordSummary(store: store, entry: entry) }
-            if let comment = entry?.coachComment {
+            if let comment = entry?.coachComment ?? (entry == nil ? task.check.ruleText : nil) {
                 Label(comment, systemImage: "bubble.left.fill")
                     .font(GameFont.body(13, weight: .medium))
                     .foregroundStyle(GameColor.ink)
