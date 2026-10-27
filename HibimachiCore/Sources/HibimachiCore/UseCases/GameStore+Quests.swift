@@ -19,6 +19,13 @@ extension GameStore {
         apply { progress in progress.archiveGoal(id) }
     }
 
+    /// Deletes a goal (ADR-0005 note, 2026-10-27). A quest of it in progress is cancelled first.
+    @discardableResult
+    public func deleteGoal(_ id: UUID) -> Bool {
+        if let session = activeSession, quest(session.questID)?.goalID == id { cancelTask() }
+        return apply { $0.deleteGoal(id) }
+    }
+
     @discardableResult
     public func renameGoal(_ id: UUID, to title: String) -> Bool {
         apply { $0.renameGoal(id, to: title) }

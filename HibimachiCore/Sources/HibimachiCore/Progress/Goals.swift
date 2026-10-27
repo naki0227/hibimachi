@@ -20,13 +20,19 @@ public struct Goal: Identifiable, Equatable, Sendable {
     public let createdAt: Date
     /// Archived goals stop producing quests but keep their history.
     public var isArchived: Bool
+    /// Deleted by the player but kept (hidden, archived) because past completions point at it.
+    public var isDeleted: Bool
 
-    public init(id: UUID, title: String, category: GoalCategory, createdAt: Date, isArchived: Bool = false) {
+    public init(
+        id: UUID, title: String, category: GoalCategory, createdAt: Date, isArchived: Bool = false,
+        isDeleted: Bool = false
+    ) {
         self.id = id
         self.title = title
         self.category = category
         self.createdAt = createdAt
-        self.isArchived = isArchived
+        self.isArchived = isArchived || isDeleted
+        self.isDeleted = isDeleted
     }
 }
 

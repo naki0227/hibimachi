@@ -1,6 +1,6 @@
 import Foundation
 
-/// Goals and their quests: create, rename, rest, resume; add, edit or retire a quest.
+/// Goals and their quests: create, rename, rest, resume, delete; add, edit or retire a quest.
 extension PlayerProgress {
     public mutating func addGoal(
         title: String, category: GoalCategory, at date: Date, makeID: () -> UUID,
@@ -36,12 +36,30 @@ extension PlayerProgress {
     /// Brings a resting goal back, within the active limit.
     public mutating func resumeGoal(_ id: UUID) -> Result<Goal, ProgressError> {
         guard let index = goals.firstIndex(where: { $0.id == id }) else { return .failure(.unknownGoal(id)) }
+        guard !goals[index].isDeleted else { return .failure(.unknownGoal(id)) }
         guard goals[index].isArchived else { return .success(goals[index]) }
         guard activeGoals.count < Self.activeGoalLimit else {
             return .failure(.tooManyGoals(limit: Self.activeGoalLimit))
         }
         goals[index].isArchived = false
         return .success(goals[index])
+    }
+
+    /// Deletes a goal for good. One never acted on goes with its quests and steps; one with completions is only
+    /// hidden, because the ledger, the album and past days point at its quests.
+    public mutating func deleteGoal(_ id: UUID) -> Result<Void, ProgressError> {
+        guard let index = goals.firstIndex(where: { $0.id == id }), !goals[index].isDeleted else {
+            return .failure(.unknownGoal(id))
+        }
+        if completions.contains(where: { $0.goalID == id }) {
+            goals[index].isDeleted = true
+            goals[index].isArchived = true
+        } else {
+            goals.remove(at: index)
+            quests.removeAll { $0.goalID == id }
+            steps.removeAll { $0.goalID == id }
+        }
+        return .success(())
     }
 
     /// Changes a quest's wording or length. Rewards already granted keep their amounts (the ledger is history).

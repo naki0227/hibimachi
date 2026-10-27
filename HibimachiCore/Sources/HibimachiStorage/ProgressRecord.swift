@@ -9,6 +9,8 @@ struct ProgressRecord: Codable, Equatable {
         var category: String
         var createdAt: Date
         var archived: Bool
+        /// Deleted but kept for its history (v8, optional).
+        var deleted: Bool?
     }
 
     struct QuestRecord: Codable, Equatable {
@@ -86,7 +88,7 @@ extension ProgressRecord {
         goals = progress.goals.map {
             GoalRecord(
                 id: $0.id, title: $0.title, category: $0.category.rawValue, createdAt: $0.createdAt,
-                archived: $0.isArchived)
+                archived: $0.isArchived, deleted: $0.isDeleted ? true : nil)
         }
         quests = progress.quests.map {
             QuestRecord(
@@ -125,7 +127,7 @@ extension ProgressRecord {
             }
             return Goal(
                 id: record.id, title: record.title, category: category, createdAt: record.createdAt,
-                isArchived: record.archived)
+                isArchived: record.archived, isDeleted: record.deleted ?? false)
         }
         let quests = quests.map {
             QuestTemplate(

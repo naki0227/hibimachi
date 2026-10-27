@@ -3,7 +3,8 @@ import Foundation
 /// Life-side state (P1): goals, quests, completions, the reward ledger and owned buildings.
 /// Every mutation validates first and changes nothing on failure.
 public struct PlayerProgress: Equatable, Sendable {
-    public static let activeGoalLimit = 3
+    /// Goals in progress at once (was 3; raised on owner feedback 2026-10-27, see ADR-0005's note).
+    public static let activeGoalLimit = 5
 
     // Set from the goal and step extensions (PlayerProgress+Goals/Steps.swift).
     public internal(set) var goals: [Goal]
@@ -66,6 +67,8 @@ public struct PlayerProgress: Equatable, Sendable {
     public var totalXP: Int { ledger.reduce(0) { $0 + $1.xpDelta } }
     public var level: Int { RewardRule.level(forXP: totalXP) }
     public var activeGoals: [Goal] { goals.filter { !$0.isArchived } }
+    /// Goals put to rest ("おやすみ") that can come back. Deleted goals are not among them.
+    public var restingGoals: [Goal] { goals.filter { $0.isArchived && !$0.isDeleted } }
 
     public func quests(of goalID: UUID) -> [QuestTemplate] { quests.filter { $0.goalID == goalID } }
     /// Quests still suggested for a goal (not retired).

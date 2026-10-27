@@ -248,6 +248,22 @@ struct JSONFileWorldRepositoryTests {
         #expect(old.progress.quests(of: goal.id).count == 3, "the everyday presets stay")
     }
 
+    @Test func aDeletedGoalWithHistoryStaysHiddenAfterLoading() throws {
+        var saved = game(sampleWorld())
+        let date = Date(timeIntervalSince1970: 10)
+        let goal = try saved.progress.addGoal(title: "部屋", category: .tidy, at: date, makeID: UUID.init).get()
+        let quest = try #require(saved.progress.quests(of: goal.id).first)
+        _ = try saved.progress.complete(
+            quest.id, on: LocalDay(year: 2027, month: 1, day: 15), at: date, completionID: UUID(), transactionID: UUID()
+        ).get()
+        _ = try saved.progress.deleteGoal(goal.id).get()
+        try repository().save(saved)
+        let loaded = try #require(repository().peek())
+        #expect(loaded == saved)
+        #expect(loaded.progress.activeGoals.isEmpty && loaded.progress.restingGoals.isEmpty)
+        #expect(loaded.progress.goals.first?.isDeleted == true)
+    }
+
     @Test func peekReadsWithoutTouchingUnreadableFiles() throws {
         #expect(repository().peek() == nil)
         let saved = game(sampleWorld())
