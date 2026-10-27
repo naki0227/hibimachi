@@ -64,6 +64,7 @@ final class IslandUITests: XCTestCase {
         screenshot(app, "02-preview")
         app.buttons["confirm-edit"].tap()
         XCTAssertEqual(objectCount(app), "置いたもの 7こ")
+        XCTAssertTrue(app.staticTexts["selection-name"].waitForExistence(timeout: 10))
         XCTAssertEqual(app.staticTexts["selection-name"].label, "はなやぶ")
 
         app.buttons["undo"].firstMatch.tap()
@@ -97,6 +98,7 @@ final class IslandUITests: XCTestCase {
         XCTAssertTrue(benchRow.waitForExistence(timeout: 5))
         benchRow.tap()
 
+        XCTAssertTrue(app.staticTexts["selection-name"].waitForExistence(timeout: 10))
         XCTAssertEqual(app.staticTexts["selection-name"].label, "ベンチ")
         app.buttons["move-selection"].tap()
         app.buttons["右上へ"].tap()
@@ -105,6 +107,7 @@ final class IslandUITests: XCTestCase {
         screenshot(app, "05-moving-bench")
         XCTAssertTrue(app.buttons["confirm-edit"].isEnabled, "moving the bench one tile right is valid")
         app.buttons["confirm-edit"].tap()
+        XCTAssertTrue(app.staticTexts["selection-name"].waitForExistence(timeout: 10))
         XCTAssertEqual(app.staticTexts["selection-name"].label, "ベンチ")
 
         app.buttons["remove-selection"].tap()
