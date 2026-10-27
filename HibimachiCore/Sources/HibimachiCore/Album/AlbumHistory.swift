@@ -26,7 +26,7 @@ public struct AlbumDay: Identifiable, Equatable, Sendable {
             let day = LocalDay(date: transaction.date, calendar: calendar)
             switch transaction.reason {
             case .purchase(let kind): purchases[day, default: []].append(kind)
-            case .questCompleted, .questUndone: earned[day, default: 0] += transaction.sparkleDelta
+            case .questCompleted, .questUndone, .recordBonus: earned[day, default: 0] += transaction.sparkleDelta
             case .welcome: break
             }
         }

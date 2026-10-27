@@ -31,10 +31,14 @@ public struct MemoryEntry: Identifiable, Equatable, Sendable {
     public let completionID: UUID?
     /// An earlier entry whose photo is the "before" of this one's ("after"). Cleared if that entry is deleted.
     public internal(set) var beforeEntryID: UUID?
+    /// How much was done (self-reported), for quests recorded by amount (ADR-0015).
+    public let amount: TaskAmount?
+    /// A short comment from the on-device coach (or its rule-based fallback). Optional.
+    public internal(set) var coachComment: String?
 
     public init(
         id: UUID, day: LocalDay, createdAt: Date, text: String?, photo: MediaReference?, completionID: UUID?,
-        beforeEntryID: UUID? = nil
+        beforeEntryID: UUID? = nil, amount: TaskAmount? = nil, coachComment: String? = nil
     ) {
         self.id = id
         self.day = day
@@ -43,6 +47,8 @@ public struct MemoryEntry: Identifiable, Equatable, Sendable {
         self.photo = photo
         self.completionID = completionID
         self.beforeEntryID = beforeEntryID
+        self.amount = amount
+        self.coachComment = coachComment
     }
 }
 
@@ -60,14 +66,21 @@ public enum AlbumError: Error, Equatable, Sendable {
 /// The growth album (P2). Recording is optional and earns nothing: the island never depends on photos or text.
 public struct Album: Equatable, Sendable {
     public static let textLimit = 200
+    public static let commentLimit = 120
 
     public private(set) var entries: [MemoryEntry]
+    /// The quest in progress ("今からやる"), if any. Kept in the save so closing the app does not lose it.
+    public internal(set) var session: TaskSession?
 
-    public init(entries: [MemoryEntry] = []) {
+    public init(entries: [MemoryEntry] = [], session: TaskSession? = nil) {
         self.entries = entries
+        self.session = session
     }
 
-    public var photoBytes: Int { entries.compactMap(\.photo).reduce(0) { $0 + $1.bytes } }
+    /// Photos in entries and in the running session (they are on disk too).
+    public var photoBytes: Int {
+        (entries.compactMap(\.photo) + (session?.photos ?? [])).reduce(0) { $0 + $1.bytes }
+    }
     public var photoCount: Int { entries.filter { $0.photo != nil }.count }
 
     /// Earlier entries with a photo, newest first: the choices for a "before".
@@ -79,11 +92,11 @@ public struct Album: Equatable, Sendable {
     /// `before`, when given, must be an existing entry with a photo, and this entry needs a photo too.
     public mutating func add(
         text: String?, photo: MediaReference?, completionID: UUID?, progress: PlayerProgress, day: LocalDay,
-        at date: Date, id: UUID, before: UUID? = nil
+        at date: Date, id: UUID, before: UUID? = nil, amount: TaskAmount? = nil, coachComment: String? = nil
     ) -> Result<MemoryEntry, AlbumError> {
         let trimmed = text?.trimmingCharacters(in: .whitespacesAndNewlines)
         let body = (trimmed?.isEmpty ?? true) ? nil : trimmed
-        guard body != nil || photo != nil else { return .failure(.empty) }
+        guard body != nil || photo != nil || amount != nil else { return .failure(.empty) }
         if let body, body.count > Self.textLimit { return .failure(.textTooLong(limit: Self.textLimit)) }
         if let completionID, !progress.completions.contains(where: { $0.id == completionID }) {
             return .failure(.unknownCompletion(completionID))
@@ -94,9 +107,23 @@ public struct Album: Equatable, Sendable {
         }
         let entry = MemoryEntry(
             id: id, day: day, createdAt: date, text: body, photo: photo, completionID: completionID,
-            beforeEntryID: before)
+            beforeEntryID: before, amount: amount, coachComment: coachComment.map(Self.trimmedComment))
         entries.append(entry)
         return .success(entry)
+    }
+
+    /// Adds or replaces the coach's comment (it arrives after the entry is saved). Returns whether it was set.
+    @discardableResult
+    public mutating func setComment(_ comment: String, on id: UUID) -> Bool {
+        let text = Self.trimmedComment(comment)
+        guard !text.isEmpty, let index = entries.firstIndex(where: { $0.id == id }) else { return false }
+        entries[index].coachComment = text
+        return true
+    }
+
+    /// Model output is untrusted text: trimmed and cut to `commentLimit` characters.
+    static func trimmedComment(_ text: String) -> String {
+        String(text.trimmingCharacters(in: .whitespacesAndNewlines).prefix(commentLimit))
     }
 
     @discardableResult

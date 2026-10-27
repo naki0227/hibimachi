@@ -185,6 +185,36 @@ struct JSONFileWorldRepositoryTests {
         }
     }
 
+    @Test func taskRecordsSessionsAndBonusesRoundTrip() throws {
+        var saved = game(sampleWorld())
+        let date = Date(timeIntervalSince1970: 10)
+        let day = LocalDay(year: 2027, month: 1, day: 15)
+        _ = try saved.progress.addGoal(title: "からだ", category: .move, at: date, makeID: UUID.init).get()
+        let quests = saved.progress.quests
+        let completionID = UUID()
+        _ = try saved.progress.complete(
+            quests[0].id, on: day, at: date, completionID: completionID, transactionID: UUID()
+        )
+        .get()
+        let amount = try #require(TaskAmount(value: 20, unit: .times))
+        let check = RecordCheck(style: .amount, hasBeforePhoto: false, hasAfterPhoto: false, amount: amount, note: nil)
+        _ = try saved.progress.grantRecordBonus(for: completionID, check: check, at: date, transactionID: UUID()).get()
+        _ = try saved.album.add(
+            text: nil, photo: nil, completionID: completionID, progress: saved.progress, day: day, at: date, id: UUID(),
+            amount: amount, coachComment: "いい調子"
+        ).get()
+        let photo = MediaReference(id: UUID(), fileName: "s.jpg", bytes: 3, createdAt: date)
+        saved.album = Album(
+            entries: saved.album.entries,
+            session: TaskSession(questID: quests[1].id, startedAt: date, beforePhoto: nil, duringPhoto: photo))
+        try repository().save(saved)
+        let loaded = try #require(repository().peek())
+        #expect(loaded == saved)
+        #expect(loaded.album.entries.first?.amount == amount)
+        #expect(loaded.album.session?.duringPhoto == photo)
+        #expect(loaded.progress.totalXP == saved.progress.totalXP)
+    }
+
     @Test func peekReadsWithoutTouchingUnreadableFiles() throws {
         #expect(repository().peek() == nil)
         let saved = game(sampleWorld())
@@ -215,7 +245,7 @@ struct JSONFileWorldRepositoryTests {
         try repository().save(saved)
         #expect(repository().peek() == saved)
         let text = try String(contentsOf: repository().fileURL, encoding: .utf8)
-        #expect(text.contains("\"schemaVersion\":6"))
+        #expect(text.contains("\"schemaVersion\":7"))
 
         // A v2 file (no album key) loads with an empty album.
         var object = try #require(

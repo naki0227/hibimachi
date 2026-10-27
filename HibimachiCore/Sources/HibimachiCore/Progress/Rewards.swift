@@ -4,8 +4,12 @@ import Foundation
 /// Values are provisional (GAME-DESIGN "初期XPの例") and versioned so old transactions keep their meaning.
 public enum RewardRule {
     /// v1: every quest 20 XP / 5. v2 (2026-10-26): gently scaled by the quest's length (see `questReward`).
+    /// v3 (2026-10-27): a small bonus for a complete record (ADR-0015).
     /// Ledger lines keep the amounts they were granted, so old completions are not re-valued.
-    public static let version = 2
+    public static let version = 3
+    /// Once per completion whose record fits its style (`RecordCheck.isComplete`).
+    public static let recordBonusXP = 5
+    public static let recordBonusSparkles = 2
     /// The standard reward, for 5–14 minute quests (every preset).
     public static let questXP = 20
     public static let questSparkles = 5
@@ -46,6 +50,7 @@ public struct RewardTransaction: Identifiable, Equatable, Sendable {
         case welcome
         case questCompleted(completionID: UUID)
         case questUndone(completionID: UUID)
+        case recordBonus(completionID: UUID)
         case purchase(ObjectKind)
     }
 
@@ -79,6 +84,7 @@ public enum ProgressError: Error, Equatable, Sendable {
     case undoOnlySameDay
     case notEnoughSparkles(needed: Int, balance: Int)
     case invalidMinutes
+    case incompleteRecord
     case duplicateID(UUID)
     case negativeBalance
 }
