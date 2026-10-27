@@ -30,13 +30,47 @@ struct GoalEditingTests {
     @Test func aRestingGoalComesBackOnlyIfThereIsRoom() throws {
         var (progress, goal) = try started()
         _ = progress.archiveGoal(goal.id)
-        for index in 0..<3 {
+        for index in 0..<PlayerProgress.activeGoalLimit {
             _ = try progress.addGoal(title: "目標\(index)", category: .rest, at: date, makeID: UUID.init).get()
         }
-        #expect(progress.resumeGoal(goal.id) == .failure(.tooManyGoals(limit: 3)))
+        #expect(progress.resumeGoal(goal.id) == .failure(.tooManyGoals(limit: PlayerProgress.activeGoalLimit)))
         _ = progress.archiveGoal(progress.activeGoals[0].id)
         #expect((try? progress.resumeGoal(goal.id).get())?.isArchived == false)
         #expect(progress.activeGoals.contains { $0.id == goal.id })
+    }
+
+    @Test func aGoalNeverActedOnIsDeletedWithItsQuestsAndSteps() throws {
+        var (progress, goal) = try started()
+        _ = try progress.applyPlan(PlanDraft.template(for: .tidy), to: goal.id, makeID: UUID.init).get()
+        #expect((try? progress.deleteGoal(goal.id).get()) != nil)
+        #expect(progress.goals.isEmpty && progress.quests.isEmpty && progress.steps.isEmpty)
+        #expect(progress.deleteGoal(goal.id).failure == .unknownGoal(goal.id))
+    }
+
+    @Test func aGoalWithHistoryIsHiddenButItsRewardsStay() throws {
+        var (progress, goal) = try started()
+        let quest = try #require(progress.quests(of: goal.id).first)
+        let reward = try progress.complete(quest.id, on: day, at: date, completionID: UUID(), transactionID: UUID())
+            .get()
+        #expect((try? progress.deleteGoal(goal.id).get()) != nil)
+        #expect(progress.activeGoals.isEmpty && progress.restingGoals.isEmpty)
+        #expect(progress.totalXP == reward.xpDelta, "the ledger is history")
+        #expect(progress.completions.count == 1)
+        #expect(progress.resumeGoal(goal.id) == .failure(.unknownGoal(goal.id)), "a deleted goal does not come back")
+        #expect(progress.deleteGoal(goal.id).failure == .unknownGoal(goal.id))
+        #expect(
+            progress.complete(
+                quest.id, on: LocalDay(year: 2027, month: 1, day: 16), at: date, completionID: UUID(),
+                transactionID: UUID())
+                == .failure(.goalArchived(goal.id)))
+    }
+
+    @Test func aRestingGoalCanBeDeletedToo() throws {
+        var (progress, goal) = try started()
+        _ = progress.archiveGoal(goal.id)
+        #expect(progress.restingGoals.map(\.id) == [goal.id])
+        _ = try progress.deleteGoal(goal.id).get()
+        #expect(progress.restingGoals.isEmpty)
     }
 
     @Test func editingAQuestKeepsPastRewardsAsTheyWere() throws {
@@ -87,9 +121,14 @@ struct GoalEditingTests {
         #expect(store.editQuest(quest.id, title: "単語を3つ", minutes: 5))
         #expect(store.removeQuest(quest.id))
         #expect(store.progress.quests(of: goal.id).count == 2)
+        #expect(store.startTask(store.progress.quests(of: goal.id)[0].id))
+        #expect(store.deleteGoal(goal.id))
+        #expect(store.activeSession == nil, "a quest of a deleted goal stops")
+        #expect(repository.saved.last?.progress.goals.isEmpty == true)
     }
 }
 
 extension Result {
     fileprivate var isFailure: Bool { if case .failure = self { true } else { false } }
+    fileprivate var failure: Failure? { if case .failure(let error) = self { error } else { nil } }
 }

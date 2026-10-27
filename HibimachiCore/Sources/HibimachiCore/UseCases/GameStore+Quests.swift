@@ -19,6 +19,13 @@ extension GameStore {
         apply { progress in progress.archiveGoal(id) }
     }
 
+    /// Deletes a goal (ADR-0005 note, 2026-10-27). A quest of it in progress is cancelled first.
+    @discardableResult
+    public func deleteGoal(_ id: UUID) -> Bool {
+        if let session = activeSession, quest(session.questID)?.goalID == id { cancelTask() }
+        return apply { $0.deleteGoal(id) }
+    }
+
     @discardableResult
     public func renameGoal(_ id: UUID, to title: String) -> Bool {
         apply { $0.renameGoal(id, to: title) }
@@ -43,6 +50,12 @@ extension GameStore {
     public func addQuest(to goalID: UUID, title: String, minutes: Int) -> Bool {
         let id = makeIDForProgress()
         return apply { progress in progress.addQuest(to: goalID, title: title, minutes: minutes, id: id) }
+    }
+
+    /// Breaks a goal into the accepted steps and quests (ADR-0016), replacing earlier steps.
+    @discardableResult
+    public func applyPlan(_ draft: PlanDraft, to goalID: UUID) -> Bool {
+        apply { progress in progress.applyPlan(draft, to: goalID, makeID: makeIDForProgress) }
     }
 
     public func skipQuest(_ id: UUID) {

@@ -67,26 +67,29 @@ struct QuestRow: View {
     var start: (() -> Void)?
 
     var body: some View {
-        HStack(spacing: 8) {
+        // Title on its own line so long quest names are not squeezed by the buttons (device feedback 2026-10-27).
+        VStack(alignment: .leading, spacing: 8) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(quest.title).font(GameFont.body(16, weight: .bold)).foregroundStyle(GameColor.ink)
                 Text("\(goalTitle)・約\(quest.minutes)分").font(GameFont.caption()).foregroundStyle(GameColor.inkSoft)
             }
-            Spacer(minLength: 4)
-            Button("ほかの", action: skip)
-                .buttonStyle(.game(.secondary, compact: true))
-                .accessibilityLabel("ほかのクエストにする")
-            if let start {
-                Button(action: start) {
-                    Image(systemName: "play.fill")
+            HStack(spacing: 8) {
+                Button("ほかの", action: skip)
+                    .buttonStyle(.game(.secondary, compact: true))
+                    .accessibilityLabel("ほかのクエストにする")
+                Spacer(minLength: 0)
+                if let start {
+                    Button(action: start) {
+                        Label("はじめる", systemImage: "play.fill")
+                    }
+                    .buttonStyle(.game(.secondary, compact: true))
+                    .accessibilityLabel("今からやる")
+                    .accessibilityIdentifier("quest-start-\(index)")
                 }
-                .buttonStyle(.game(.secondary, compact: true))
-                .accessibilityLabel("今からやる")
-                .accessibilityIdentifier("quest-start-\(index)")
+                Button("やった！", action: complete)
+                    .buttonStyle(.game(.primary, compact: true))
+                    .accessibilityIdentifier("quest-done-\(index)")
             }
-            Button("やった！", action: complete)
-                .buttonStyle(.game(.primary, compact: true))
-                .accessibilityIdentifier("quest-done-\(index)")
         }
         .gameCard()
     }

@@ -18,22 +18,26 @@ enum AppleIntelligenceCoach {
     }
 
     static func comment(prompt: String, english: Bool) async -> String? {
+        await respond(to: prompt, instructions: english ? englishInstructions : japaneseInstructions, timeout: timeout)
+    }
+
+    /// One answer from the on-device model, or `nil` (unavailable, failed or slower than `timeout`).
+    /// Whichever finishes first wins; a task group would wait for a model call that ignores cancellation.
+    static func respond(to prompt: String, instructions: String, timeout: Duration) async -> String? {
         #if canImport(FoundationModels)
             if #available(iOS 26.0, *) {
                 guard SystemLanguageModel.default.isAvailable else { return nil }
-                let instructions = english ? englishInstructions : japaneseInstructions
-                return await withTaskGroup(of: String?.self) { group in
-                    group.addTask {
+                return await withCheckedContinuation { continuation in
+                    let gate = FirstAnswer(continuation)
+                    let work = Task {
                         let session = LanguageModelSession(instructions: instructions)
-                        return try? await session.respond(to: prompt).content
+                        gate.resume(with: try? await session.respond(to: prompt).content)
                     }
-                    group.addTask {
+                    Task {
                         try? await Task.sleep(for: timeout)
-                        return nil
+                        gate.resume(with: nil)
+                        work.cancel()
                     }
-                    let first = await group.next() ?? nil
-                    group.cancelAll()
-                    return first
                 }
             }
         #endif
@@ -43,8 +47,10 @@ enum AppleIntelligenceCoach {
     static let japaneseInstructions = """
         あなたは箱庭ゲーム「ひびまち」に住む、やさしい生き物です。
         プレイヤーが現実でやったことの記録を読んで、ひとことだけ返します。
-        ・日本語で1文、40文字以内。
-        ・ほめる、ねぎらう、気づいたことを言う。点数や評価はつけない。
+        ・日本語で1〜2文、60文字以内。
+        ・記録に書かれた具体的なこと（やったこと、量、ひとこと、写真に写っているもの）にひとつ触れてから、ねぎらう。
+          例: 「あたりを描けたんだね。形が見えてくるとわくわくするね。」
+        ・「頑張ったね」だけのような、どの記録にも言える返事にしない。点数や評価はつけない。
         ・本当にやったか、どれだけ上手かを決めつけない。命令や説教をしない。
         ・記録に書かれていないことを作らない。
         """
@@ -52,9 +58,27 @@ enum AppleIntelligenceCoach {
     static let englishInstructions = """
         You are a gentle creature living in the island game Hibimachi.
         Read the record of something the player did in real life and reply with one short sentence.
-        - English, one sentence, at most 15 words.
-        - Praise, thank or notice something. No scores or grades.
+        - English, one or two sentences, at most 25 words.
+        - Mention one concrete thing from the record (what was done, the amount, the note, what is in the photo), \
+        then encourage. Example: "You sketched the outline! It's exciting when the shape starts to show."
+        - Never reply with something that fits any record, like only "Good job". No scores or grades.
         - Never judge whether it really happened or how well it was done. No orders or lectures.
         - Do not invent anything that is not in the record.
         """
+}
+
+/// Resumes a continuation once, with whichever answer arrives first.
+private final class FirstAnswer: @unchecked Sendable {
+    private let lock = NSLock()
+    private var continuation: CheckedContinuation<String?, Never>?
+
+    init(_ continuation: CheckedContinuation<String?, Never>) { self.continuation = continuation }
+
+    func resume(with answer: String?) {
+        lock.lock()
+        let pending = continuation
+        continuation = nil
+        lock.unlock()
+        pending?.resume(returning: answer)
+    }
 }
