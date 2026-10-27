@@ -136,6 +136,11 @@ final class IslandUITests: XCTestCase {
         app.buttons["rename-goal-save"].tap()
         XCTAssertTrue(app.buttons["goal-row"].label.contains("部屋を心地よくする!"))
         screenshot(app, "17-goal-editing")
+        // Deleting asks once, then the goal is gone and a new one can be picked.
+        app.buttons["delete-goal"].tap()
+        app.buttons["delete-goal-confirm"].tap()
+        XCTAssertTrue(app.buttons["goal-category-tidy"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["goal-row"].exists)
     }
 
     @MainActor

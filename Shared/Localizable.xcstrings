@@ -351,6 +351,26 @@
         }
       }
     },
+    "「%@」を削除": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete “%@”"
+          }
+        }
+      }
+    },
+    "「%@」を削除しますか？これまでの記録とXPは残ります。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete “%@”? What you've done and your XP stay."
+          }
+        }
+      }
+    },
     "あと": {
       "localizations": {
         "en": {
@@ -2471,6 +2491,26 @@
         }
       }
     },
+    "削除": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
+          }
+        }
+      }
+    },
+    "削除する": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
+          }
+        }
+      }
+    },
     "前の写真とくらべる（なくてもOK）": {
       "localizations": {
         "en": {
@@ -3447,6 +3487,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "You can have up to %lld goals. Rest one to add another"
+          }
+        }
+      }
+    },
+    "目標は同時に%lldつまで。どれかをおやすみか削除すると追加できます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Up to %lld goals at a time. Rest or delete one to add another."
           }
         }
       }

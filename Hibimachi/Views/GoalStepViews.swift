@@ -203,3 +203,36 @@ private struct CountStepper: View {
 extension Array {
     fileprivate subscript(safe index: Int) -> Element? { indices.contains(index) ? self[index] : nil }
 }
+
+/// "削除" that asks once before deleting a goal. What was already done (XP, album, past days) stays.
+struct DeleteGoalButton: View {
+    let title: String
+    let delete: () -> Void
+    @State private var confirming = false
+
+    var body: some View {
+        if confirming {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("「\(title)」を削除しますか？これまでの記録とXPは残ります。")
+                    .font(GameFont.caption())
+                    .foregroundStyle(GameColor.berryDark)
+                    .fixedSize(horizontal: false, vertical: true)
+                HStack(spacing: 8) {
+                    Button("やめる") { confirming = false }.buttonStyle(.game(.secondary, compact: true))
+                    Button("削除する", action: delete)
+                        .buttonStyle(.game(.danger, compact: true))
+                        .accessibilityIdentifier("delete-goal-confirm")
+                }
+            }
+        } else {
+            Button {
+                confirming = true
+            } label: {
+                Label("削除", systemImage: "trash")
+            }
+            .buttonStyle(.game(.danger, compact: true))
+            .accessibilityLabel("「\(title)」を削除")
+            .accessibilityIdentifier("delete-goal")
+        }
+    }
+}

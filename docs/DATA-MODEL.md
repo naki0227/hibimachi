@@ -34,7 +34,7 @@
 - schema v6（2026-10-26）は `growthStage` を追加し、地図は 20x20。v5 以前の 16x16 の保存は読み込み時に (+2, +2) ずらして中央へ移す（ADR-0014）。
 - 同じ v6 の範囲で、クエスト記録に `retired`（もう出さない。履歴があるとき）、アルバムの記録に `beforeEntryID`（Before/After のつながり）を追加した。どちらも省略可で、古い保存はそのまま読める。
 - schema v7（2026-10-27、ADR-0015）は、アルバムに進行中のタスク `session`（questID, startedAt, beforePhoto?, duringPhoto?）を、記録に `amount`（value 1〜999, unit: minutes/times/pages/items）と `coachComment`（120字まで）を追加。台帳の理由に `bonus`（記録ボーナス、達成ごとに1回）を追加し、報酬規則は v3。v1〜v6 はそのまま読める（セッションなし）。クエストが消えたセッションは読み込み時に捨てる。
-- schema v8（2026-10-27、ADR-0016）は、目標のステップ `steps`（id, goalID, title, target 1〜99。並び順が進む順）と、クエストの `stepID`（省略可。ないものは「いつものクエスト」）を追加。ステップの進み具合は保存せず、そのステップのクエストの達成数から数える。v1〜v7 はステップなしとして読める。
+- schema v8（2026-10-27、ADR-0016）は、目標のステップ `steps`（id, goalID, title, target 1〜99。並び順が進む順）と、クエストの `stepID`（省略可。ないものは「いつものクエスト」）を追加。ステップの進み具合は保存せず、そのステップのクエストの達成数から数える。v1〜v7 はステップなしとして読める。同じ v8 で、目標に `deleted`（省略可。記録のある目標を削除したときに非表示として残す）を追加した。
 - 保存場所は App Group `group.com.enludus.hibimachi` の `Hibimachi/world.json`（ウィジェットと共有。使えないときはアプリの Application Support）。ウィジェットは副作用なしの `peek()` で読み、達成だけを書き込む（ADR-0006）。島の絵 `widget-island.png` も同じコンテナに置く。
 - `Wallet` は保存しない。台帳（transactions）の合計から XP ときらめきを算出する。`Unlock` は保存しない。解放は「レベルか発見数」から毎回算出する（`Unlocks`、ADR-0009。ADR-0005 の「すべて買える」を v1.0 で変更）。設定（効果音・音楽・ふるえる）は保存JSONではなく UserDefaults（ADR-0010）。
 

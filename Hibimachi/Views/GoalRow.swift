@@ -8,6 +8,7 @@ struct GoalActions {
     let removeQuest: (UUID) -> Bool
     let rename: (String) -> Bool
     let rest: () -> Void
+    let delete: () -> Void
     /// A proposed breakdown (AI or template) and applying the accepted one (ADR-0016).
     let makePlan: @MainActor () async -> (draft: PlanDraft, byAI: Bool)
     let applyPlan: (PlanDraft) -> Bool
@@ -123,6 +124,7 @@ struct GoalRow: View {
             Button("この目標をおやすみする", action: actions.rest)
                 .buttonStyle(.game(.secondary, compact: true))
         }
+        DeleteGoalButton(title: goal.title, delete: actions.delete)
     }
 }
 
