@@ -38,8 +38,10 @@ final class TaskSessionUITests: XCTestCase {
         let note = app.descendants(matching: .any)["finish-note"].firstMatch
         XCTAssertTrue(note.waitForExistence(timeout: 5))
         note.tap()
-        note.typeText("机の上")
-        XCTAssertTrue(app.descendants(matching: .any)["record-check"].firstMatch.label.contains("そろいました"))
+        // ASCII: typed Japanese can stay as uncommitted (marked) text on the simulator's keyboard.
+        note.typeText("desk")
+        let complete = app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", "そろいました"))
+        XCTAssertTrue(complete.firstMatch.waitForExistence(timeout: 5))
         app.buttons["session-done"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["finished-task"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.descendants(matching: .any)["record-bonus"].exists)
