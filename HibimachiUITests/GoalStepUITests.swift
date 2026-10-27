@@ -27,7 +27,11 @@ final class GoalStepUITests: XCTestCase {
         XCTAssertTrue(row.waitForExistence(timeout: 5))
         row.tap()
 
-        app.buttons["plan-goal"].tap()
+        // The open goal card runs past the bottom of the panel on small simulators; bring its buttons up first.
+        app.scrollViews.firstMatch.swipeUp()
+        let plan = app.buttons["plan-goal"]
+        XCTAssertTrue(plan.waitForExistence(timeout: 5))
+        plan.tap()
         // AI (when available) may take a while; the template arrives at once.
         let apply = app.buttons["plan-apply"]
         XCTAssertTrue(apply.waitForExistence(timeout: 30))
