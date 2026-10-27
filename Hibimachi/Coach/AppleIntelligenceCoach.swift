@@ -22,22 +22,22 @@ enum AppleIntelligenceCoach {
     }
 
     /// One answer from the on-device model, or `nil` (unavailable, failed or slower than `timeout`).
+    /// Whichever finishes first wins; a task group would wait for a model call that ignores cancellation.
     static func respond(to prompt: String, instructions: String, timeout: Duration) async -> String? {
         #if canImport(FoundationModels)
             if #available(iOS 26.0, *) {
                 guard SystemLanguageModel.default.isAvailable else { return nil }
-                return await withTaskGroup(of: String?.self) { group in
-                    group.addTask {
+                return await withCheckedContinuation { continuation in
+                    let gate = FirstAnswer(continuation)
+                    let work = Task {
                         let session = LanguageModelSession(instructions: instructions)
-                        return try? await session.respond(to: prompt).content
+                        gate.resume(with: try? await session.respond(to: prompt).content)
                     }
-                    group.addTask {
+                    Task {
                         try? await Task.sleep(for: timeout)
-                        return nil
+                        gate.resume(with: nil)
+                        work.cancel()
                     }
-                    let first = await group.next() ?? nil
-                    group.cancelAll()
-                    return first
                 }
             }
         #endif
@@ -65,4 +65,20 @@ enum AppleIntelligenceCoach {
         - Never judge whether it really happened or how well it was done. No orders or lectures.
         - Do not invent anything that is not in the record.
         """
+}
+
+/// Resumes a continuation once, with whichever answer arrives first.
+private final class FirstAnswer: @unchecked Sendable {
+    private let lock = NSLock()
+    private var continuation: CheckedContinuation<String?, Never>?
+
+    init(_ continuation: CheckedContinuation<String?, Never>) { self.continuation = continuation }
+
+    func resume(with answer: String?) {
+        lock.lock()
+        let pending = continuation
+        continuation = nil
+        lock.unlock()
+        pending?.resume(returning: answer)
+    }
 }
