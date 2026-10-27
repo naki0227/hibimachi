@@ -190,6 +190,24 @@ public struct PlayerProgress: Equatable, Sendable {
         return .success(reward)
     }
 
+    /// The small bonus for a complete record (ADR-0015). Once per completion; the completion must exist.
+    public mutating func grantRecordBonus(
+        for completionID: UUID, check: RecordCheck, at date: Date, transactionID: UUID
+    ) -> Result<RewardTransaction, ProgressError> {
+        guard completions.contains(where: { $0.id == completionID }) else {
+            return .failure(.unknownCompletion(completionID))
+        }
+        guard check.isComplete else { return .failure(.incompleteRecord) }
+        guard !ledger.contains(where: { $0.reason == .recordBonus(completionID: completionID) }) else {
+            return .failure(.alreadyRewarded(completionID))
+        }
+        let bonus = RewardTransaction(
+            id: transactionID, reason: .recordBonus(completionID: completionID), xpDelta: RewardRule.recordBonusXP,
+            sparkleDelta: RewardRule.recordBonusSparkles, ruleVersion: RewardRule.version, date: date)
+        ledger.append(bonus)
+        return .success(bonus)
+    }
+
     /// Takes back a same-day completion (e.g. a mis-tap). The reward is reversed with a ledger line, so a later
     /// re-completion is not a second reward. Refused if the きらめき were already spent.
     public mutating func undoCompletion(
@@ -202,12 +220,16 @@ public struct PlayerProgress: Equatable, Sendable {
         guard
             let granted = ledger.first(where: { $0.reason == .questCompleted(completionID: completionID) })
         else { return .failure(.unknownCompletion(completionID)) }
-        guard sparkles >= granted.sparkleDelta else {
-            return .failure(.notEnoughSparkles(needed: granted.sparkleDelta, balance: sparkles))
+        // The record bonus goes back with the quest's reward.
+        let bonus = ledger.first { $0.reason == .recordBonus(completionID: completionID) }
+        let xp = granted.xpDelta + (bonus?.xpDelta ?? 0)
+        let sparkleTotal = granted.sparkleDelta + (bonus?.sparkleDelta ?? 0)
+        guard sparkles >= sparkleTotal else {
+            return .failure(.notEnoughSparkles(needed: sparkleTotal, balance: sparkles))
         }
         let reversal = RewardTransaction(
-            id: transactionID, reason: .questUndone(completionID: completionID), xpDelta: -granted.xpDelta,
-            sparkleDelta: -granted.sparkleDelta, ruleVersion: granted.ruleVersion, date: date)
+            id: transactionID, reason: .questUndone(completionID: completionID), xpDelta: -xp,
+            sparkleDelta: -sparkleTotal, ruleVersion: granted.ruleVersion, date: date)
         completions.remove(at: index)
         ledger.append(reversal)
         return .success(reversal)
@@ -261,6 +283,10 @@ public struct PlayerProgress: Equatable, Sendable {
         var rewarded = Set<UUID>()
         for case .questCompleted(let completionID) in ledger.map(\.reason) {
             guard rewarded.insert(completionID).inserted else { throw .alreadyRewarded(completionID) }
+        }
+        var bonused = Set<UUID>()
+        for case .recordBonus(let completionID) in ledger.map(\.reason) {
+            guard bonused.insert(completionID).inserted else { throw .alreadyRewarded(completionID) }
         }
         guard sparkles >= 0 else { throw .negativeBalance }
     }

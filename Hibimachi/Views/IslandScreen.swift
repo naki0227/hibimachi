@@ -84,6 +84,23 @@ struct IslandScreen: View {
                     ) { phaseOverride = shownPhase.next }
                 }
                 Spacer()
+                if let session = store.activeSession, let quest = store.quest(session.questID), overlay == nil {
+                    Button {
+                        overlay = .quests
+                    } label: {
+                        Label(quest.title, systemImage: "play.circle.fill")
+                            .font(GameFont.body(14, weight: .heavy))
+                            .lineLimit(1)
+                            .padding(.horizontal, 14)
+                            .frame(minHeight: 40)
+                            .foregroundStyle(GameColor.ink)
+                            .background(GameColor.paper, in: Capsule())
+                            .overlay(Capsule().stroke(GameColor.leaf, lineWidth: 2.5))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityHint("いまやっていること。タップでひらきます")
+                    .accessibilityIdentifier("session-chip")
+                }
                 if tutorial.guide.isActive, store.mode == .browse, store.selectedObject == nil {
                     TutorialCard(step: tutorial.guide.step) { tutorial.skip() }
                         .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -151,7 +168,7 @@ struct IslandScreen: View {
                 previewWidget: Self.widgetPreviewAction { overlay = .widgetPreview },
                 close: close)
         case .quests:
-            QuestPanel(store: store, close: close)
+            QuestPanel(store: store, aiCoach: settings.aiCoach, close: close)
         case .fieldGuide:
             FieldGuidePanel(
                 discoveries: store.world.discoveries, images: album.images,

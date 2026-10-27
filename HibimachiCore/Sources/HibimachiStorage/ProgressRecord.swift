@@ -29,7 +29,7 @@ struct ProgressRecord: Codable, Equatable {
     }
 
     struct TransactionRecord: Codable, Equatable {
-        /// "welcome" | "quest" | "undo" | "purchase"
+        /// "welcome" | "quest" | "undo" | "bonus" | "purchase"
         var reason: String
         /// Completion ID for quest/undo, object kind for purchase.
         var reference: String?
@@ -90,6 +90,7 @@ extension ProgressRecord {
                 case .welcome: ("welcome", nil)
                 case .questCompleted(let id): ("quest", id.uuidString)
                 case .questUndone(let id): ("undo", id.uuidString)
+                case .recordBonus(let id): ("bonus", id.uuidString)
                 case .purchase(let kind): ("purchase", kind.rawValue)
                 }
             return TransactionRecord(
@@ -148,11 +149,15 @@ extension ProgressRecord {
         switch record.reason {
         case "welcome":
             return .welcome
-        case "quest", "undo":
+        case "quest", "undo", "bonus":
             guard let reference = record.reference, let id = UUID(uuidString: reference) else {
                 throw ProgressRecordError.badReference(record.reference)
             }
-            return record.reason == "quest" ? .questCompleted(completionID: id) : .questUndone(completionID: id)
+            switch record.reason {
+            case "quest": return .questCompleted(completionID: id)
+            case "undo": return .questUndone(completionID: id)
+            default: return .recordBonus(completionID: id)
+            }
         case "purchase":
             guard let reference = record.reference, let kind = ObjectKind(rawValue: reference) else {
                 throw ProgressRecordError.badReference(record.reference)

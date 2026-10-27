@@ -141,6 +141,7 @@ private struct MemoryComposer: View {
 struct AlbumDayCard: View {
     let day: AlbumDay
     let store: GameStore
+    @State private var sharing = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -170,6 +171,21 @@ struct AlbumDayCard: View {
                         afterURL: store.photoURL(for: entry))
                 }
                 MemoryRow(entry: entry, photoURL: store.photoURL(for: entry)) { store.deleteMemory(entry.id) }
+            }
+            Button {
+                sharing.toggle()
+            } label: {
+                Label(
+                    sharing ? LocalizedStringKey("シェアをとじる") : LocalizedStringKey("日記をシェア"),
+                    systemImage: "square.and.arrow.up")
+            }
+            .buttonStyle(.game(.secondary, compact: true))
+            .accessibilityIdentifier("diary-share")
+            if sharing {
+                ShareComposer(
+                    hasPhotos: day.memories.contains { $0.photo != nil },
+                    hasComment: day.memories.contains { $0.coachComment != nil }
+                ) { RecordShare.card(for: day, store: store, choices: $0) }
             }
         }
         .gameCard()

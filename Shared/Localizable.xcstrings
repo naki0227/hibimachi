@@ -161,12 +161,52 @@
         }
       }
     },
+    "%lld、おつかれさま！": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld done. Nice work!"
+          }
+        }
+      }
+    },
+    "%lldページ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld pages"
+          }
+        }
+      }
+    },
     "%lld分": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "%lld min"
+          }
+        }
+      }
+    },
+    "%lld問": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld problems"
+          }
+        }
+      }
+    },
+    "%lld回": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld times"
           }
         }
       }
@@ -187,6 +227,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Arrived on %1$lld/%2$lld. See the memory of that day"
+          }
+        }
+      }
+    },
+    "AIのひとこと": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI comments"
+          }
+        }
+      }
+    },
+    "AIのひとことを入れる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Include the AI comment"
           }
         }
       }
@@ -251,6 +311,26 @@
         }
       }
     },
+    "あとを撮る": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo after"
+          }
+        }
+      }
+    },
+    "いいものができたね。残せてよかった。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That turned out nicely. Glad you kept it."
+          }
+        }
+      }
+    },
     "いつもうれしそう。ハートを見せてくれる。": {
       "localizations": {
         "en": {
@@ -261,12 +341,42 @@
         }
       }
     },
+    "いまやっていること": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doing now"
+          }
+        }
+      }
+    },
+    "いまやっていること。タップでひらきます": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In progress. Tap to open"
+          }
+        }
+      }
+    },
     "いわ": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Rock"
+          }
+        }
+      }
+    },
+    "おつかれさま。島でひと休みしよう。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nice work. Take a little rest on the island."
           }
         }
       }
@@ -297,6 +407,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "This goal is resting"
+          }
+        }
+      }
+    },
+    "おわった": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finished"
           }
         }
       }
@@ -381,6 +501,16 @@
         }
       }
     },
+    "きょうの日記": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diary"
+          }
+        }
+      }
+    },
     "きょうの記録": {
       "localizations": {
         "en": {
@@ -407,6 +537,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sparkles %lld"
+          }
+        }
+      }
+    },
+    "きらめき +%lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sparkles +%lld"
           }
         }
       }
@@ -521,6 +661,16 @@
         }
       }
     },
+    "この端末では AI が使えないため、決まったひとことになります。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI isn't available on this device, so comments are fixed phrases."
+          }
+        }
+      }
+    },
     "この記録はもう受け取り済みです": {
       "localizations": {
         "en": {
@@ -617,6 +767,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Store"
+          }
+        }
+      }
+    },
+    "すっきりしたね。島のみんなも気持ちよさそう。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "So much tidier! Everyone on the island feels it too."
           }
         }
       }
@@ -771,6 +931,26 @@
         }
       }
     },
+    "できたものを撮る": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo of the result"
+          }
+        }
+      }
+    },
+    "できたら、できたものを撮って残せます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When it's ready, you can keep a photo of what you made."
+          }
+        }
+      }
+    },
     "できたらタップ。できなかった日も、島は何も失いません。": {
       "localizations": {
         "en": {
@@ -831,12 +1011,52 @@
         }
       }
     },
+    "どこを片付けた？（なくてもOK）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What did you tidy? (optional)"
+          }
+        }
+      }
+    },
+    "どこを片付ける？ まえを撮っておくと、あとでくらべられます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What will you tidy? Take a photo before to compare it later."
+          }
+        }
+      }
+    },
+    "どれくらいやった？": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How much did you do?"
+          }
+        }
+      }
+    },
     "どんなことを育てたい？": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "What would you like to grow?"
+          }
+        }
+      }
+    },
+    "どんな気分？（なくてもOK）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How do you feel? (optional)"
           }
         }
       }
@@ -977,6 +1197,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Add a few words or a photo"
+          }
+        }
+      }
+    },
+    "ひとことで記録がそろいます": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A few words complete the record"
           }
         }
       }
@@ -1161,6 +1391,26 @@
         }
       }
     },
+    "まえとあとの写真、またはひとことで記録がそろいます": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photos before and after, or a few words, complete the record"
+          }
+        }
+      }
+    },
+    "まえを撮る": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo before"
+          }
+        }
+      }
+    },
     "まだ何も見つけていません。生き物のそばに、いろいろなものを置いてみましょう。": {
       "localizations": {
         "en": {
@@ -1241,12 +1491,52 @@
         }
       }
     },
+    "もどる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back"
+          }
+        }
+      }
+    },
+    "やったこと": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        }
+      }
+    },
+    "やった量を入れると記録がそろいます": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter how much you did to complete the record"
+          }
+        }
+      }
+    },
     "やった！": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Did it!"
+          }
+        }
+      }
+    },
+    "やっているところを撮ってもOK。終わったら、どれくらいやったかを残せます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can take a photo while doing it. When done, record how much you did."
           }
         }
       }
@@ -1267,6 +1557,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cancel"
+          }
+        }
+      }
+    },
+    "ゆっくりしたら、どんな気分だったかを残せます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After resting, you can note how it felt."
+          }
+        }
+      }
+    },
+    "ゆっくりできたなら、それがいちばん。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If you got to slow down, that's what matters."
           }
         }
       }
@@ -1381,6 +1691,16 @@
         }
       }
     },
+    "カメラで撮る": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Take a photo"
+          }
+        }
+      }
+    },
     "クエスト": {
       "localizations": {
         "en": {
@@ -1427,6 +1747,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Share"
+          }
+        }
+      }
+    },
+    "シェアする画像": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Image to share"
+          }
+        }
+      }
+    },
+    "シェアをとじる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close sharing"
+          }
+        }
+      }
+    },
+    "タスクのあとのひとことを、この端末の中だけで作ります（送信しません）。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Writes the comment after a task on this device only (nothing is sent)."
           }
         }
       }
@@ -1611,6 +1961,16 @@
         }
       }
     },
+    "ページ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "pages"
+          }
+        }
+      }
+    },
     "ポスト": {
       "localizations": {
         "en": {
@@ -1741,6 +2101,16 @@
         }
       }
     },
+    "今からやる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start now"
+          }
+        }
+      }
+    },
     "今日の分はおしまい。島でゆっくりしましょう": {
       "localizations": {
         "en": {
@@ -1851,6 +2221,26 @@
         }
       }
     },
+    "写真か、ひとことで記録がそろいます": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A photo or a few words complete the record"
+          }
+        }
+      }
+    },
+    "写真からえらぶ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose from photos"
+          }
+        }
+      }
+    },
     "写真をえらぶ": {
       "localizations": {
         "en": {
@@ -1887,6 +2277,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "The photo could not be saved. You can still keep the words"
+          }
+        }
+      }
+    },
+    "写真を入れる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Include photos"
+          }
+        }
+      }
+    },
+    "分": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "min"
           }
         }
       }
@@ -1937,6 +2347,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Couldn't find what to move"
+          }
+        }
+      }
+    },
+    "単位": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unit"
           }
         }
       }
@@ -2011,12 +2431,42 @@
         }
       }
     },
+    "問": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "problems"
+          }
+        }
+      }
+    },
+    "回": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "times"
+          }
+        }
+      }
+    },
     "図鑑": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Field guide"
+          }
+        }
+      }
+    },
+    "増やす": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "More"
           }
         }
       }
@@ -2371,6 +2821,16 @@
         }
       }
     },
+    "撮りなおす": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retake"
+          }
+        }
+      }
+    },
     "新しい住人！": {
       "localizations": {
         "en": {
@@ -2387,6 +2847,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Starting a new island. The unreadable data was kept on this device under another name."
+          }
+        }
+      }
+    },
+    "日記をシェア": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share diary"
           }
         }
       }
@@ -2691,6 +3161,16 @@
         }
       }
     },
+    "減らす": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Less"
+          }
+        }
+      }
+    },
     "火のそばにすわって、手をかざしてぬくぬく。": {
       "localizations": {
         "en": {
@@ -2891,6 +3371,36 @@
         }
       }
     },
+    "記録がそろいました（✨+%lld）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Record complete (✨+%lld)"
+          }
+        }
+      }
+    },
+    "記録がまだそろっていません": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The record is not complete yet"
+          }
+        }
+      }
+    },
+    "記録できたね。あとで見返すのが楽しみ。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recorded. It will be fun to look back on."
+          }
+        }
+      }
+    },
     "記録に問題があります": {
       "localizations": {
         "en": {
@@ -2911,6 +3421,16 @@
         }
       }
     },
+    "記録ボーナス +%lld XP　✨+%lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Record bonus +%1$lld XP  ✨+%2$lld"
+          }
+        }
+      }
+    },
     "近くにベンチがあると、腰かけてのんびりする。": {
       "localizations": {
         "en": {
@@ -2927,6 +3447,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Add"
+          }
+        }
+      }
+    },
+    "途中を撮る": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo while doing it"
           }
         }
       }
@@ -2967,6 +3497,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Use the list button to select and move things on the island"
+          }
+        }
+      }
+    },
+    "量やひとことを入れる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Include amounts and notes"
           }
         }
       }

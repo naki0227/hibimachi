@@ -14,6 +14,10 @@ final class AppSettings {
     var haptics: Bool {
         didSet { store(haptics, Keys.haptics) }
     }
+    /// The on-device AI comment after a quest (ADR-0015). Off means the rule-based line.
+    var aiCoach: Bool {
+        didSet { store(aiCoach, Keys.aiCoach) }
+    }
 
     @ObservationIgnored private let defaults: UserDefaults
 
@@ -21,6 +25,7 @@ final class AppSettings {
         static let effects = "settings.soundEffects"
         static let music = "settings.music"
         static let haptics = "settings.haptics"
+        static let aiCoach = "settings.aiCoach"
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -28,6 +33,7 @@ final class AppSettings {
         soundEffects = defaults.object(forKey: Keys.effects) as? Bool ?? true
         music = defaults.object(forKey: Keys.music) as? Bool ?? true
         haptics = defaults.object(forKey: Keys.haptics) as? Bool ?? true
+        aiCoach = defaults.object(forKey: Keys.aiCoach) as? Bool ?? true
     }
 
     private func store(_ value: Bool, _ key: String) {

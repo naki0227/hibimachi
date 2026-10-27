@@ -122,6 +122,7 @@ extension ProgressError {
         case .undoOnlySameDay: String(localized: "取り消せるのは当日の記録だけです")
         case .notEnoughSparkles(let needed, let balance): String(localized: "きらめきが足りません（\(balance) / \(needed)）")
         case .invalidMinutes: String(localized: "時間は1〜60分にしてください")
+        case .incompleteRecord: String(localized: "記録がまだそろっていません")
         case .duplicateID, .negativeBalance: String(localized: "記録に問題があります")
         }
     }

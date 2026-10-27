@@ -63,6 +63,8 @@ struct QuestRow: View {
     let index: Int
     let complete: () -> Void
     let skip: () -> Void
+    /// "今からやる" (nil while another quest is in progress).
+    var start: (() -> Void)?
 
     var body: some View {
         HStack(spacing: 8) {
@@ -74,6 +76,14 @@ struct QuestRow: View {
             Button("ほかの", action: skip)
                 .buttonStyle(.game(.secondary, compact: true))
                 .accessibilityLabel("ほかのクエストにする")
+            if let start {
+                Button(action: start) {
+                    Image(systemName: "play.fill")
+                }
+                .buttonStyle(.game(.secondary, compact: true))
+                .accessibilityLabel("今からやる")
+                .accessibilityIdentifier("quest-start-\(index)")
+            }
             Button("やった！", action: complete)
                 .buttonStyle(.game(.primary, compact: true))
                 .accessibilityIdentifier("quest-done-\(index)")

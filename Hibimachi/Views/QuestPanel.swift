@@ -4,15 +4,30 @@ import SwiftUI
 /// "きょうのこと": today's small quests, rewards and goals. Everything is optional and never punishes.
 struct QuestPanel: View {
     let store: GameStore
+    /// Whether the player allows the on-device AI comment (settings).
+    var aiCoach = true
     let close: () -> Void
     @State private var newGoalCategory: GoalCategory?
     @State private var newGoalTitle = ""
     @State private var pickingCategory = false
+    /// The last quest finished through a session, for its record card (coach comment, share).
+    @State private var finishedTask: FinishedTask?
 
     var body: some View {
         GamePanel(title: "きょうのこと", symbol: "checklist", identifier: "quest-panel", close: close) {
             VStack(spacing: 14) {
                 ProgressSummary(progress: store.progress)
+                if let session = store.activeSession {
+                    SessionCard(store: store, session: session) { finishedTask = $0 }
+                }
+                if let finishedTask, store.lastCompletion?.completionID == finishedTask.completionID {
+                    FinishedTaskCard(store: store, task: finishedTask)
+                        .task(id: finishedTask.completionID) {
+                            guard let entryID = finishedTask.entryID else { return }
+                            let comment = await TaskCoach.comment(for: finishedTask, in: store, aiAllowed: aiCoach)
+                            store.setCoachComment(comment, on: entryID)
+                        }
+                }
                 if let last = store.lastCompletion {
                     RewardBanner(reward: last.reward, undo: { store.undoLastCompletion() })
                     if let step = store.nextStep {
@@ -91,7 +106,8 @@ struct QuestPanel: View {
                     goalTitle: store.progress.goals.first { $0.id == quest.goalID }?.title ?? "",
                     index: index,
                     complete: { store.completeQuest(quest.id) },
-                    skip: { store.skipQuest(quest.id) })
+                    skip: { store.skipQuest(quest.id) },
+                    start: store.activeSession == nil ? { _ = store.startTask(quest.id) } : nil)
             }
             ForEach(store.completedToday) { completion in
                 let title = store.progress.quests.first { $0.id == completion.questID }?.title ?? ""
