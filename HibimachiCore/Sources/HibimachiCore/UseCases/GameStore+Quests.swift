@@ -20,6 +20,26 @@ extension GameStore {
     }
 
     @discardableResult
+    public func renameGoal(_ id: UUID, to title: String) -> Bool {
+        apply { $0.renameGoal(id, to: title) }
+    }
+
+    @discardableResult
+    public func resumeGoal(_ id: UUID) -> Bool {
+        apply { $0.resumeGoal(id) }
+    }
+
+    @discardableResult
+    public func editQuest(_ id: UUID, title: String, minutes: Int) -> Bool {
+        apply { $0.editQuest(id, title: title, minutes: minutes) }
+    }
+
+    @discardableResult
+    public func removeQuest(_ id: UUID) -> Bool {
+        apply { $0.removeQuest(id) }
+    }
+
+    @discardableResult
     public func addQuest(to goalID: UUID, title: String, minutes: Int) -> Bool {
         let id = makeIDForProgress()
         return apply { progress in progress.addQuest(to: goalID, title: title, minutes: minutes, id: id) }

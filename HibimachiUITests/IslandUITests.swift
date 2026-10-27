@@ -15,6 +15,7 @@ final class IslandUITests: XCTestCase {
         app.launchEnvironment["HIBIMACHI_STORAGE_NAME"] = storageName
         if !tutorial { app.launchEnvironment["HIBIMACHI_TUTORIAL"] = "off" }
         app.launchEnvironment["HIBIMACHI_SEED"] = "2026"
+        app.launchEnvironment["HIBIMACHI_AUDIO"] = "off"
         app.launchEnvironment["HIBIMACHI_DAY_PHASE"] = "day"
         // The assertions below read Japanese labels; English is covered by EnglishUITests.
         app.launchArguments += ["-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
@@ -113,6 +114,28 @@ final class IslandUITests: XCTestCase {
     }
 
     @MainActor
+    func testGoalsAndQuestsCanBeEdited() {
+        let app = launch()
+        openQuests(app)
+        app.buttons["goal-category-tidy"].tap()
+        app.buttons["create-goal"].tap()
+        let row = app.buttons["goal-row"].firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 5))
+        row.tap()
+        XCTAssertEqual(app.buttons.matching(identifier: "edit-quest").count, 3)
+        app.buttons.matching(identifier: "edit-quest").firstMatch.tap()
+        app.buttons["remove-quest"].tap()
+        XCTAssertEqual(app.buttons.matching(identifier: "edit-quest").count, 2, "a never-done quest is removed")
+        app.buttons["rename-goal"].tap()
+        let field = app.descendants(matching: .any)["rename-goal-field"].firstMatch
+        field.tap()
+        field.typeText("!")
+        app.buttons["rename-goal-save"].tap()
+        XCTAssertTrue(app.buttons["goal-row"].label.contains("部屋を心地よくする!"))
+        screenshot(app, "17-goal-editing")
+    }
+
+    @MainActor
     func testQuestCompletionRewardsAndCanBeUndone() {
         let app = launch()
         XCTAssertEqual(sparkles(app), "きらめき 30")
@@ -191,11 +214,16 @@ final class IslandUITests: XCTestCase {
         screenshot(app, "13-tutorial")
         app.buttons["tab-nature"].tap()
         app.buttons["palette-flower"].tap()
+        XCTAssertTrue(app.buttons["confirm-edit"].waitForExistence(timeout: 10))
         app.buttons["confirm-edit"].tap()
+        // Wait for the placement to land before moving on: on a slow CI simulator taps can take seconds each.
+        XCTAssertTrue(app.staticTexts["selection-name"].waitForExistence(timeout: 10))
         app.buttons["deselect"].tap()
         // Placing moved the guide on (to the reaction step, or further if the creature already reacted).
         XCTAssertTrue(card.waitForExistence(timeout: 5))
-        XCTAssertFalse(app.staticTexts["島に、ひとつ置いてみよう"].exists)
+        let firstStep = app.staticTexts["島に、ひとつ置いてみよう"]
+        let gone = expectation(for: NSPredicate(format: "exists == false"), evaluatedWith: firstStep)
+        wait(for: [gone], timeout: 10)
         app.buttons["案内をとばす"].tap()
         XCTAssertFalse(card.waitForExistence(timeout: 2))
         app.terminate()

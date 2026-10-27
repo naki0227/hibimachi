@@ -29,9 +29,12 @@ public struct MemoryEntry: Identifiable, Equatable, Sendable {
     public let text: String?
     public let photo: MediaReference?
     public let completionID: UUID?
+    /// An earlier entry whose photo is the "before" of this one's ("after"). Cleared if that entry is deleted.
+    public internal(set) var beforeEntryID: UUID?
 
     public init(
-        id: UUID, day: LocalDay, createdAt: Date, text: String?, photo: MediaReference?, completionID: UUID?
+        id: UUID, day: LocalDay, createdAt: Date, text: String?, photo: MediaReference?, completionID: UUID?,
+        beforeEntryID: UUID? = nil
     ) {
         self.id = id
         self.day = day
@@ -39,6 +42,7 @@ public struct MemoryEntry: Identifiable, Equatable, Sendable {
         self.text = text
         self.photo = photo
         self.completionID = completionID
+        self.beforeEntryID = beforeEntryID
     }
 }
 
@@ -49,6 +53,8 @@ public enum AlbumError: Error, Equatable, Sendable {
     case notFound(UUID)
     case photoUnavailable
     case photoSaveFailed(String)
+    /// A before/after pair needs a photo on both sides.
+    case comparisonNeedsPhotos
 }
 
 /// The growth album (P2). Recording is optional and earns nothing: the island never depends on photos or text.
@@ -64,10 +70,16 @@ public struct Album: Equatable, Sendable {
     public var photoBytes: Int { entries.compactMap(\.photo).reduce(0) { $0 + $1.bytes } }
     public var photoCount: Int { entries.filter { $0.photo != nil }.count }
 
+    /// Earlier entries with a photo, newest first: the choices for a "before".
+    public var photoEntries: [MemoryEntry] { entries.filter { $0.photo != nil }.reversed() }
+
+    public func entry(_ id: UUID) -> MemoryEntry? { entries.first { $0.id == id } }
+
     /// Validates and adds an entry. `completionID`, when given, must be one of the player's completions.
+    /// `before`, when given, must be an existing entry with a photo, and this entry needs a photo too.
     public mutating func add(
         text: String?, photo: MediaReference?, completionID: UUID?, progress: PlayerProgress, day: LocalDay,
-        at date: Date, id: UUID
+        at date: Date, id: UUID, before: UUID? = nil
     ) -> Result<MemoryEntry, AlbumError> {
         let trimmed = text?.trimmingCharacters(in: .whitespacesAndNewlines)
         let body = (trimmed?.isEmpty ?? true) ? nil : trimmed
@@ -76,8 +88,13 @@ public struct Album: Equatable, Sendable {
         if let completionID, !progress.completions.contains(where: { $0.id == completionID }) {
             return .failure(.unknownCompletion(completionID))
         }
+        if let before {
+            guard let earlier = entry(before) else { return .failure(.notFound(before)) }
+            guard earlier.photo != nil, photo != nil else { return .failure(.comparisonNeedsPhotos) }
+        }
         let entry = MemoryEntry(
-            id: id, day: day, createdAt: date, text: body, photo: photo, completionID: completionID)
+            id: id, day: day, createdAt: date, text: body, photo: photo, completionID: completionID,
+            beforeEntryID: before)
         entries.append(entry)
         return .success(entry)
     }
@@ -85,6 +102,8 @@ public struct Album: Equatable, Sendable {
     @discardableResult
     public mutating func remove(_ id: UUID) -> MemoryEntry? {
         guard let index = entries.firstIndex(where: { $0.id == id }) else { return nil }
+        // Afters that compared with this entry keep their own photo and lose only the link.
+        for other in entries.indices where entries[other].beforeEntryID == id { entries[other].beforeEntryID = nil }
         return entries.remove(at: index)
     }
 }

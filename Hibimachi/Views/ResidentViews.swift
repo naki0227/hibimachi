@@ -64,6 +64,42 @@ struct ResidentCard: View {
     }
 }
 
+/// "島が広がった！" when the island grows (ADR-0014). Same slot and behaviour as the other cards.
+struct GrowthCard: View {
+    let dismiss: () -> Void
+
+    var body: some View {
+        Button(action: dismiss) {
+            HStack(spacing: 12) {
+                Image(systemName: "leaf.fill")
+                    .font(.system(size: 26, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 64, height: 64)
+                    .background(GameColor.leaf, in: RoundedRectangle(cornerRadius: 14))
+                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(GameColor.line, lineWidth: 2))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("島が広がった！").font(GameFont.body(16, weight: .heavy)).foregroundStyle(GameColor.ink)
+                    Text("まわりの海に、新しい土地ができました。")
+                        .font(GameFont.caption(11)).foregroundStyle(GameColor.inkSoft)
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(10)
+            .background(GameColor.paper, in: RoundedRectangle(cornerRadius: 20))
+            .overlay(RoundedRectangle(cornerRadius: 20).stroke(GameColor.line, lineWidth: 2.5))
+            .shadow(color: GameColor.ink.opacity(0.2), radius: 6, y: 3)
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityHint("タップで閉じます")
+        .accessibilityIdentifier("growth-card")
+        .task {
+            try? await Task.sleep(for: .seconds(6))
+            dismiss()
+        }
+    }
+}
+
 /// Three hearts filled by friendship level, for the field guide.
 struct FriendshipHearts: View {
     let friendship: Friendship

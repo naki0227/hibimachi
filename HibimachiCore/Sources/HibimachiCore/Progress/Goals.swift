@@ -38,12 +38,15 @@ public struct QuestTemplate: Identifiable, Equatable, Sendable {
     public let goalID: UUID
     public var title: String
     public var minutes: Int
+    /// No longer suggested. Kept (not deleted) when past completions point at it, so history stays intact.
+    public var isRetired: Bool
 
-    public init(id: UUID, goalID: UUID, title: String, minutes: Int) {
+    public init(id: UUID, goalID: UUID, title: String, minutes: Int, isRetired: Bool = false) {
         self.id = id
         self.goalID = goalID
         self.title = title
         self.minutes = minutes
+        self.isRetired = isRetired
     }
 }
 

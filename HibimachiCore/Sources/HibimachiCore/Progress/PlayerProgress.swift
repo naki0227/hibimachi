@@ -62,6 +62,8 @@ public struct PlayerProgress: Equatable, Sendable {
     public var activeGoals: [Goal] { goals.filter { !$0.isArchived } }
 
     public func quests(of goalID: UUID) -> [QuestTemplate] { quests.filter { $0.goalID == goalID } }
+    /// Quests still suggested for a goal (not retired).
+    public func activeQuests(of goalID: UUID) -> [QuestTemplate] { quests(of: goalID).filter { !$0.isRetired } }
 
     public func isCompleted(_ questID: UUID, on day: LocalDay) -> Bool {
         completions.contains { $0.questID == questID && $0.day == day }
@@ -97,6 +99,47 @@ public struct PlayerProgress: Equatable, Sendable {
         guard let index = goals.firstIndex(where: { $0.id == id }) else { return .failure(.unknownGoal(id)) }
         goals[index].isArchived = true
         return .success(goals[index])
+    }
+
+    public mutating func renameGoal(_ id: UUID, to title: String) -> Result<Goal, ProgressError> {
+        guard let index = goals.firstIndex(where: { $0.id == id }) else { return .failure(.unknownGoal(id)) }
+        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let issue = Self.titleIssue(trimmed, limit: Goal.titleLimit) { return .failure(issue) }
+        goals[index].title = trimmed
+        return .success(goals[index])
+    }
+
+    /// Brings a resting goal back, within the active limit.
+    public mutating func resumeGoal(_ id: UUID) -> Result<Goal, ProgressError> {
+        guard let index = goals.firstIndex(where: { $0.id == id }) else { return .failure(.unknownGoal(id)) }
+        guard goals[index].isArchived else { return .success(goals[index]) }
+        guard activeGoals.count < Self.activeGoalLimit else {
+            return .failure(.tooManyGoals(limit: Self.activeGoalLimit))
+        }
+        goals[index].isArchived = false
+        return .success(goals[index])
+    }
+
+    /// Changes a quest's wording or length. Rewards already granted keep their amounts (the ledger is history).
+    public mutating func editQuest(_ id: UUID, title: String, minutes: Int) -> Result<QuestTemplate, ProgressError> {
+        guard let index = quests.firstIndex(where: { $0.id == id }) else { return .failure(.unknownQuest(id)) }
+        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let issue = Self.titleIssue(trimmed, limit: Goal.titleLimit) { return .failure(issue) }
+        guard QuestTemplate.minutesRange.contains(minutes) else { return .failure(.invalidMinutes) }
+        quests[index].title = trimmed
+        quests[index].minutes = minutes
+        return .success(quests[index])
+    }
+
+    /// Stops suggesting a quest. One that was never done is deleted; one with history is only retired.
+    public mutating func removeQuest(_ id: UUID) -> Result<Void, ProgressError> {
+        guard let index = quests.firstIndex(where: { $0.id == id }) else { return .failure(.unknownQuest(id)) }
+        if completions.contains(where: { $0.questID == id }) {
+            quests[index].isRetired = true
+        } else {
+            quests.remove(at: index)
+        }
+        return .success(())
     }
 
     public mutating func addQuest(

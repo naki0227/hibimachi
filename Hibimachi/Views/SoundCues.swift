@@ -29,5 +29,6 @@ struct SoundCues: ViewModifier {
             .onChange(of: store.pendingDiscoveries.count) { old, new in if new > old { sound.play(.discovery) } }
             .onChange(of: store.pendingArrivals.count) { old, new in if new > old { sound.play(.arrival) } }
             .onChange(of: store.pendingFriendships.count) { old, new in if new > old { sound.play(.arrival) } }
+            .onChange(of: store.pendingGrowths) { old, new in if new > old { sound.play(.questDone) } }
     }
 }

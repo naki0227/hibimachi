@@ -37,7 +37,7 @@ struct JSONFileWorldRepositoryTests {
         var world = IslandFactory.makeWorld()
         world.recordDiscovery(.treeNap)
         world.recordDiscovery(.benchRest)
-        world.creature.position = TileCoord(x: 2, y: 5)
+        world.creature.position = TileCoord(x: 4, y: 7)
         return world
     }
 
@@ -136,7 +136,7 @@ struct JSONFileWorldRepositoryTests {
         #expect(loaded.world.residents.map(\.position) == world.residents.map(\.position))
 
         var placed = world
-        _ = placed.place(.swing, at: TileCoord(x: 6, y: 6), id: UUID(), placedAt: Date(timeIntervalSince1970: 1_000))
+        _ = placed.place(.swing, at: TileCoord(x: 8, y: 8), id: UUID(), placedAt: Date(timeIntervalSince1970: 1_000))
         try repository().save(game(placed))
         #expect(repository().peek()?.world.objects.last?.placedAt == Date(timeIntervalSince1970: 1_000))
         try repository().save(game(world))
@@ -201,13 +201,21 @@ struct JSONFileWorldRepositoryTests {
     @Test func albumRoundTripsAndOldSavesHaveAnEmptyAlbum() throws {
         var saved = game(sampleWorld())
         let photo = MediaReference(id: UUID(), fileName: "a.jpg", bytes: 12, createdAt: Date(timeIntervalSince1970: 5))
-        _ = saved.album.add(
+        let first = try saved.album.add(
             text: "はじめての記録", photo: photo, completionID: nil, progress: saved.progress,
-            day: LocalDay(year: 2027, month: 1, day: 15), at: Date(timeIntervalSince1970: 5), id: UUID())
+            day: LocalDay(year: 2027, month: 1, day: 15), at: Date(timeIntervalSince1970: 5), id: UUID()
+        ).get()
+        let afterPhoto = MediaReference(
+            id: UUID(), fileName: "b.jpg", bytes: 9, createdAt: Date(timeIntervalSince1970: 6))
+        _ = saved.album.add(
+            text: nil, photo: afterPhoto, completionID: nil, progress: saved.progress,
+            day: LocalDay(year: 2027, month: 2, day: 15), at: Date(timeIntervalSince1970: 6), id: UUID(),
+            before: first.id)
+        #expect(saved.album.entries.count == 2)
         try repository().save(saved)
         #expect(repository().peek() == saved)
         let text = try String(contentsOf: repository().fileURL, encoding: .utf8)
-        #expect(text.contains("\"schemaVersion\":5"))
+        #expect(text.contains("\"schemaVersion\":6"))
 
         // A v2 file (no album key) loads with an empty album.
         var object = try #require(
@@ -314,8 +322,15 @@ struct JSONFileWorldRepositoryTests {
             return
         }
         let world = snapshot.world
-        #expect(world.terrain == [.grass, .path, .water, .grass])
+        // v5 -> v6 migration: the old island moves to the middle of the larger map, everything shifted alike.
+        #expect(world.width == IslandGrowth.mapSize && world.height == IslandGrowth.mapSize)
+        let margin = (IslandGrowth.mapSize - 2) / 2
+        let old = [(0, 0), (1, 0), (0, 1), (1, 1)].map { world.terrain(at: TileCoord(x: $0 + margin, y: $1 + margin)) }
+        #expect(old == [.grass, .path, .water, .grass])
+        #expect(world.terrain(at: TileCoord(x: 0, y: 0)) == .water)
         #expect(world.objects.first?.kind == .roundTree)
+        #expect(world.objects.first?.origin == TileCoord(x: 1 + margin, y: 1 + margin))
+        #expect(world.creature.position == TileCoord(x: margin, y: margin))
         #expect(world.discoveries == [.treeNap])
         // v1 -> v2 migration: owns what is placed, gets the welcome gift, no goals yet.
         #expect(snapshot.progress.owned == [.roundTree: 1])

@@ -15,6 +15,7 @@ extension GameStore {
         events += arrived.map { .residentArrived($0.species, id: $0.id) }
         pendingDiscoveries.append(contentsOf: discovered)
         pendingArrivals.append(contentsOf: arrived.map(\.species))
+        if !discovered.isEmpty { growIslandIfDue() }
         if !discovered.isEmpty || !arrived.isEmpty { persist() }
         return events
     }

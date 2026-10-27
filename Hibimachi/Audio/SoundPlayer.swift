@@ -24,6 +24,8 @@ final class SoundPlayer {
     }
     /// Evening/night play lower and slower.
     var calm = false
+    /// `false` keeps the audio engine off entirely (UI tests on CI runners, which have no audio device).
+    var isAvailable = true
 
     private let engine = AVAudioEngine()
     private let synth: Synth
@@ -66,7 +68,7 @@ final class SoundPlayer {
     /// Starts or pauses audio with the app (no sound in the background).
     func setActive(_ active: Bool) {
         if active {
-            guard !started else { return }
+            guard isAvailable, !started else { return }
             do {
                 try AVAudioSession.sharedInstance().setCategory(.ambient, options: [.mixWithOthers])
                 try AVAudioSession.sharedInstance().setActive(true)

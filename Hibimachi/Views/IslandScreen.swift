@@ -16,6 +16,8 @@ struct IslandScreen: View {
     let tutorial: TutorialCoach
     let settings: AppSettings
     @State private var scene: IslandScene
+    /// Rendered when the share panel opens, so it shows the island as it is right now.
+    @State private var sharePicture: UIImage?
     @State private var album: DiscoveryAlbum
     @State private var tab: PaletteTab = .build
     @State private var phaseOverride: DayPhase?
@@ -63,6 +65,10 @@ struct IslandScreen: View {
                         } else if let species = store.pendingArrivals.first {
                             ResidentCard.arrival(species) { store.dismissArrival() }
                                 .transition(.move(edge: .top).combined(with: .opacity))
+                        } else if store.pendingGrowths > 0 {
+                            GrowthCard { store.dismissGrowth() }
+                                .id(store.pendingGrowths)
+                                .transition(.move(edge: .top).combined(with: .opacity))
                         } else if let notice = store.pendingFriendships.first {
                             ResidentCard.friendship(notice) { store.dismissFriendship() }
                                 .transition(.move(edge: .top).combined(with: .opacity))
@@ -91,6 +97,7 @@ struct IslandScreen: View {
             .animation(.easeOut(duration: 0.25), value: store.pendingDiscoveries.first)
             .animation(.easeOut(duration: 0.25), value: store.pendingArrivals.first)
             .animation(.easeOut(duration: 0.25), value: store.pendingFriendships.first)
+            .animation(.easeOut(duration: 0.25), value: store.pendingGrowths)
             .animation(.easeOut(duration: 0.25), value: tutorial.guide.step)
         }
         .modifier(TutorialSignals(store: store, coach: tutorial))
@@ -137,6 +144,10 @@ struct IslandScreen: View {
                 },
                 askReset: { overlay = .resetConfirm },
                 openSettings: { overlay = .settings },
+                shareIsland: {
+                    sharePicture = IslandShareCard.render(scene.islandPicture(maxWidth: 1080))
+                    overlay = .share
+                },
                 previewWidget: Self.widgetPreviewAction { overlay = .widgetPreview },
                 close: close)
         case .quests:
@@ -172,6 +183,8 @@ struct IslandScreen: View {
             #else
                 EmptyView()
             #endif
+        case .share:
+            IslandSharePanel(picture: sharePicture, close: close)
         case .startupNotice:
             GameDialog(
                 symbol: "exclamationmark.triangle.fill", title: "保存データを読み込めませんでした",

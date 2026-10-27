@@ -130,15 +130,18 @@ final class DemoUITests: XCTestCase {
         pause(3)
     }
 
-    /// Screen point of a tile's center. Mirrors IslandScene.resetCamera + IsoGrid (64x32 tiles, 48pt base,
-    /// camera margin 24, initial zoom 0.72), centered on the map.
+    /// Screen point of a tile's center, in the starting 16x16 layout's coordinates (the map adds 2 tiles of sea on
+    /// each side). Mirrors IslandScene.resetCamera + IsoGrid (64x32 tiles, 48pt base, camera margin 24, initial
+    /// zoom 0.72): framed on the 16-tile land, centered on the 20x20 map.
     @MainActor
     private func tile(_ app: XCUIApplication, x: Int, y: Int) -> XCUICoordinate {
+        let (x, y) = (x + 2, y + 2)
         let frame = app.windows.firstMatch.frame
-        let map = CGSize(width: 1024, height: 560)
-        let fitting = min(max((map.width + 48) / frame.width, (map.height + 48) / frame.height), 3.2)
+        let land = CGSize(width: 1024, height: 560)
+        let map = CGSize(width: 1280, height: 688)
+        let fitting = min(max((land.width + 48) / frame.width, (land.height + 48) / frame.height), 3.2)
         let scale = min(max(fitting * 0.72, 0.6), 3.2)
-        let sceneX = (CGFloat(x) + 0.5 - (CGFloat(y) + 0.5) + 16) * 32
+        let sceneX = (CGFloat(x) + 0.5 - (CGFloat(y) + 0.5) + 20) * 32
         let sceneY = (CGFloat(x) + 0.5 + CGFloat(y) + 0.5) * 16 + 48
         let point = CGVector(
             dx: frame.width / 2 + (sceneX - map.width / 2) / scale,

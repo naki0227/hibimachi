@@ -21,12 +21,32 @@
         }
       }
     },
+    "%@と%@の写真をくらべる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compare the photos from %1$@ and %2$@"
+          }
+        }
+      }
+    },
     "%@に\n%@を迎えた日": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "%1$@\nThe day %2$@ arrived"
+          }
+        }
+      }
+    },
+    "%@の写真": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo from %@"
           }
         }
       }
@@ -57,6 +77,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mark %@ as done"
+          }
+        }
+      }
+    },
+    "%@を編集": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit %@"
           }
         }
       }
@@ -211,6 +241,16 @@
         }
       }
     },
+    "あと": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After"
+          }
+        }
+      }
+    },
     "いつもうれしそう。ハートを見せてくれる。": {
       "localizations": {
         "en": {
@@ -237,6 +277,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Waiting for a letter"
+          }
+        }
+      }
+    },
+    "おやすみ中の目標": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resting goals"
           }
         }
       }
@@ -367,6 +417,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Not enough sparkles (%1$lld / %2$lld)"
+          }
+        }
+      }
+    },
+    "くらべるには、両方に写真が必要です": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Both sides need a photo to compare"
           }
         }
       }
@@ -1091,6 +1151,16 @@
         }
       }
     },
+    "まえ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Before"
+          }
+        }
+      }
+    },
     "まだ何も見つけていません。生き物のそばに、いろいろなものを置いてみましょう。": {
       "localizations": {
         "en": {
@@ -1121,12 +1191,32 @@
         }
       }
     },
+    "まわりの海に、新しい土地ができました。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New land rose from the sea around it."
+          }
+        }
+      }
+    },
     "みち": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Paths"
+          }
+        }
+      }
+    },
+    "もう出さない": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop showing"
           }
         }
       }
@@ -1301,6 +1391,16 @@
         }
       }
     },
+    "クエストの名前": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quest name"
+          }
+        }
+      }
+    },
     "クエストをやった！にする": {
       "localizations": {
         "en": {
@@ -1317,6 +1417,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Support and contact"
+          }
+        }
+      }
+    },
+    "シェアする": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share"
           }
         }
       }
@@ -1681,6 +1791,16 @@
         }
       }
     },
+    "保存": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save"
+          }
+        }
+      }
+    },
     "保存できませんでした。島はこのまま残っています。": {
       "localizations": {
         "en": {
@@ -1707,6 +1827,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Retry"
+          }
+        }
+      }
+    },
+    "再開": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume"
           }
         }
       }
@@ -1757,6 +1887,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "The photo could not be saved. You can still keep the words"
+          }
+        }
+      }
+    },
+    "前の写真とくらべる（なくてもOK）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compare with an earlier photo (optional)"
           }
         }
       }
@@ -1857,6 +1997,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Enter a name"
+          }
+        }
+      }
+    },
+    "名前を変える": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rename"
           }
         }
       }
@@ -2011,6 +2161,16 @@
         }
       }
     },
+    "島が広がった！": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The island grew!"
+          }
+        }
+      }
+    },
     "島に、ひとつ置いてみよう": {
       "localizations": {
         "en": {
@@ -2077,6 +2237,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Can't place it off the island"
+          }
+        }
+      }
+    },
+    "島の絵だけをシェアします。目標や記録、写真は含まれません。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only the island picture is shared. No goals, notes or photos."
+          }
+        }
+      }
+    },
+    "島の絵をシェア": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share island picture"
+          }
+        }
+      }
+    },
+    "島の絵を用意できませんでした。島を表示してから、もう一度ためしてください。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't make the picture. Show the island and try again."
           }
         }
       }

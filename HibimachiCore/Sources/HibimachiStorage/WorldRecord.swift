@@ -6,9 +6,10 @@ import HibimachiCore
 /// v3 (2026-10-26): adds `album` (optional memories; photos are separate files).
 /// v4 (2026-10-26): adds `residents` (newcomers) and a `species` on every creature record.
 /// v5 (2026-10-26): adds `friendship` on creature records.
+/// v6 (2026-10-26): adds `growthStage`; the map is 20x20 (older 16x16 islands are moved to its middle on load).
 struct WorldRecord: Codable, Equatable {
-    static let currentSchemaVersion = 5
-    static let supportedSchemaVersions = 1...5
+    static let currentSchemaVersion = 6
+    static let supportedSchemaVersions = 1...6
 
     struct ObjectRecord: Codable, Equatable {
         var id: UUID
@@ -45,6 +46,8 @@ struct WorldRecord: Codable, Equatable {
     /// Residents after the first one (v4). Absent before v4.
     var residents: [CreatureRecord]?
     var discoveries: [String]
+    /// Absent before v6: not grown yet.
+    var growthStage: Int?
     /// Absent in v1 files; migrated by `makeSnapshot`.
     var progress: ProgressRecord?
     /// Absent before v3; an empty album then.
@@ -107,6 +110,7 @@ extension WorldRecord {
         residents = world.residents.dropFirst().map(CreatureRecord.init)
         // Sorted so identical worlds produce identical files.
         discoveries = world.discoveries.map(\.rawValue).sorted()
+        growthStage = world.growthStage == 0 ? nil : world.growthStage
         progress = nil
         album = nil
     }
@@ -131,15 +135,18 @@ extension WorldRecord {
         let first = try creature.makeCreature()
         let others = try (residents ?? []).map { try $0.makeCreature() }
         do {
-            return try World(
+            let world = try World(
                 width: width,
                 height: height,
                 terrain: tiles,
                 objects: worldObjects,
                 creature: first,
                 otherResidents: others,
-                discoveries: known
+                discoveries: known,
+                growthStage: growthStage ?? 0
             )
+            // Islands saved before v6 lived on a 16x16 map; they move to the middle of the larger one.
+            return schemaVersion < 6 ? world.padded(toSize: IslandGrowth.mapSize) : world
         } catch {
             throw WorldRecordError.invalidWorld(error)
         }

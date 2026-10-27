@@ -108,9 +108,15 @@ extension IslandScene: UIGestureRecognizerDelegate {
     }
 
     /// Frames the island so it fills the width of a phone (the thin left/right tips may be cut), centered.
+    /// Framed on the land, not the whole map, so the sea left for growth does not shrink the island on screen.
     /// UI tests mirror this formula (HibimachiUITests/DemoUITests.swift).
     func resetCamera() {
-        let scale = cameraBounds.clampScale(cameraBounds.fittingScale(for: viewportSize) * Self.initialZoom)
+        // One ring of sea around the land, which is exactly the original 16x16 framing for a new island.
+        let span = store.world.landSpan + 2
+        let land = CameraBounds(
+            mapSize: IsoGrid(columns: span, rows: span).mapSize, minScale: cameraBounds.minScale,
+            maxScale: cameraBounds.maxScale, margin: cameraBounds.margin)
+        let scale = cameraBounds.clampScale(land.fittingScale(for: viewportSize) * Self.initialZoom)
         cameraNode.setScale(CGFloat(scale))
         cameraNode.position = CGPoint(x: grid.mapSize.width / 2, y: grid.mapSize.height / 2)
         clampCamera()
