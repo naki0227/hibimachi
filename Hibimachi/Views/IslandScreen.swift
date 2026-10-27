@@ -84,6 +84,12 @@ struct IslandScreen: View {
                     ) { phaseOverride = shownPhase.next }
                 }
                 Spacer()
+                if overlay == nil, store.activeSession == nil, store.mode == .browse, store.selectedObject == nil,
+                    !tutorial.guide.isActive
+                {
+                    HomeQuestTray(store: store) { overlay = .quests }
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
                 if let session = store.activeSession, let quest = store.quest(session.questID), overlay == nil {
                     Button {
                         overlay = .quests

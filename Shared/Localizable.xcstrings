@@ -71,6 +71,16 @@
         }
       }
     },
+    "%@をやった": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done: %@"
+          }
+        }
+      }
+    },
     "%@をやった！にする": {
       "localizations": {
         "en": {
@@ -547,6 +557,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Today's quests"
+          }
+        }
+      }
+    },
+    "きょうのクエストはぜんぶできました！島でひと休みしよう。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All of today's quests are done! Take a rest on the island."
           }
         }
       }
@@ -3431,12 +3451,32 @@
         }
       }
     },
+    "目標を決めて、きょうのクエストをもらう": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick a goal to get today's quests"
+          }
+        }
+      }
+    },
     "目標を追加": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Add goal"
+          }
+        }
+      }
+    },
+    "約%lld分": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About %lld min"
           }
         }
       }
