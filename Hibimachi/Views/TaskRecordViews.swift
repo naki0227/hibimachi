@@ -44,6 +44,8 @@ struct FinishedTaskCard: View {
             }
         }
         .gameCard(highlighted: true)
+        // A container, so the buttons inside keep their own identifiers.
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("finished-task")
     }
 }

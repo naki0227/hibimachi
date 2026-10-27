@@ -27,6 +27,8 @@ struct SessionCard: View {
             }
         }
         .gameCard(highlighted: true)
+        // A container, so the buttons inside keep their own identifiers.
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("session-card")
     }
 
