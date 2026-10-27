@@ -40,13 +40,18 @@ public struct QuestTemplate: Identifiable, Equatable, Sendable {
     public var minutes: Int
     /// No longer suggested. Kept (not deleted) when past completions point at it, so history stays intact.
     public var isRetired: Bool
+    /// The goal step it belongs to (ADR-0016). `nil`: an everyday quest of the goal, suggested at any step.
+    public var stepID: UUID?
 
-    public init(id: UUID, goalID: UUID, title: String, minutes: Int, isRetired: Bool = false) {
+    public init(
+        id: UUID, goalID: UUID, title: String, minutes: Int, isRetired: Bool = false, stepID: UUID? = nil
+    ) {
         self.id = id
         self.goalID = goalID
         self.title = title
         self.minutes = minutes
         self.isRetired = isRetired
+        self.stepID = stepID
     }
 }
 

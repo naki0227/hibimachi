@@ -5,8 +5,11 @@ import Foundation
 public struct PlayerProgress: Equatable, Sendable {
     public static let activeGoalLimit = 3
 
-    public private(set) var goals: [Goal]
-    public private(set) var quests: [QuestTemplate]
+    // Set from the goal and step extensions (PlayerProgress+Goals/Steps.swift).
+    public internal(set) var goals: [Goal]
+    public internal(set) var quests: [QuestTemplate]
+    /// Middle steps of goals, in order within each goal (ADR-0016).
+    public internal(set) var steps: [GoalStep]
     public private(set) var completions: [QuestCompletion]
     public private(set) var ledger: [RewardTransaction]
     /// Buildings the player owns (placed or in storage). Placing uses one; putting away returns it.
@@ -15,12 +18,13 @@ public struct PlayerProgress: Equatable, Sendable {
     public private(set) var skipped: (day: LocalDay, questIDs: Set<UUID>)?
 
     public init(
-        goals: [Goal] = [], quests: [QuestTemplate] = [], completions: [QuestCompletion] = [],
+        goals: [Goal] = [], quests: [QuestTemplate] = [], steps: [GoalStep] = [], completions: [QuestCompletion] = [],
         ledger: [RewardTransaction] = [], owned: [ObjectKind: Int] = [:],
         skipped: (day: LocalDay, questIDs: Set<UUID>)? = nil
     ) throws(ProgressError) {
         self.goals = goals
         self.quests = quests
+        self.steps = steps
         self.completions = completions
         self.ledger = ledger
         self.owned = owned
@@ -42,6 +46,7 @@ public struct PlayerProgress: Equatable, Sendable {
     private init(unvalidatedLedger ledger: [RewardTransaction], owned: [ObjectKind: Int]) {
         goals = []
         quests = []
+        steps = []
         completions = []
         self.ledger = ledger
         self.owned = owned
@@ -49,7 +54,8 @@ public struct PlayerProgress: Equatable, Sendable {
     }
 
     public static func == (lhs: PlayerProgress, rhs: PlayerProgress) -> Bool {
-        lhs.goals == rhs.goals && lhs.quests == rhs.quests && lhs.completions == rhs.completions
+        lhs.goals == rhs.goals && lhs.quests == rhs.quests && lhs.steps == rhs.steps
+            && lhs.completions == rhs.completions
             && lhs.ledger == rhs.ledger && lhs.owned == rhs.owned && lhs.skipped?.day == rhs.skipped?.day
             && lhs.skipped?.questIDs == rhs.skipped?.questIDs
     }
@@ -76,84 +82,7 @@ public struct PlayerProgress: Equatable, Sendable {
         max(owned[kind, default: 0] - world.objects.filter { $0.kind == kind }.count, 0)
     }
 
-    // MARK: Goals and quests
-
-    public mutating func addGoal(
-        title: String, category: GoalCategory, at date: Date, makeID: () -> UUID,
-        language: QuestPresets.Language = .japanese
-    ) -> Result<Goal, ProgressError> {
-        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        if let issue = Self.titleIssue(trimmed, limit: Goal.titleLimit) { return .failure(issue) }
-        guard activeGoals.count < Self.activeGoalLimit else {
-            return .failure(.tooManyGoals(limit: Self.activeGoalLimit))
-        }
-        let goal = Goal(id: makeID(), title: trimmed, category: category, createdAt: date)
-        goals.append(goal)
-        for preset in QuestPresets.quests(for: category, language: language) {
-            quests.append(QuestTemplate(id: makeID(), goalID: goal.id, title: preset.title, minutes: preset.minutes))
-        }
-        return .success(goal)
-    }
-
-    public mutating func archiveGoal(_ id: UUID) -> Result<Goal, ProgressError> {
-        guard let index = goals.firstIndex(where: { $0.id == id }) else { return .failure(.unknownGoal(id)) }
-        goals[index].isArchived = true
-        return .success(goals[index])
-    }
-
-    public mutating func renameGoal(_ id: UUID, to title: String) -> Result<Goal, ProgressError> {
-        guard let index = goals.firstIndex(where: { $0.id == id }) else { return .failure(.unknownGoal(id)) }
-        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        if let issue = Self.titleIssue(trimmed, limit: Goal.titleLimit) { return .failure(issue) }
-        goals[index].title = trimmed
-        return .success(goals[index])
-    }
-
-    /// Brings a resting goal back, within the active limit.
-    public mutating func resumeGoal(_ id: UUID) -> Result<Goal, ProgressError> {
-        guard let index = goals.firstIndex(where: { $0.id == id }) else { return .failure(.unknownGoal(id)) }
-        guard goals[index].isArchived else { return .success(goals[index]) }
-        guard activeGoals.count < Self.activeGoalLimit else {
-            return .failure(.tooManyGoals(limit: Self.activeGoalLimit))
-        }
-        goals[index].isArchived = false
-        return .success(goals[index])
-    }
-
-    /// Changes a quest's wording or length. Rewards already granted keep their amounts (the ledger is history).
-    public mutating func editQuest(_ id: UUID, title: String, minutes: Int) -> Result<QuestTemplate, ProgressError> {
-        guard let index = quests.firstIndex(where: { $0.id == id }) else { return .failure(.unknownQuest(id)) }
-        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        if let issue = Self.titleIssue(trimmed, limit: Goal.titleLimit) { return .failure(issue) }
-        guard QuestTemplate.minutesRange.contains(minutes) else { return .failure(.invalidMinutes) }
-        quests[index].title = trimmed
-        quests[index].minutes = minutes
-        return .success(quests[index])
-    }
-
-    /// Stops suggesting a quest. One that was never done is deleted; one with history is only retired.
-    public mutating func removeQuest(_ id: UUID) -> Result<Void, ProgressError> {
-        guard let index = quests.firstIndex(where: { $0.id == id }) else { return .failure(.unknownQuest(id)) }
-        if completions.contains(where: { $0.questID == id }) {
-            quests[index].isRetired = true
-        } else {
-            quests.remove(at: index)
-        }
-        return .success(())
-    }
-
-    public mutating func addQuest(
-        to goalID: UUID, title: String, minutes: Int, id: UUID
-    ) -> Result<QuestTemplate, ProgressError> {
-        guard let goal = goals.first(where: { $0.id == goalID }) else { return .failure(.unknownGoal(goalID)) }
-        guard !goal.isArchived else { return .failure(.goalArchived(goalID)) }
-        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        if let issue = Self.titleIssue(trimmed, limit: Goal.titleLimit) { return .failure(issue) }
-        guard QuestTemplate.minutesRange.contains(minutes) else { return .failure(.invalidMinutes) }
-        let quest = QuestTemplate(id: id, goalID: goalID, title: trimmed, minutes: minutes)
-        quests.append(quest)
-        return .success(quest)
-    }
+    // MARK: Skipping
 
     public mutating func skip(_ questID: UUID, on day: LocalDay) {
         var ids = skipped?.day == day ? skipped?.questIDs ?? [] : []
@@ -262,7 +191,7 @@ public struct PlayerProgress: Equatable, Sendable {
         ledger.contains { $0.reason == .questCompleted(completionID: completionID) }
     }
 
-    private static func titleIssue(_ title: String, limit: Int) -> ProgressError? {
+    static func titleIssue(_ title: String, limit: Int) -> ProgressError? {
         if title.isEmpty { return .emptyTitle }
         if title.count > limit { return .titleTooLong(limit: limit) }
         return nil
@@ -270,12 +199,13 @@ public struct PlayerProgress: Equatable, Sendable {
 
     private func validate() throws(ProgressError) {
         var seen = Set<UUID>()
-        let ids = goals.map(\.id) + quests.map(\.id) + completions.map(\.id) + ledger.map(\.id)
+        let ids = goals.map(\.id) + quests.map(\.id) + steps.map(\.id) + completions.map(\.id) + ledger.map(\.id)
         for id in ids {
             guard seen.insert(id).inserted else { throw .duplicateID(id) }
         }
         let goalIDs = Set(goals.map(\.id))
         for quest in quests where !goalIDs.contains(quest.goalID) { throw .unknownGoal(quest.goalID) }
+        try validateSteps()
         let questIDs = Set(quests.map(\.id))
         for completion in completions where !questIDs.contains(completion.questID) {
             throw .unknownQuest(completion.questID)

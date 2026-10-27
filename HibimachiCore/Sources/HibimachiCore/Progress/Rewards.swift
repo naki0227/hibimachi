@@ -85,6 +85,7 @@ public enum ProgressError: Error, Equatable, Sendable {
     case notEnoughSparkles(needed: Int, balance: Int)
     case invalidMinutes
     case incompleteRecord
+    case invalidPlan
     case duplicateID(UUID)
     case negativeBalance
 }

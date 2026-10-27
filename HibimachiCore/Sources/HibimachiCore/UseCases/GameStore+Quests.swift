@@ -45,6 +45,12 @@ extension GameStore {
         return apply { progress in progress.addQuest(to: goalID, title: title, minutes: minutes, id: id) }
     }
 
+    /// Breaks a goal into the accepted steps and quests (ADR-0016), replacing earlier steps.
+    @discardableResult
+    public func applyPlan(_ draft: PlanDraft, to goalID: UUID) -> Bool {
+        apply { progress in progress.applyPlan(draft, to: goalID, makeID: makeIDForProgress) }
+    }
+
     public func skipQuest(_ id: UUID) {
         updateProgress { $0.skip(id, on: today) }
     }
