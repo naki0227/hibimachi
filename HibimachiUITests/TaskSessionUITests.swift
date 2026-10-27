@@ -44,6 +44,10 @@ final class TaskSessionUITests: XCTestCase {
         XCTAssertTrue(app.descendants(matching: .any)["finished-task"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.descendants(matching: .any)["record-bonus"].exists)
         XCTAssertFalse(app.descendants(matching: .any)["session-card"].exists)
+
+        // Sharing the record: the card is rendered for the chosen parts, photos left out by default.
+        app.buttons["finished-share"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["share-record-link"].firstMatch.waitForExistence(timeout: 5))
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = "19-task-finished"
         attachment.lifetime = .keepAlways

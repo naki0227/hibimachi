@@ -241,6 +241,16 @@
         }
       }
     },
+    "AIのひとことを入れる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Include the AI comment"
+          }
+        }
+      }
+    },
     "Lv%lld / 発見%lld": {
       "localizations": {
         "en": {
@@ -491,6 +501,16 @@
         }
       }
     },
+    "きょうの日記": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diary"
+          }
+        }
+      }
+    },
     "きょうの記録": {
       "localizations": {
         "en": {
@@ -517,6 +537,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sparkles %lld"
+          }
+        }
+      }
+    },
+    "きらめき +%lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sparkles +%lld"
           }
         }
       }
@@ -1471,6 +1501,16 @@
         }
       }
     },
+    "やったこと": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        }
+      }
+    },
     "やった量を入れると記録がそろいます": {
       "localizations": {
         "en": {
@@ -1707,6 +1747,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Share"
+          }
+        }
+      }
+    },
+    "シェアする画像": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Image to share"
+          }
+        }
+      }
+    },
+    "シェアをとじる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close sharing"
           }
         }
       }
@@ -2217,6 +2277,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "The photo could not be saved. You can still keep the words"
+          }
+        }
+      }
+    },
+    "写真を入れる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Include photos"
           }
         }
       }
@@ -2777,6 +2847,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Starting a new island. The unreadable data was kept on this device under another name."
+          }
+        }
+      }
+    },
+    "日記をシェア": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share diary"
           }
         }
       }
@@ -3417,6 +3497,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Use the list button to select and move things on the island"
+          }
+        }
+      }
+    },
+    "量やひとことを入れる": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Include amounts and notes"
           }
         }
       }

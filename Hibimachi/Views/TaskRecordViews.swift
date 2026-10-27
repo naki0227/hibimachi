@@ -6,6 +6,7 @@ import SwiftUI
 struct FinishedTaskCard: View {
     let store: GameStore
     let task: FinishedTask
+    @State private var sharing = false
 
     var body: some View {
         let entry = task.entryID.flatMap(store.album.entry)
@@ -26,6 +27,20 @@ struct FinishedTaskCard: View {
                     .foregroundStyle(GameColor.ink)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("coach-comment")
+            }
+            Button {
+                sharing.toggle()
+            } label: {
+                Label(
+                    sharing ? LocalizedStringKey("シェアをとじる") : LocalizedStringKey("シェアする"),
+                    systemImage: "square.and.arrow.up")
+            }
+            .buttonStyle(.game(.secondary, compact: true))
+            .accessibilityIdentifier("finished-share")
+            if sharing {
+                ShareComposer(hasPhotos: entry?.photo != nil, hasComment: entry?.coachComment != nil) {
+                    RecordShare.card(for: task, entry: entry, store: store, choices: $0)
+                }
             }
         }
         .gameCard(highlighted: true)
