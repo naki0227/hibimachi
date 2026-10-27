@@ -60,4 +60,6 @@ extension GameStore {
     public func photoURL(for entry: MemoryEntry) -> URL? {
         entry.photo.flatMap { media?.url(for: $0) }
     }
+
+    public func photoURL(for reference: MediaReference) -> URL? { media?.url(for: reference) }
 }

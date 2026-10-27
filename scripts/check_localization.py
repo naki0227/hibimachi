@@ -29,7 +29,7 @@ FORMAT_SPECIFIER = re.compile(r"%(?:\d+\$)?(?:lld|ld|d|@|f|\.\d+f)")
 # Text immediately before a literal that makes it a LocalizedStringKey / LocalizedStringResource.
 LOCALIZED_CONTEXTS = re.compile(
     r"(?:String\(localized:|LocalizedStringKey\(|LocalizedStringResource\(|"
-    r"\bText\(|\bLabel\(|\bButton\(|\bToggle\(|"
+    r"\bText\(|\bLabel\(|\bButton\(|\bToggle\(|\bPicker\(|"
     r"\.accessibilityLabel\(|\.accessibilityHint\(|\.accessibilityValue\(|"
     r"\.configurationDisplayName\(|\.description\(|"
     r"GamePanel\(title:|GameTextField\(placeholder:|\btitle:|\bmessage:|\blabel:|"
