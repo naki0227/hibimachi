@@ -19,10 +19,12 @@
 ## 検証
 | 項目 | 結果 |
 |---|---|
-| `swift test`（HibimachiCore, Linux, Swift 6.3.3） | 168件 PASS（`c7c87ec` 時点） |
+| `swift test`（HibimachiCore, Linux, Swift 6.3.3） | 168件 PASS |
 | format-check / lint、`check_localization.py`、`verify_docs.py` | PASS |
-| Swift CI（`9fb3425`）Linux ジョブ | success。iOS build/test は本報告作成時に実行中 |
-| AI コーチ・シェア（`c7c87ec`〜） | iOS のコンパイルとテストは PR #5 の CI で確認する（ローカルでは不可） |
+| Swift CI（`450c9a4`）: iOS build・unit | success。UI テスト1件失敗（カードの識別子が中のボタンを上書き）→ `66dd7e0` |
+| Swift CI（`66dd7e0`） | UI テスト1件失敗（テストで日本語を入力すると確定されずひとことが空）→ `fe076be` で英字入力に |
+| Swift CI（`fe076be`）: iOS build・unit・UI test（14件） | success |
+| TestFlight | 1.0.0 (80) を実行（結果は PR に記載） |
 
 ## 未実施・残課題
 - Foundation Models の実際の出力は CI で確認できない（フォールバック経路のみテスト）。対応端末での確認が必要。
