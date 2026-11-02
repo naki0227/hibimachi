@@ -144,6 +144,14 @@ age_rating:      # 年齢制限指定の回答（API の属性名そのまま）
   gambling: false
   unrestrictedWebAccess: false
   lootBox: false
+  # Added by Apple in 2025 (all yes/no). Answers decided by the owner on 2026-11-02.
+  advertising: false              # 広告なし
+  socialMedia: false              # SNS 機能なし（共有は OS の共有シートのみ）
+  messagingAndChat: false         # メッセージ・チャットなし
+  userGeneratedContent: false     # 記録や写真は本人の端末の中だけで、他人には見えない
+  ageAssurance: false             # 年齢確認なし
+  parentalControls: false         # 保護者による制限機能なし
+  healthOrWellnessTopics: true    # ストレッチ・休息などの習慣づくりのクエストがあるため（慎重に申告）
 
 review:          # App Review に関する情報
   contact_first_name: ${ASC_REVIEW_FIRST_NAME}
