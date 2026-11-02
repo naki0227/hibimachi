@@ -1,6 +1,6 @@
 name: TestFlight
-# Manual only: archives a Release build, signs it with automatic signing through an App Store Connect API key
-# and uploads it to TestFlight. Required repository secrets (see docs/QUALITY-CI.md):
+# Manual only: archives a Release build (ad-hoc signed), signs it for the App Store with a cloud-managed
+# distribution certificate through an App Store Connect API key and uploads it to TestFlight. Required repository secrets (see docs/QUALITY-CI.md):
 #   ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8 (contents of the .p8 file), APPLE_TEAM_ID
 on:
   workflow_dispatch:
@@ -52,20 +52,32 @@ jobs:
         run: |
           umask 077
           printf '%s\n' "$ASC_KEY_P8" > "$RUNNER_TEMP/AuthKey.p8"
-      - name: Archive (Release, automatic signing)
+      # The archive is only ad-hoc signed: automatic signing here made Apple issue a new development certificate
+      # on every fresh runner until the account hit its limit (2026-11-02). The real signature comes from the
+      # export below, with a cloud-managed distribution certificate, so no certificate is created per run.
+      - name: Archive (Release, ad-hoc signed)
         env:
-          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
-          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
           set -o pipefail
           xcodebuild archive \
             -project Hibimachi.xcodeproj -scheme Hibimachi -configuration Release \
             -destination "generic/platform=iOS" -archivePath build/Hibimachi.xcarchive \
-            -allowProvisioningUpdates \
-            -authenticationKeyPath "$RUNNER_TEMP/AuthKey.p8" \
-            -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO AD_HOC_CODE_SIGNING_ALLOWED=YES \
+            PROVISIONING_PROFILE_SPECIFIER= \
             DEVELOPMENT_TEAM="$APPLE_TEAM_ID" CURRENT_PROJECT_VERSION="$BUILD_NUMBER"
+      # Re-signing keeps the entitlements of the archived binaries; without the App Group the widget could not
+      # read the save, so stop here rather than upload such a build.
+      - name: Check App Group entitlements
+        run: |
+          app="build/Hibimachi.xcarchive/Products/Applications/Hibimachi.app"
+          for binary in "$app" "$app/PlugIns/HibimachiWidgetExtension.appex"; do
+            entitlements=$(codesign -d --entitlements - --xml "$binary" 2>/dev/null || true)
+            if ! printf '%s' "$entitlements" | grep -q "group.com.enludus.hibimachi"; then
+              echo "::error::$binary is missing the App Group entitlement"
+              exit 1
+            fi
+          done
       - name: Export and upload to App Store Connect
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
