@@ -9,6 +9,8 @@ final class CreatureNode: SKNode {
     private let body: SKSpriteNode
     private let emote = SKLabelNode(fontNamed: "HiraginoSans-W6")
     private var shownActivityKey = ""
+    /// The face the current pose wants; a short expression (`showFace`) returns to it.
+    private var poseFace: CreatureFace = .normal
     /// When the next friendly gesture is due (seconds, `CACurrentMediaTime` clock).
     private var nextCheerAt: TimeInterval?
     /// Last position we started moving to. Starting a new move only when it changes matters:
@@ -88,8 +90,12 @@ final class CreatureNode: SKNode {
     /// Feedback for a tap: a heart when it counted toward friendship, a happy note otherwise.
     func showPet(_ outcome: PetOutcome, reduceMotion: Bool) {
         switch outcome {
-        case .counted(let level, _): flash(level == .bestFriend ? "♡♡" : "♡", reduceMotion: reduceMotion)
-        case .notCounted: flash("♪", reduceMotion: reduceMotion)
+        case .counted(let level, _):
+            flash(level == .bestFriend ? "♡♡" : "♡", reduceMotion: reduceMotion)
+            showFace(.happy)
+        case .notCounted:
+            flash("♪", reduceMotion: reduceMotion)
+            showFace(.happy)
         case .unknownResident: break
         }
     }
@@ -115,6 +121,26 @@ final class CreatureNode: SKNode {
     }
 
     /// Short, one-off emote (e.g. "?" when its target vanished, a heart when petted).
+    /// A short expression (being petted, a surprise), then back to the pose's face.
+    func showFace(_ face: CreatureFace, for seconds: TimeInterval = 1.4) {
+        removeAction(forKey: "face")
+        body.texture = IslandArt.creatureTexture(species, face: face)
+        run(
+            .sequence([
+                .wait(forDuration: seconds),
+                .run { [weak self] in
+                    guard let self else { return }
+                    body.texture = IslandArt.creatureTexture(species, face: poseFace)
+                },
+            ]), withKey: "face")
+    }
+
+    private func setPoseFace(_ face: CreatureFace) {
+        poseFace = face
+        removeAction(forKey: "face")
+        body.texture = IslandArt.creatureTexture(species, face: face)
+    }
+
     func flash(_ text: String, reduceMotion: Bool) {
         emote.text = text
         emote.removeAllActions()
@@ -131,14 +157,15 @@ final class CreatureNode: SKNode {
         body.removeAction(forKey: "pose")
         body.yScale = 1
         guard case .interacting(let kind, _, _) = activity else {
-            body.texture = IslandArt.creatureTexture(species, sleeping: false)
+            setPoseFace(.normal)
             emote.run(.fadeOut(withDuration: 0.3))
             return
         }
         emote.removeAllActions()
         emote.text = kind.emote
         emote.alpha = 1
-        body.texture = IslandArt.creatureTexture(species, sleeping: kind.looksSleepy)
+        // Enjoying the bench, the flowers or the café shows on the face; naps keep their sleepy eyes.
+        setPoseFace(kind.looksSleepy ? .sleepy : .happy)
         guard !reduceMotion else { return }
         let breathe = SKAction.sequence([.scaleY(to: 0.94, duration: 0.7), .scaleY(to: 1, duration: 0.7)])
         body.run(.repeatForever(breathe), withKey: "pose")

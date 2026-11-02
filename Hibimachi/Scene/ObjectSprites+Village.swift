@@ -221,7 +221,7 @@ extension ObjectSprites {
     }
 
     /// A small yellow bird. Same size and feet position as the mochi.
-    static func kotori(sleeping: Bool) -> PixelCanvas {
+    static func kotori(face: CreatureFace) -> PixelCanvas {
         let c = PixelCanvas(width: 22, height: 20)
         c.ellipse(V.shadow, 4, 1, 14, 5)
         c.ellipse(SKColor(hex: 0xD9A82E), 4, 3, 15, 13)
@@ -229,10 +229,11 @@ extension ObjectSprites {
         c.ellipse(V.cream, 7, 4, 9, 5)
         c.ellipse(SKColor(hex: 0xE2B23A), 3, 7, 6, 5)  // wing
         c.polygon(V.apricot, [(17, 10), (21, 9), (17, 8)])  // beak
-        if sleeping {
-            c.rect(V.ink, 13, 11, 2, 1)
-        } else {
-            c.rect(V.ink, 14, 11, 1, 2)
+        // Seen from the side: one eye.
+        switch face {
+        case .sleepy: c.rect(V.ink, 13, 11, 2, 1)
+        case .normal: c.rect(V.ink, 14, 11, 1, 2)
+        case .happy, .surprised: CreatureFace.drawEyes(face, on: c, centers: [14], y: 11, color: V.ink)
         }
         c.rect(V.apricot, 12, 8, 2, 1)
         c.rect(SKColor(hex: 0xD9A82E), 10, 16, 2, 2)  // tuft
@@ -242,7 +243,7 @@ extension ObjectSprites {
     }
 
     /// A young tanuki: brown, darker mask, light belly.
-    static func tanuki(sleeping: Bool) -> PixelCanvas {
+    static func tanuki(face: CreatureFace) -> PixelCanvas {
         let c = PixelCanvas(width: 22, height: 20)
         c.ellipse(V.shadow, 3, 1, 16, 5)
         c.ellipse(SKColor(hex: 0x6B4A33), 2, 3, 18, 14)
@@ -252,14 +253,19 @@ extension ObjectSprites {
         c.rect(SKColor(hex: 0x6B4A33), 15, 15, 4, 4)
         c.rect(V.ink, 5, 9, 5, 3)  // mask
         c.rect(V.ink, 12, 9, 5, 3)
-        if sleeping {
+        // Light eyes on the dark mask.
+        switch face {
+        case .sleepy:
             c.rect(V.cream, 6, 10, 3, 1)
             c.rect(V.cream, 13, 10, 3, 1)
-        } else {
+        case .normal:
             c.rect(V.cream, 7, 10, 1, 1)
             c.rect(V.cream, 14, 10, 1, 1)
+        case .happy, .surprised:
+            CreatureFace.drawEyes(face, on: c, centers: [7, 14], y: 10, color: V.cream)
         }
         c.rect(V.ink, 10, 8, 2, 1)  // nose
+        CreatureFace.drawMouth(face, on: c, x: 10, y: 6, color: V.ink)
         c.ellipse(SKColor(hex: 0x6B4A33), 17, 3, 5, 4)  // tail
         c.rect(V.wall, 19, 4, 2, 1)
         return c
