@@ -1,8 +1,11 @@
+import HibimachiCore
 import SwiftUI
 
 /// "せってい": sound, music and vibration, the first-run guide again, and where the data lives.
 struct SettingsPanel: View {
     @Bindable var settings: AppSettings
+    /// What the island leans towards lately (ADR-0017), shown under the favorite color.
+    var mood: GoalCategory?
     let replayTutorial: () -> Void
     let close: () -> Void
 
@@ -39,6 +42,7 @@ struct SettingsPanel: View {
                 }
                 .buttonStyle(.game(.secondary))
                 .accessibilityIdentifier("replay-tutorial")
+                LookSettingsCard(favorite: $settings.favoriteColor, mood: mood)
                 VStack(alignment: .leading, spacing: 8) {
                     Label("データはこの端末の中だけに保存されます。通信や登録はありません。", systemImage: "lock.fill")
                         .font(GameFont.body(13, weight: .medium))

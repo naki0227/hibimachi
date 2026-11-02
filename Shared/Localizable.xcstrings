@@ -331,6 +331,26 @@
         }
       }
     },
+    "「%@」の塔が1段のびた！": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The “%@” tower grew a level!"
+          }
+        }
+      }
+    },
+    "「%@」の塔ができた！": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The “%@” tower is complete!"
+          }
+        }
+      }
+    },
     "「%@」の小さなクエストが3つ用意されます。目標を開くと、ステップに分けることもできます。": {
       "localizations": {
         "en": {
@@ -367,6 +387,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Delete “%@”? What you've done and your XP stay."
+          }
+        }
+      }
+    },
+    "あお": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blue"
+          }
+        }
+      }
+    },
+    "あか": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Red"
           }
         }
       }
@@ -537,6 +577,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Move my body"
+          }
+        }
+      }
+    },
+    "きいろ": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yellow"
           }
         }
       }
@@ -881,6 +931,16 @@
         }
       }
     },
+    "すきな色": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favorite color"
+          }
+        }
+      }
+    },
     "すっきりしたね。島のみんなも気持ちよさそう。": {
       "localizations": {
         "en": {
@@ -1017,6 +1077,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Best friends"
+          }
+        }
+      }
+    },
+    "だいだい": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orange"
           }
         }
       }
@@ -1187,6 +1257,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Friends"
+          }
+        }
+      }
+    },
+    "なし": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "None"
           }
         }
       }
@@ -1601,6 +1681,26 @@
         }
       }
     },
+    "みどり": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Green"
+          }
+        }
+      }
+    },
+    "むらさき": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Purple"
+          }
+        }
+      }
+    },
     "もう出さない": {
       "localizations": {
         "en": {
@@ -1921,6 +2021,16 @@
         }
       }
     },
+    "ステップ「%lld」を終えました。まわりの小島を見てみよう。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You finished the step “%lld”. Look at the islets around the island."
+          }
+        }
+      }
+    },
     "ステップに分ける": {
       "localizations": {
         "en": {
@@ -2047,6 +2157,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Picnics seem nicer in the shade than in the sun"
+          }
+        }
+      }
+    },
+    "ピンク": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pink"
           }
         }
       }
@@ -2327,6 +2447,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rest"
+          }
+        }
+      }
+    },
+    "住人のリボンと、目標の塔の旗がこの色になります。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Residents' ribbons and the flags on goal towers take this color."
           }
         }
       }
@@ -2951,6 +3081,16 @@
         }
       }
     },
+    "島の雰囲気は、最近よくやっていることで少しずつ変わります（回数を数えるだけです）。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The island's mood slowly follows what you've been doing lately (it only counts how often)."
+          }
+        }
+      }
+    },
     "島をはじめからにしますか？": {
       "localizations": {
         "en": {
@@ -3167,6 +3307,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Show the guide again"
+          }
+        }
+      }
+    },
+    "最近は「%@」が多めの島。島の上に、その色の光が舞っています。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lately this island leans to “%@”. Lights of that color drift over it."
           }
         }
       }

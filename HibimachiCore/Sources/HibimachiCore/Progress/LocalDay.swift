@@ -34,10 +34,16 @@ public struct LocalDay: Hashable, Comparable, Sendable, CustomStringConvertible 
         UInt64(year) &* 10_000 &+ UInt64(month) &* 100 &+ UInt64(day)
     }
 
-    /// Whole days from `other` to this day (negative when `other` is later).
-    public func daysSince(_ other: LocalDay) -> Int {
+    /// A fixed Gregorian calendar in UTC: counting days must not depend on the device's settings.
+    private static let dayCounting: Calendar = {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? .current
+        return calendar
+    }()
+
+    /// Whole days from `other` to this day (negative when `other` is later).
+    public func daysSince(_ other: LocalDay) -> Int {
+        let calendar = Self.dayCounting
         guard
             let start = calendar.date(from: DateComponents(year: other.year, month: other.month, day: other.day)),
             let end = calendar.date(from: DateComponents(year: year, month: month, day: day))

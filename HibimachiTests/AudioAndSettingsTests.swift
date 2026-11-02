@@ -41,6 +41,20 @@ struct AppSettingsTests {
         let reloaded = AppSettings(defaults: defaults)
         #expect(reloaded.soundEffects && !reloaded.music && !reloaded.haptics && !reloaded.aiCoach)
     }
+
+    @Test func theFavoriteColorStartsUnsetAndPersists() throws {
+        let name = "settings-test-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: name))
+        defer { defaults.removePersistentDomain(forName: name) }
+        let settings = AppSettings(defaults: defaults)
+        #expect(settings.favoriteColor == .none)
+        #expect(FavoriteColor.none.color == nil)
+        settings.favoriteColor = .blue
+        #expect(AppSettings(defaults: defaults).favoriteColor == .blue)
+        defaults.set("plaid", forKey: "settings.favoriteColor")
+        #expect(AppSettings(defaults: defaults).favoriteColor == .none, "an unknown value falls back")
+        #expect(FavoriteColor.allCases.dropFirst().allSatisfy { $0.color != nil })
+    }
 }
 
 @MainActor

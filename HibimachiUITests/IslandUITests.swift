@@ -292,6 +292,15 @@ final class IslandUITests: XCTestCase {
         music.tap()
         XCTAssertEqual(music.value as? String, "0")
         screenshot(app, "16-settings")
+        // A favorite color is remembered as the selected swatch.
+        app.scrollViews.firstMatch.swipeUp()
+        let blue = app.buttons["favorite-blue"]
+        XCTAssertTrue(blue.waitForExistence(timeout: 5))
+        blue.tap()
+        XCTAssertTrue(blue.isSelected)
+        XCTAssertTrue(app.descendants(matching: .any)["island-mood"].firstMatch.exists)
+        app.buttons["favorite-none"].tap()
+        app.scrollViews.firstMatch.swipeDown()
         app.buttons["replay-tutorial"].tap()
         XCTAssertTrue(app.descendants(matching: .any)["tutorial-card"].waitForExistence(timeout: 5))
     }
