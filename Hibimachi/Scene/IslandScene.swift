@@ -81,6 +81,7 @@ final class IslandScene: SKScene {
         [worldLayer, gridOverlay, overlayLayer].forEach(addChild)
         cameraNode.addChild(tint)
         buildBackdrop()
+        buildScenery()
         buildSeaPattern()
         buildGridOverlay()
         refreshDayPhase()
