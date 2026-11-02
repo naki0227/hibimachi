@@ -69,6 +69,10 @@ struct IslandScreen: View {
                             GrowthCard { store.dismissGrowth() }
                                 .id(store.pendingGrowths)
                                 .transition(.move(edge: .top).combined(with: .opacity))
+                        } else if let finish = store.pendingStepFinishes.first {
+                            StepFinishedCard(finish: finish) { store.dismissStepFinished() }
+                                .id(store.pendingStepFinishes.count)
+                                .transition(.move(edge: .top).combined(with: .opacity))
                         } else if let notice = store.pendingFriendships.first {
                             ResidentCard.friendship(notice) { store.dismissFriendship() }
                                 .transition(.move(edge: .top).combined(with: .opacity))
@@ -121,10 +125,15 @@ struct IslandScreen: View {
             .animation(.easeOut(duration: 0.25), value: store.pendingArrivals.first)
             .animation(.easeOut(duration: 0.25), value: store.pendingFriendships.first)
             .animation(.easeOut(duration: 0.25), value: store.pendingGrowths)
+            .animation(.easeOut(duration: 0.25), value: store.pendingStepFinishes.count)
             .animation(.easeOut(duration: 0.25), value: tutorial.guide.step)
         }
         .modifier(TutorialSignals(store: store, coach: tutorial))
         .onChange(of: phaseOverride) { _, phase in scene.dayPhaseOverride = phase }
+        .onChange(of: settings.favoriteColor, initial: true) { _, color in
+            scene.favoriteColor = color
+            scene.syncLook()
+        }
         .onChange(of: scenePhase) { _, phase in
             // Leaving the app: the island is still on screen, so this is the moment to picture it for the widget.
             if phase == .inactive { WidgetSync.exportIsland(scene.islandPicture()) }
@@ -184,7 +193,9 @@ struct IslandScreen: View {
         case .album:
             AlbumPanel(store: store, close: close)
         case .settings:
-            SettingsPanel(settings: settings, replayTutorial: { tutorial.restart(store: store) }, close: close)
+            SettingsPanel(
+                settings: settings, mood: IslandMood.leaning(in: store.progress, today: store.today),
+                replayTutorial: { tutorial.restart(store: store) }, close: close)
         case .memory(let objectID):
             BuildingMemoryPanel(store: store, objectID: objectID, close: close)
         case .resetConfirm:

@@ -21,6 +21,8 @@ final class IslandScene: SKScene {
     var dayPhaseOverride: DayPhase? {
         didSet { refreshDayPhase() }
     }
+    /// The player's favorite color for ribbons and tower flags (ADR-0017); applied by `syncLook()`.
+    var favoriteColor: FavoriteColor = .none
     /// Currently shown lighting; changed by `refreshDayPhase()`.
     var dayPhase: DayPhase = .day
     var dayPhaseApplied = false
@@ -83,6 +85,7 @@ final class IslandScene: SKScene {
         buildGridOverlay()
         refreshDayPhase()
         syncWithStore(animated: false)
+        syncLook()
     }
 
     @available(*, unavailable)
@@ -119,6 +122,8 @@ final class IslandScene: SKScene {
             spawnSparkle()
             smokeCounter += 1
             if smokeCounter.isMultiple(of: 4) { puffSmoke() }
+            if smokeCounter.isMultiple(of: 3) { spawnMoodMote() }
+            if smokeCounter.isMultiple(of: 4) { syncLook() }
         }
         clockAccumulator += delta
         if clockAccumulator >= 10 {

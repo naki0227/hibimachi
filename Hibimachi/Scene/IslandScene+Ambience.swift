@@ -7,10 +7,8 @@ extension IslandScene {
     func buildBackdrop() {
         let size = grid.mapSize
         // The corners of the map's bounding box are open sea: a few distant islets live there.
-        let spots: [(CGFloat, CGFloat, CGFloat)] = [
-            (0.12, 0.84, 2.0), (0.88, 0.86, 1.6), (0.1, 0.16, 1.4), (0.9, 0.12, 2.2),
-        ]
-        for (index, spot) in spots.enumerated() {
+        // Goal towers are built on them (IslandScene+Look.swift).
+        for (index, spot) in Self.isletSpots.enumerated() {
             let islet = SKSpriteNode(texture: TerrainArt.isletTexture(variant: index))
             islet.size = CGSize(width: 40 * spot.2 * IslandArt.pixel / 2, height: 30 * spot.2 * IslandArt.pixel / 2)
             islet.position = CGPoint(x: size.width * spot.0, y: size.height * spot.1)

@@ -19,6 +19,11 @@ final class AppSettings {
         didSet { store(aiCoach, Keys.aiCoach) }
     }
 
+    /// Ribbons and tower flags (ADR-0017).
+    var favoriteColor: FavoriteColor {
+        didSet { defaults.set(favoriteColor.rawValue, forKey: Keys.favoriteColor) }
+    }
+
     @ObservationIgnored private let defaults: UserDefaults
 
     private enum Keys {
@@ -26,6 +31,7 @@ final class AppSettings {
         static let music = "settings.music"
         static let haptics = "settings.haptics"
         static let aiCoach = "settings.aiCoach"
+        static let favoriteColor = "settings.favoriteColor"
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -34,6 +40,7 @@ final class AppSettings {
         music = defaults.object(forKey: Keys.music) as? Bool ?? true
         haptics = defaults.object(forKey: Keys.haptics) as? Bool ?? true
         aiCoach = defaults.object(forKey: Keys.aiCoach) as? Bool ?? true
+        favoriteColor = defaults.string(forKey: Keys.favoriteColor).flatMap(FavoriteColor.init(rawValue:)) ?? .none
     }
 
     private func store(_ value: Bool, _ key: String) {

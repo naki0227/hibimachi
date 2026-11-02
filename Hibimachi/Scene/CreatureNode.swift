@@ -61,6 +61,30 @@ final class CreatureNode: SKNode {
         showFriendship(creature.friendship.level, idle: idle, reduceMotion: reduceMotion)
     }
 
+    /// A small bow on the head in the player's favorite color (ADR-0017); `nil` takes it off.
+    func setRibbon(_ color: SKColor?) {
+        let existing = body.childNode(withName: "ribbon") as? SKSpriteNode
+        guard existing?.color != color || (existing == nil) != (color == nil) else { return }
+        existing?.removeFromParent()
+        guard let color else { return }
+        let ribbon = SKSpriteNode(color: .clear, size: CGSize(width: 12, height: 6))
+        ribbon.name = "ribbon"
+        ribbon.color = color
+        for (x, width) in [(-3.0, 5.0), (3.0, 5.0)] {
+            let wing = SKSpriteNode(color: color, size: CGSize(width: width, height: 5))
+            wing.position = CGPoint(x: x, y: 0)
+            ribbon.addChild(wing)
+        }
+        let knot = SKSpriteNode(
+            color: IslandArt.Palette.ink.withAlphaComponent(0.35), size: CGSize(width: 2, height: 3))
+        knot.zPosition = 1
+        ribbon.addChild(knot)
+        // Top right of the head: body is anchored near its feet, 30 points tall.
+        ribbon.position = CGPoint(x: 6, y: body.size.height * 0.82)
+        ribbon.zPosition = 1
+        body.addChild(ribbon)
+    }
+
     /// Feedback for a tap: a heart when it counted toward friendship, a happy note otherwise.
     func showPet(_ outcome: PetOutcome, reduceMotion: Bool) {
         switch outcome {
