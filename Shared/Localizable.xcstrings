@@ -2051,12 +2051,12 @@
         }
       }
     },
-    "ステップ「%lld」を終えました。まわりの小島を見てみよう。": {
+    "ステップ「%@」を終えました。まわりの小島を見てみよう。": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "You finished the step “%lld”. Look at the islets around the island."
+            "value": "You finished the step “%@”. Look at the islets around the island."
           }
         }
       }
@@ -2481,12 +2481,12 @@
         }
       }
     },
-    "住人: %lld": {
+    "住人: %@": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Residents: %lld"
+            "value": "Residents: %@"
           }
         }
       }

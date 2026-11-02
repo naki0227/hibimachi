@@ -49,6 +49,9 @@ struct IslandSummaryTests {
         #expect(text.contains(Species.mochi.displayName))
         #expect(text.contains("\(store.world.objects.count)"))
         #expect(text.contains("部屋"), "the goal's tower is named")
-        #expect(text.contains("1/\(GoalMonument.maxStage)"), "a plan with no finished step is level 1")
+        // Same in every language: "（ステップ 0/3）" / "(steps 0/3)".
+        let steps = store.progress.steps(of: goal.id).count
+        #expect(text.contains("0/\(steps)"), "no step finished yet")
+        #expect(!text.contains("%"), "every placeholder is filled")
     }
 }
