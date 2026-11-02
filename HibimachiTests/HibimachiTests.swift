@@ -116,6 +116,22 @@ struct CreatureNodeTests {
         }
     }
 
+    @Test func everySpeciesHasEveryFaceAndTheyDiffer() {
+        for species in Species.allCases {
+            let faces = CreatureFace.allCases.map { face -> Data in
+                let canvas =
+                    switch species {
+                    case .mochi: ObjectSprites.creature(face: face)
+                    case .kotori: ObjectSprites.kotori(face: face)
+                    case .tanuki: ObjectSprites.tanuki(face: face)
+                    }
+                let image = canvas.makeImage()
+                return image.dataProvider?.data.map { $0 as Data } ?? Data()
+            }
+            #expect(Set(faces).count == CreatureFace.allCases.count, "\(species): each face looks different")
+        }
+    }
+
     @Test func moveActionIsStartedOncePerNewTile() throws {
         let world = IslandFactory.makeWorld()
         let grid = IsoGrid(columns: world.width, rows: world.height)

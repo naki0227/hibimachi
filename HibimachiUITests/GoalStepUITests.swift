@@ -44,6 +44,13 @@ final class GoalStepUITests: XCTestCase {
         XCTAssertTrue(app.descendants(matching: .any)["step-list"].firstMatch.exists)
         XCTAssertEqual(app.buttons.matching(identifier: "edit-quest").count, 3, "everyday quests stay editable")
 
+        // 得意 / ふつう / 苦手 (ADR-0018): the choice is shown as selected.
+        app.scrollViews.firstMatch.swipeUp()
+        let hard = app.buttons["goal-feeling-hard"]
+        XCTAssertTrue(hard.waitForExistence(timeout: 5))
+        hard.tap()
+        XCTAssertTrue(hard.isSelected)
+
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = "20-goal-steps"
         attachment.lifetime = .keepAlways

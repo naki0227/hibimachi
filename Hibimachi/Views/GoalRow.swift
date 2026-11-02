@@ -9,6 +9,8 @@ struct GoalActions {
     let rename: (String) -> Bool
     let rest: () -> Void
     let delete: () -> Void
+    /// 得意 / ふつう / 苦手 (ADR-0018).
+    let setFeeling: (GoalFeeling) -> Void
     /// A proposed breakdown (AI or template) and applying the accepted one (ADR-0016).
     let makePlan: @MainActor () async -> (draft: PlanDraft, byAI: Bool)
     let applyPlan: (PlanDraft) -> Bool
@@ -81,6 +83,7 @@ struct GoalRow: View {
             .buttonStyle(.game(.secondary, compact: true))
             .accessibilityIdentifier("plan-goal")
         }
+        FeelingPicker(feeling: goal.feeling, choose: actions.setFeeling)
         if !steps.isEmpty {
             Text("いつものクエスト").font(GameFont.caption()).foregroundStyle(GameColor.inkSoft)
         }

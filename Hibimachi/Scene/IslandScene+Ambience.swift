@@ -126,6 +126,7 @@ extension IslandScene {
             switch event {
             case .reactionInterrupted(_, let who):
                 residentNodes[who]?.flash("?", reduceMotion: reduceMotion)
+                residentNodes[who]?.showFace(.surprised)
             case .discovered(let kind, let who):
                 guard let node = residentNodes[who] else { break }
                 sparkle(at: node.position)
@@ -135,6 +136,7 @@ extension IslandScene {
                 guard let node = residentNodes[id] else { break }
                 sparkle(at: node.position)
                 node.flash("♪", reduceMotion: reduceMotion)
+                node.showFace(.happy, for: 2.5)
             case .reactionStarted(let kind, let objectID, _):
                 if let mote = NightMotes.color(for: kind), let target = objectNodes[objectID] {
                     showMotes(around: target.position, color: mote)

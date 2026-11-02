@@ -5,8 +5,11 @@ import Foundation
 public enum RewardRule {
     /// v1: every quest 20 XP / 5. v2 (2026-10-26): gently scaled by the quest's length (see `questReward`).
     /// v3 (2026-10-27): a small bonus for a complete record (ADR-0015).
+    /// v4 (2026-11-02): a little more XP for goals the player marked as hard for them (ADR-0018).
     /// Ledger lines keep the amounts they were granted, so old completions are not re-valued.
-    public static let version = 3
+    public static let version = 4
+    /// Extra XP per quest of a goal marked "苦手" (no extra きらめき: the economy stays the same for everyone).
+    public static let challengeBonusXP = 2
     /// Once per completion whose record fits its style (`RecordCheck.isComplete`).
     public static let recordBonusXP = 5
     public static let recordBonusSparkles = 2

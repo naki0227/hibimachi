@@ -117,13 +117,19 @@ enum IslandArt {
     }
 
     static func creatureTexture(_ species: Species = .mochi, sleeping: Bool) -> SKTexture {
-        let key = "creature-\(species.rawValue)-\(sleeping)"
+        creatureTexture(species, face: sleeping ? .sleepy : .normal)
+    }
+
+    static func creatureTexture(_ species: Species, face: CreatureFace) -> SKTexture {
+        // Normal and sleepy keep their old keys: `creatureImage` reads the normal one back.
+        let key =
+            "creature-\(species.rawValue)-\(face == .sleepy)" + (face == .happy || face == .surprised ? "-\(face)" : "")
         if let cached = cache[key] { return cached.texture }
         let canvas =
             switch species {
-            case .mochi: ObjectSprites.creature(sleeping: sleeping)
-            case .kotori: ObjectSprites.kotori(sleeping: sleeping)
-            case .tanuki: ObjectSprites.tanuki(sleeping: sleeping)
+            case .mochi: ObjectSprites.creature(face: face)
+            case .kotori: ObjectSprites.kotori(face: face)
+            case .tanuki: ObjectSprites.tanuki(face: face)
             }
         let texture = canvas.makeTexture()
         cache[key] = Sprite(texture: texture, image: canvas.makeImage(), anchor: CGPoint(x: 0.5, y: 0.1))

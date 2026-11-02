@@ -131,7 +131,10 @@ enum ObjectSprites {
     }
 
     /// The island's creature: a round white mochi with a sprout. 22x20 px, feet at (11, 3).
-    static func creature(sleeping: Bool) -> PixelCanvas {
+    static func creature(sleeping: Bool) -> PixelCanvas { creature(face: sleeping ? .sleepy : .normal) }
+
+    static func creature(face: CreatureFace) -> PixelCanvas {
+        let sleeping = face == .sleepy
         let c = PixelCanvas(width: 22, height: 20)
         c.ellipse(P.shadow, 3, 1, 16, 5)
         let bodyHeight: Double = sleeping ? 10 : 12
@@ -139,13 +142,17 @@ enum ObjectSprites {
         c.ellipse(P.cream, 3, 4, 16, bodyHeight)
         c.ellipse(SKColor(hex: 0xE6E2D8), 4, 4, 14, 4)
         let eyeY = sleeping ? 8 : 9
-        if sleeping {
+        switch face {
+        case .sleepy:
             c.rect(P.ink, 7, eyeY, 2, 1)
             c.rect(P.ink, 13, eyeY, 2, 1)
-        } else {
+        case .normal:
             c.rect(P.ink, 7, eyeY, 1, 2)
             c.rect(P.ink, 14, eyeY, 1, 2)
+        case .happy, .surprised:
+            CreatureFace.drawEyes(face, on: c, centers: [7, 14], y: eyeY, color: P.ink)
         }
+        CreatureFace.drawMouth(face, on: c, x: 10, y: 6, color: P.ink)
         c.rect(P.apricot, 5, 7, 2, 1)
         c.rect(P.apricot, 15, 7, 2, 1)
         let top = Int(4 + bodyHeight)
