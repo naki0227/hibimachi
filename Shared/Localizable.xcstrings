@@ -1511,6 +1511,16 @@
         }
       }
     },
+    "ふつう": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Okay"
+          }
+        }
+      }
+    },
     "ふるえる": {
       "localizations": {
         "en": {
@@ -3191,6 +3201,16 @@
         }
       }
     },
+    "得意": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Good at"
+          }
+        }
+      }
+    },
     "思い出": {
       "localizations": {
         "en": {
@@ -3777,6 +3797,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Resting by the flowers"
+          }
+        }
+      }
+    },
+    "苦手": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hard for me"
+          }
+        }
+      }
+    },
+    "苦手にした目標のクエストは XP が少し多くなります（+%lld。きらめきは同じ）。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quests of goals marked hard give a little more XP (+%lld; sparkles stay the same)."
           }
         }
       }

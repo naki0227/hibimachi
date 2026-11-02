@@ -236,3 +236,40 @@ struct DeleteGoalButton: View {
         }
     }
 }
+
+/// "得意 / ふつう / 苦手" for a goal (ADR-0018). 苦手 earns a little more XP per quest, never more きらめき.
+struct FeelingPicker: View {
+    let feeling: GoalFeeling
+    let choose: (GoalFeeling) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                ForEach(GoalFeeling.allCases, id: \.self) { option in
+                    Button {
+                        choose(option)
+                    } label: {
+                        Text(option.title).frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.game(option == feeling ? .primary : .secondary, compact: true))
+                    .accessibilityAddTraits(option == feeling ? .isSelected : [])
+                    .accessibilityIdentifier("goal-feeling-\(option.rawValue)")
+                }
+            }
+            Text("苦手にした目標のクエストは XP が少し多くなります（+\(RewardRule.challengeBonusXP)。きらめきは同じ）。")
+                .font(GameFont.caption(11))
+                .foregroundStyle(GameColor.inkSoft)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+}
+
+extension GoalFeeling {
+    var title: LocalizedStringKey {
+        switch self {
+        case .good: LocalizedStringKey("得意")
+        case .neutral: LocalizedStringKey("ふつう")
+        case .hard: LocalizedStringKey("苦手")
+        }
+    }
+}

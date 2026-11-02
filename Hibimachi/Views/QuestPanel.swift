@@ -184,6 +184,7 @@ struct QuestPanel: View {
             rename: { title in store.renameGoal(goal.id, to: title) },
             rest: { store.archiveGoal(goal.id) },
             delete: { store.deleteGoal(goal.id) },
+            setFeeling: { feeling in store.setFeeling(feeling, of: goal.id) },
             makePlan: { await PlanCoach.draft(for: goal, aiAllowed: aiCoach) },
             applyPlan: { draft in store.applyPlan(draft, to: goal.id) })
     }
