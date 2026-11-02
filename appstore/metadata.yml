@@ -40,23 +40,39 @@ localizations:
       ・発見が増えると新しい住人がやってきます。住人ごとにお気に入りの場所があります
 
       ■ 現実の「小さなやった！」が島の資源に
-      ・片付け、勉強、休息、創作、からだ…育てたいことを選ぶと、今日の小さなクエストが3つ届きます
-      ・できたらタップするだけで、XP と「きらめき」がもらえます
+      ・片付け、勉強、休息、創作、からだ…育てたいことを選ぶと、今日の小さなクエストが島の画面に並びます
+      ・できたら ○ をタップするだけで、XP と「きらめき」がもらえます
       ・きらめきで新しい建物を迎えられます。できなかった日も、島は何も失いません
+
+      ■ 目標を3段に分けて、塔を育てる
+      ・大きな目標を「ステップ」に分け、ステップごとの小さなクエストを進めます
+      ・分け方は、ひな形か、対応端末では端末内の AI が提案。自由に直せます
+      ・ステップを終えるたびに、島のまわりの小島に目標の塔が1段ずつ育ちます
+
+      ■ 「今からやる」で記録を残す
+      ・片付けは前と後の写真、料理はできたもの、筋トレや勉強はやった量。タスクに合った記録が残せます
+      ・写真がなくても、ひとことや量で記録はそろいます。そろうと小さなボーナス
+      ・対応端末では、端末内の AI が記録を見てひとこと声をかけてくれます（通信しません）
 
       ■ ホーム画面ウィジェット
       ・大きなウィジェットには、左に島のようす、右に今日のクエスト
       ・ウィジェットから直接「やった！」にできます
 
-      ■ 成長アルバム
+      ■ 成長アルバムと日記
       ・ひとことと写真1枚で、その日の記録を残せます（もちろん残さなくても遊べます）
-      ・やったクエストや迎えた建物が日付ごとに並び、島の歴史になります
+      ・やったクエストや迎えた建物、その日の島の姿が日付ごとに並び、島の歴史になります
+      ・タスクの記録や一日の日記を、入れるものを選んで画像にしてシェアできます（写真は最初はオフ）
+
+      ■ あなたらしい島に
+      ・すきな色を選ぶと、住人のリボンと塔の旗がその色に
+      ・最近よくやっていることに合わせて、島にその色の光が舞います（回数を数えるだけです）
 
       ■ 安心して使える
       ・アカウント登録なし、広告なし、通信なし。データはすべて端末の中に保存されます
-      ・写真は縮小し、位置情報を取り除いてから端末内に保存します
+      ・写真は縮小し、位置情報を取り除いてから端末内に保存します。カメラは撮るときだけ使います
+      ・AI のひとことと提案は端末の中だけで作ります（せっていでオフにできます）
       ・音楽と効果音もすべてコードで鳴らしています（せっていでオフにできます）
-    whats_new: 新しい島と生き物、今日のクエスト、ウィジェット、アルバムを追加しました。   # 新機能（初回バージョンでは送られない）
+    whats_new: 目標のステップと島に育つ塔、「今からやる」と記録、端末内 AI のひとこと、日記とシェア、すきな色を追加しました。   # 新機能（初回バージョンでは送られない）
   en-US:                                       # 英語（アプリ内の英語表示と同じ言葉づかい）
     name: Hibimachi
     subtitle: Your days grow a little island
@@ -77,23 +93,39 @@ localizations:
       ・New residents move in as you make discoveries, each with their own favorite spots
 
       ■ Small real-life wins become island resources
-      ・Pick something you want to grow (tidying, study, rest, creating, moving) and get three small quests for today
-      ・Tap when you're done to earn XP and sparkles
+      ・Pick something you want to grow (tidying, study, rest, creating, moving) and today's small quests appear right on the island screen
+      ・Tap the circle when you're done to earn XP and sparkles
       ・Spend sparkles to welcome new buildings. On days you can't, the island loses nothing
+
+      ■ Break goals into steps and grow towers
+      ・Split a big goal into steps, each with its own small quests
+      ・Start from a template, or on supported devices let on-device AI suggest a plan. Change anything you like
+      ・Every finished step builds a goal's tower a level higher on the islets around your island
+
+      ■ "Start now" and keep a record
+      ・Before and after photos for tidying, a photo of what you made, or how much you did for workouts and study
+      ・No photo needed: a few words or an amount completes the record, with a small bonus
+      ・On supported devices, on-device AI reads your record and says a kind word (nothing is sent)
 
       ■ Home Screen widget
       ・The large widget shows your island on the left and today's quests on the right
       ・Mark quests as done right from the widget
 
-      ■ Growth album
+      ■ Growth album and diary
       ・Keep a few words and one photo for the day (or don't — the game works either way)
-      ・Finished quests and new buildings line up by date as your island's history
+      ・Finished quests, new buildings and how the island looked line up by date as your island's history
+      ・Share a task record or a day's diary as a picture, choosing what goes in (photos start off)
+
+      ■ An island that feels like yours
+      ・Pick a favorite color for residents' ribbons and tower flags
+      ・Lights in the color of what you've been doing lately drift over the island (it only counts how often)
 
       ■ Calm and private
       ・No account, no ads, no network. Everything stays on your device
-      ・Photos are downsized and stripped of location data before being saved on the device
+      ・Photos are downsized and stripped of location data before being saved on the device. The camera is used only when you take a photo
+      ・AI comments and plans are made on the device only (you can turn them off in Settings)
       ・Gentle music and sounds, all generated in code (you can turn them off in Settings)
-    whats_new: New island, residents, daily quests, widget and album.
+    whats_new: Goal steps and growing towers, "start now" with records, on-device AI comments, diary and sharing, and a favorite color.
 
 age_rating:      # 年齢制限指定の回答（API の属性名そのまま）。新しい質問が増えたらキーを足す
   alcoholTobaccoOrDrugUseOrReferences: NONE
@@ -125,6 +157,8 @@ review:          # App Review に関する情報
     ・右の ✓ ボタンから目標を選ぶと、今日の小さなクエストが表示されます（自己申告でタップするだけです）。
     ・ホーム画面ウィジェット（小・中・大）から、今日のクエストを完了にできます。
     ・アルバムの写真はシステムの写真ピッカーで選ぶため、写真ライブラリへのアクセス許可は求めません。
+    ・クエストの「はじめる」から写真を撮るときだけ、カメラの許可を求めます（撮らなくても完了できます）。
+    ・AI のひとこと・ステップの提案は Apple Intelligence（端末内）で作り、使えない端末では定型文・ひな形になります。通信はしません。
 
 screenshots:     # スクリーンショット（フォルダ内の PNG をファイル名順に最大10枚）
   ja:

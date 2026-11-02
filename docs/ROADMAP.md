@@ -1,7 +1,7 @@
 # Roadmap — ゲームの面白さから検証する
 
 ## Stage 0 — Docs / CI（別コミット）
-- [ ] 新規Private Repoを作り、本資料を移す。仮称HIBIMACHI、元のVault概念ノートと相互参照。
+- [x] 新規Private Repoを作り、本資料を移す（2026-10-25）。仮称HIBIMACHI、元のVault概念ノートと相互参照。
 - [x] Xcodeプロジェクト（SwiftUI/SpriteKit）初期化・shared scheme。
 - [x] formatter、lint、unit test、typecheck相当、buildのCI。緑になったら機能へ進む。
 - [ ] アセットの命名・ファイル規則と無断転載防止チェック。
@@ -33,7 +33,7 @@
 - [ ] Image understandingは利用可能なOS/端末でのみ、本人の意思で実行。成果/努力を断定しない。
 
 ## Stage 5 — P4: 共有 / CD
-- [ ] 箱庭だけの静止画像共有（写真・目標を含めない）。
+- [x] 箱庭だけの静止画像共有（写真・目標を含めない）（PR #4）。
 - [ ] 必要に応じてクラウド同期を設計（Apple/端末バックアップの復元要件を含める）。
 - [x] TestFlight配信の手動起動（`testflight.yml`。2026-10-26 に 0.1.0 (20)/(30) を配信）。
 - [x] 日本語・英語のストア情報をYAMLで管理（ADR-0008/0011）。
