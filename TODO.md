@@ -71,7 +71,7 @@
 - [x] API キーと Secrets を登録し、Actions「TestFlight」で初回アップロード成功（2026-10-26、0.1.0 (20)。リポジトリを public にして macOS ランナーの枠切れを解消）。
 - [x] 写真はiCloudバックアップに含める（ユーザー決定 2026-10-26、標準のまま）。
 - [x] 著作権「2026 enludus」、サポート/プライバシーポリシーは enludus.com に作成（company-web PR #38、マージ後に公開）。
-- [ ] 審査連絡先の Secrets（`ASC_REVIEW_*`）→ Actions「App Store metadata」を plan で実行（未実行、ADR-0008）。
+- [x] 審査連絡先の Secrets（`ASC_REVIEW_*`）は登録済み（オーナー確認 2026-11-02）。Actions「App Store metadata」plan 成功（24件、2026-11-02）。apply は年齢制限の新しい質問で止まり、回答を追加して再実行。
 - [ ] App Store Connect で「App のプライバシー」（データを収集していません）と価格・配信国を手で設定。
 
 ## 要確認（ウィジェット）

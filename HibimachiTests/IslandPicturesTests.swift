@@ -36,3 +36,22 @@ struct IslandPicturesTests {
         #expect(pictures.image(for: LocalDay(year: 2027, month: 6, day: 2)) == nil, "no picture, no file")
     }
 }
+
+@MainActor
+@Suite("Island summary for VoiceOver")
+struct IslandSummaryTests {
+    @Test func residentsTowersAndPlacedThingsAreRead() throws {
+        let store = GameStore(repository: MemoryRepository(), seed: 1)
+        #expect(store.addGoal(title: "部屋", category: .tidy))
+        let goal = try #require(store.progress.activeGoals.first)
+        #expect(store.applyPlan(PlanDraft.template(for: .tidy), to: goal.id))
+        let text = IslandSummary.text(for: store)
+        #expect(text.contains(Species.mochi.displayName))
+        #expect(text.contains("\(store.world.objects.count)"))
+        #expect(text.contains("部屋"), "the goal's tower is named")
+        // Same in every language: "（ステップ 0/3）" / "(steps 0/3)".
+        let steps = store.progress.steps(of: goal.id).count
+        #expect(text.contains("0/\(steps)"), "no step finished yet")
+        #expect(!text.contains("%"), "every placeholder is filled")
+    }
+}

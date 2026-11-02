@@ -47,6 +47,7 @@ struct IslandScreen: View {
                 .ignoresSafeArea()
                 .accessibilityElement()
                 .accessibilityLabel("ひびまちの島")
+                .accessibilityValue(IslandSummary.text(for: store))
                 .accessibilityHint("配置物の一覧ボタンから、島のものを選んだり動かしたりできます")
                 .accessibilityIdentifier("island-view")
 

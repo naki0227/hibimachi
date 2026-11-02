@@ -331,6 +331,16 @@
         }
       }
     },
+    "「%@」の塔 %lld/%lld段（ステップ %lld/%lld）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” tower, level %2$lld of %3$lld (steps %4$lld/%5$lld)"
+          }
+        }
+      }
+    },
     "「%@」の塔が1段のびた！": {
       "localizations": {
         "en": {
@@ -2041,12 +2051,12 @@
         }
       }
     },
-    "ステップ「%lld」を終えました。まわりの小島を見てみよう。": {
+    "ステップ「%@」を終えました。まわりの小島を見てみよう。": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "You finished the step “%lld”. Look at the islets around the island."
+            "value": "You finished the step “%@”. Look at the islets around the island."
           }
         }
       }
@@ -2467,6 +2477,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rest"
+          }
+        }
+      }
+    },
+    "住人: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Residents: %@"
           }
         }
       }
@@ -3337,6 +3357,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Show the guide again"
+          }
+        }
+      }
+    },
+    "最近は「%@」が多めの島": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lately the island leans to “%@”"
           }
         }
       }
