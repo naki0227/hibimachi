@@ -11,6 +11,13 @@ public enum GoalCategory: String, CaseIterable, Sendable {
     case other
 }
 
+/// How the player feels about a goal's area (ADR-0018). Self-reported, changeable any time, never inferred.
+public enum GoalFeeling: String, CaseIterable, Sendable {
+    case good
+    case neutral
+    case hard
+}
+
 public struct Goal: Identifiable, Equatable, Sendable {
     public static let titleLimit = 30
 
@@ -22,10 +29,12 @@ public struct Goal: Identifiable, Equatable, Sendable {
     public var isArchived: Bool
     /// Deleted by the player but kept (hidden, archived) because past completions point at it.
     public var isDeleted: Bool
+    /// "苦手" goals earn `RewardRule.challengeBonusXP` per quest.
+    public var feeling: GoalFeeling
 
     public init(
         id: UUID, title: String, category: GoalCategory, createdAt: Date, isArchived: Bool = false,
-        isDeleted: Bool = false
+        isDeleted: Bool = false, feeling: GoalFeeling = .neutral
     ) {
         self.id = id
         self.title = title
@@ -33,6 +42,7 @@ public struct Goal: Identifiable, Equatable, Sendable {
         self.createdAt = createdAt
         self.isArchived = isArchived || isDeleted
         self.isDeleted = isDeleted
+        self.feeling = feeling
     }
 }
 

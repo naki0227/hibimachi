@@ -45,6 +45,15 @@ extension PlayerProgress {
         return .success(goals[index])
     }
 
+    /// Marks how the player feels about a goal (ADR-0018). Only future completions are affected.
+    public mutating func setFeeling(_ feeling: GoalFeeling, of id: UUID) -> Result<Goal, ProgressError> {
+        guard let index = goals.firstIndex(where: { $0.id == id }), !goals[index].isDeleted else {
+            return .failure(.unknownGoal(id))
+        }
+        goals[index].feeling = feeling
+        return .success(goals[index])
+    }
+
     /// Deletes a goal for good. One never acted on goes with its quests and steps; one with completions is only
     /// hidden, because the ledger, the album and past days point at its quests.
     public mutating func deleteGoal(_ id: UUID) -> Result<Void, ProgressError> {

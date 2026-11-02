@@ -73,6 +73,31 @@ struct GoalEditingTests {
         #expect(progress.restingGoals.isEmpty)
     }
 
+    @Test func aHardGoalEarnsALittleMoreXPButTheSameSparkles() throws {
+        var (progress, goal) = try started()
+        let quest = try #require(progress.quests(of: goal.id).first { $0.minutes == 5 })
+        let plain = try progress.complete(quest.id, on: day, at: date, completionID: UUID(), transactionID: UUID())
+            .get()
+        _ = try progress.setFeeling(.hard, of: goal.id).get()
+        let next = LocalDay(year: 2027, month: 1, day: 16)
+        let completionID = UUID()
+        let hard = try progress.complete(
+            quest.id, on: next, at: date, completionID: completionID, transactionID: UUID()
+        )
+        .get()
+        #expect(hard.xpDelta == plain.xpDelta + RewardRule.challengeBonusXP)
+        #expect(hard.sparkleDelta == plain.sparkleDelta)
+        #expect(hard.ruleVersion == RewardRule.version)
+        // Changing the feeling later does not rewrite what was granted, and undo takes back exactly that.
+        _ = try progress.setFeeling(.good, of: goal.id).get()
+        #expect(progress.ledger.contains(hard))
+        let xpBefore = progress.totalXP
+        _ = try progress.undoCompletion(completionID, today: next, at: date, transactionID: UUID()).get()
+        #expect(progress.totalXP == xpBefore - hard.xpDelta)
+        _ = try progress.deleteGoal(goal.id).get()
+        #expect(progress.setFeeling(.hard, of: goal.id).failure == .unknownGoal(goal.id))
+    }
+
     @Test func editingAQuestKeepsPastRewardsAsTheyWere() throws {
         var (progress, goal) = try started()
         let quest = try #require(progress.quests(of: goal.id).first)

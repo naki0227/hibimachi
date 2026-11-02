@@ -27,6 +27,11 @@ extension GameStore {
     }
 
     @discardableResult
+    public func setFeeling(_ feeling: GoalFeeling, of goalID: UUID) -> Bool {
+        apply { $0.setFeeling(feeling, of: goalID) }
+    }
+
+    @discardableResult
     public func renameGoal(_ id: UUID, to title: String) -> Bool {
         apply { $0.renameGoal(id, to: title) }
     }

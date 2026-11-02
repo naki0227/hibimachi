@@ -114,8 +114,10 @@ public struct PlayerProgress: Equatable, Sendable {
         let completion = QuestCompletion(
             id: completionID, questID: questID, goalID: quest.goalID, day: day, completedAt: date)
         let amount = RewardRule.questReward(minutes: quest.minutes)
+        let hard = goals.first { $0.id == quest.goalID }?.feeling == .hard
         let reward = RewardTransaction(
-            id: transactionID, reason: .questCompleted(completionID: completionID), xpDelta: amount.xp,
+            id: transactionID, reason: .questCompleted(completionID: completionID),
+            xpDelta: amount.xp + (hard ? RewardRule.challengeBonusXP : 0),
             sparkleDelta: amount.sparkles, ruleVersion: RewardRule.version, date: date)
         completions.append(completion)
         ledger.append(reward)

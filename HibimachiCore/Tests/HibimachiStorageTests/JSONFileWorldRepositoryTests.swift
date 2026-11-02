@@ -264,6 +264,18 @@ struct JSONFileWorldRepositoryTests {
         #expect(loaded.progress.goals.first?.isDeleted == true)
     }
 
+    @Test func aGoalsFeelingRoundTripsAndUnknownValuesReadAsNeutral() throws {
+        var saved = game(sampleWorld())
+        let date = Date(timeIntervalSince1970: 10)
+        let goal = try saved.progress.addGoal(title: "勉強", category: .study, at: date, makeID: UUID.init).get()
+        _ = try saved.progress.setFeeling(.hard, of: goal.id).get()
+        try repository().save(saved)
+        #expect(repository().peek()?.progress.goals.first?.feeling == .hard)
+        let text = try String(contentsOf: repository().fileURL, encoding: .utf8)
+        try write(text.replacingOccurrences(of: "\"feeling\":\"hard\"", with: "\"feeling\":\"sleepy\""))
+        #expect(repository().peek()?.progress.goals.first?.feeling == .neutral)
+    }
+
     @Test func peekReadsWithoutTouchingUnreadableFiles() throws {
         #expect(repository().peek() == nil)
         let saved = game(sampleWorld())
