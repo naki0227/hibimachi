@@ -44,17 +44,17 @@ struct PlayerProgressTests {
         let long = progress.addGoal(
             title: String(repeating: "あ", count: 31), category: .rest, at: date, makeID: UUID.init)
         #expect(long == .failure(.titleTooLong(limit: Goal.titleLimit)))
-        for index in 0..<3 {
+        for index in 0..<PlayerProgress.activeGoalLimit {
             _ = try progress.addGoal(title: "目標\(index)", category: .other, at: date, makeID: UUID.init).get()
         }
-        let fourth = progress.addGoal(title: "多すぎ", category: .other, at: date, makeID: UUID.init)
-        #expect(fourth == .failure(.tooManyGoals(limit: 3)))
+        let extra = progress.addGoal(title: "多すぎ", category: .other, at: date, makeID: UUID.init)
+        #expect(extra == .failure(.tooManyGoals(limit: PlayerProgress.activeGoalLimit)))
         // Archiving frees a slot without deleting history.
         let first = progress.activeGoals[0]
         _ = progress.archiveGoal(first.id)
         let replacement = progress.addGoal(title: "新しい目標", category: .move, at: date, makeID: UUID.init)
         #expect((try? replacement.get()) != nil)
-        #expect(progress.goals.count == 4)
+        #expect(progress.goals.count == PlayerProgress.activeGoalLimit + 1)
     }
 
     @Test func completionRewardsExactlyOnce() throws {
@@ -234,8 +234,25 @@ struct DailyPlannerTests {
         let picked = DailyPlanner.suggestions(for: day, in: progress)
         #expect(picked.count == DailyPlanner.dailyCount)
         let goals = progress.activeGoals.map(\.id)
-        #expect(picked.map(\.goalID) == [goals[0], goals[1], goals[0]])
+        let first = picked[0].goalID
+        let other = goals.first { $0 != first }
+        #expect(picked.map(\.goalID) == [first, other, first], "goals take turns")
         #expect(DailyPlanner.suggestions(for: day, in: progress) == picked)
+    }
+
+    @Test func withMoreGoalsThanDailyQuestsEveryGoalGetsADay() throws {
+        var progress = try PlayerProgress()
+        for index in 0..<PlayerProgress.activeGoalLimit {
+            _ = try progress.addGoal(
+                title: "目標\(index)", category: .other, at: date.addingTimeInterval(Double(index)), makeID: UUID.init
+            ).get()
+        }
+        var seen = Set<UUID>()
+        for offset in 0..<14 {
+            let someDay = LocalDay(year: 2027, month: 2, day: 1 + offset)
+            seen.formUnion(DailyPlanner.suggestions(for: someDay, in: progress).map(\.goalID))
+        }
+        #expect(seen == Set(progress.activeGoals.map(\.id)), "the starting goal moves from day to day")
     }
 
     @Test func completedAndSkippedQuestsAreReplaced() throws {

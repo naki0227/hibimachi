@@ -8,9 +8,10 @@ import HibimachiCore
 /// v5 (2026-10-26): adds `friendship` on creature records.
 /// v6 (2026-10-26): adds `growthStage`; the map is 20x20 (older 16x16 islands are moved to its middle on load).
 /// v7 (2026-10-27): album entries keep an amount and a coach comment, and the quest in progress is saved.
+/// v8 (2026-10-27): goals can have ordered steps, and a quest can belong to one (ADR-0016).
 struct WorldRecord: Codable, Equatable {
-    static let currentSchemaVersion = 7
-    static let supportedSchemaVersions = 1...7
+    static let currentSchemaVersion = 8
+    static let supportedSchemaVersions = 1...8
 
     struct ObjectRecord: Codable, Equatable {
         var id: UUID

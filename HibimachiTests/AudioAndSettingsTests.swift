@@ -72,3 +72,19 @@ struct TaskCoachTests {
         #expect(!comment.isEmpty)
     }
 }
+
+@MainActor
+@Suite("Plan coach")
+struct PlanCoachTests {
+    private let goal = Goal(id: UUID(), title: "部屋を心地よく", category: .tidy, createdAt: Date())
+
+    @Test func withoutAITheCategoryTemplateIsOffered() async {
+        let result = await PlanCoach.draft(for: goal, aiAllowed: false)
+        #expect(!result.byAI)
+        #expect(result.draft == PlanDraft.template(for: .tidy, language: .current))
+    }
+
+    @Test func thePromptHoldsOnlyTheGoal() {
+        #expect(PlanCoach.prompt(for: goal) == "goal: 部屋を心地よく\ncategory: tidy")
+    }
+}

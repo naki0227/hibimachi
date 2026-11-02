@@ -130,16 +130,25 @@ struct QuestPanel: View {
         Text("目標").gameSectionTitle()
         VStack(spacing: 8) {
             ForEach(store.progress.activeGoals) { goal in
-                GoalRow(goal: goal, quests: store.progress.activeQuests(of: goal.id), actions: actions(for: goal))
+                GoalRow(
+                    goal: goal, quests: store.progress.activeQuests(of: goal.id),
+                    steps: store.progress.stepStatuses(of: goal.id), actions: actions(for: goal))
             }
-            if store.progress.activeGoals.count < PlayerProgress.activeGoalLimit {
-                Button {
-                    pickingCategory = true
-                } label: {
-                    Label("目標を追加", systemImage: "plus").frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.game(.secondary))
-                .accessibilityIdentifier("add-goal")
+            // Always shown, so a full list explains itself instead of the button silently disappearing.
+            let full = store.progress.activeGoals.count >= PlayerProgress.activeGoalLimit
+            Button {
+                pickingCategory = true
+            } label: {
+                Label("目標を追加", systemImage: "plus").frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.game(.secondary))
+            .disabled(full)
+            .accessibilityIdentifier("add-goal")
+            if full {
+                Text("目標は同時に\(PlayerProgress.activeGoalLimit)つまで。どれかをおやすみか削除すると追加できます。")
+                    .font(GameFont.caption())
+                    .foregroundStyle(GameColor.inkSoft)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             restingGoals
         }
@@ -148,7 +157,7 @@ struct QuestPanel: View {
     /// Goals put to rest can come back (within the limit of active goals).
     @ViewBuilder
     private var restingGoals: some View {
-        let resting = store.progress.goals.filter(\.isArchived)
+        let resting = store.progress.restingGoals
         if !resting.isEmpty {
             Text("おやすみ中の目標").gameSectionTitle()
             ForEach(resting) { goal in
@@ -160,6 +169,7 @@ struct QuestPanel: View {
                     Button("再開") { store.resumeGoal(goal.id) }
                         .buttonStyle(.game(.secondary, compact: true))
                         .accessibilityIdentifier("resume-goal")
+                    DeleteGoalButton(title: goal.title) { store.deleteGoal(goal.id) }
                 }
                 .gameCard()
             }
@@ -172,7 +182,10 @@ struct QuestPanel: View {
             editQuest: { id, title, minutes in store.editQuest(id, title: title, minutes: minutes) },
             removeQuest: { id in store.removeQuest(id) },
             rename: { title in store.renameGoal(goal.id, to: title) },
-            rest: { store.archiveGoal(goal.id) })
+            rest: { store.archiveGoal(goal.id) },
+            delete: { store.deleteGoal(goal.id) },
+            makePlan: { await PlanCoach.draft(for: goal, aiAllowed: aiCoach) },
+            applyPlan: { draft in store.applyPlan(draft, to: goal.id) })
     }
 }
 
@@ -194,7 +207,7 @@ struct NewGoalForm: View {
                 .foregroundStyle(GameColor.leafDark)
             GameTextField(placeholder: "目標の名前", text: $title)
                 .accessibilityIdentifier("goal-title")
-            Text("「\(category.title)」の小さなクエストが3つ用意されます。あとで自分のクエストも足せます。")
+            Text("「\(category.title)」の小さなクエストが3つ用意されます。目標を開くと、ステップに分けることもできます。")
                 .font(GameFont.caption())
                 .foregroundStyle(GameColor.inkSoft)
                 .fixedSize(horizontal: false, vertical: true)

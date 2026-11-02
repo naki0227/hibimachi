@@ -9,6 +9,8 @@ struct ProgressRecord: Codable, Equatable {
         var category: String
         var createdAt: Date
         var archived: Bool
+        /// Deleted but kept for its history (v8, optional).
+        var deleted: Bool?
     }
 
     struct QuestRecord: Codable, Equatable {
@@ -18,6 +20,16 @@ struct ProgressRecord: Codable, Equatable {
         var minutes: Int
         /// Absent in older saves: still suggested.
         var retired: Bool?
+        /// Absent before v8, or for a goal's everyday quests.
+        var stepID: UUID?
+    }
+
+    /// A goal step (v8).
+    struct StepRecord: Codable, Equatable {
+        var id: UUID
+        var goalID: UUID
+        var title: String
+        var target: Int
     }
 
     struct CompletionRecord: Codable, Equatable {
@@ -42,6 +54,8 @@ struct ProgressRecord: Codable, Equatable {
 
     var goals: [GoalRecord]
     var quests: [QuestRecord]
+    /// Absent before v8: no steps.
+    var steps: [StepRecord]?
     var completions: [CompletionRecord]
     var transactions: [TransactionRecord]
     var owned: [String: Int]
@@ -74,12 +88,16 @@ extension ProgressRecord {
         goals = progress.goals.map {
             GoalRecord(
                 id: $0.id, title: $0.title, category: $0.category.rawValue, createdAt: $0.createdAt,
-                archived: $0.isArchived)
+                archived: $0.isArchived, deleted: $0.isDeleted ? true : nil)
         }
         quests = progress.quests.map {
             QuestRecord(
-                id: $0.id, goalID: $0.goalID, title: $0.title, minutes: $0.minutes, retired: $0.isRetired ? true : nil)
+                id: $0.id, goalID: $0.goalID, title: $0.title, minutes: $0.minutes, retired: $0.isRetired ? true : nil,
+                stepID: $0.stepID)
         }
+        steps =
+            progress.steps.isEmpty
+            ? nil : progress.steps.map { StepRecord(id: $0.id, goalID: $0.goalID, title: $0.title, target: $0.target) }
         completions = progress.completions.map {
             CompletionRecord(
                 id: $0.id, questID: $0.questID, goalID: $0.goalID, day: $0.day.description, completedAt: $0.completedAt)
@@ -109,12 +127,14 @@ extension ProgressRecord {
             }
             return Goal(
                 id: record.id, title: record.title, category: category, createdAt: record.createdAt,
-                isArchived: record.archived)
+                isArchived: record.archived, isDeleted: record.deleted ?? false)
         }
         let quests = quests.map {
             QuestTemplate(
-                id: $0.id, goalID: $0.goalID, title: $0.title, minutes: $0.minutes, isRetired: $0.retired ?? false)
+                id: $0.id, goalID: $0.goalID, title: $0.title, minutes: $0.minutes, isRetired: $0.retired ?? false,
+                stepID: $0.stepID)
         }
+        let steps = (steps ?? []).map { GoalStep(id: $0.id, goalID: $0.goalID, title: $0.title, target: $0.target) }
         let completions = try completions.map { record in
             guard let day = LocalDay(string: record.day) else { throw ProgressRecordError.badDay(record.day) }
             return QuestCompletion(
@@ -138,7 +158,7 @@ extension ProgressRecord {
         }
         do {
             return try PlayerProgress(
-                goals: goals, quests: quests, completions: completions, ledger: ledger, owned: ownedKinds,
+                goals: goals, quests: quests, steps: steps, completions: completions, ledger: ledger, owned: ownedKinds,
                 skipped: skipped)
         } catch {
             throw ProgressRecordError.invalidProgress(error)

@@ -71,6 +71,16 @@
         }
       }
     },
+    "%@をやった": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done: %@"
+          }
+        }
+      }
+    },
     "%@をやった！にする": {
       "localizations": {
         "en": {
@@ -151,12 +161,32 @@
         }
       }
     },
+    "%lld. %@（%lld/%lld回）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld. %2$@ (%3$lld/%4$lld times)"
+          }
+        }
+      }
+    },
     "%lld/%lldに迎えた": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Arrived %1$lld/%2$lld"
+          }
+        }
+      }
+    },
+    "%lld/%lld回": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld/%2$lld times"
           }
         }
       }
@@ -251,6 +281,16 @@
         }
       }
     },
+    "AIの案です。自由に直してください。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This is the AI's idea. Change anything you like."
+          }
+        }
+      }
+    },
     "Lv%lld / 発見%lld": {
       "localizations": {
         "en": {
@@ -291,12 +331,42 @@
         }
       }
     },
-    "「%@」の小さなクエストが3つ用意されます。あとで自分のクエストも足せます。": {
+    "「%@」の小さなクエストが3つ用意されます。目標を開くと、ステップに分けることもできます。": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "You'll get 3 small \"%@\" quests. You can add your own later."
+            "value": "Three small %@ quests are ready. Open the goal to break it into steps."
+          }
+        }
+      }
+    },
+    "「%@」をステップに分ける": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Break “%@” into steps"
+          }
+        }
+      }
+    },
+    "「%@」を削除": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete “%@”"
+          }
+        }
+      }
+    },
+    "「%@」を削除しますか？これまでの記録とXPは残ります。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete “%@”? What you've done and your XP stay."
           }
         }
       }
@@ -337,6 +407,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Always happy to see you, with a heart to show it."
+          }
+        }
+      }
+    },
+    "いつものクエスト": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everyday quests"
           }
         }
       }
@@ -501,6 +581,16 @@
         }
       }
     },
+    "きょうのクエストはぜんぶできました！島でひと休みしよう。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All of today's quests are done! Take a rest on the island."
+          }
+        }
+      }
+    },
     "きょうの日記": {
       "localizations": {
         "en": {
@@ -641,6 +731,16 @@
         }
       }
     },
+    "このステップを消す": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove this step"
+          }
+        }
+      }
+    },
     "この地面には置けません": {
       "localizations": {
         "en": {
@@ -697,6 +797,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Delete this note"
+          }
+        }
+      }
+    },
+    "これで始める": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start with this"
           }
         }
       }
@@ -777,6 +887,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "So much tidier! Everyone on the island feels it too."
+          }
+        }
+      }
+    },
+    "すべてのステップを終えました！": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every step is done!"
           }
         }
       }
@@ -1241,6 +1361,16 @@
         }
       }
     },
+    "ひな形の案です。自由に直してください。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This is a starter plan. Change anything you like."
+          }
+        }
+      }
+    },
     "ひびまち": {
       "localizations": {
         "en": {
@@ -1367,6 +1497,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Show another quest"
+          }
+        }
+      }
+    },
+    "ほかの案": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Another idea"
           }
         }
       }
@@ -1767,6 +1907,56 @@
           "stringUnit": {
             "state": "translated",
             "value": "Close sharing"
+          }
+        }
+      }
+    },
+    "ステップ %lld/%lld：%@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Step %1$lld/%2$lld: %3$@"
+          }
+        }
+      }
+    },
+    "ステップに分ける": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Break into steps"
+          }
+        }
+      }
+    },
+    "ステップの名前": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Step name"
+          }
+        }
+      }
+    },
+    "ステップは2〜5個、それぞれにクエストを1〜3個にしてください": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use 2 to 5 steps, each with 1 to 3 quests"
+          }
+        }
+      }
+    },
+    "ステップを作り直す": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Redo the steps"
           }
         }
       }
@@ -2301,6 +2491,26 @@
         }
       }
     },
+    "削除": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
+          }
+        }
+      }
+    },
+    "削除する": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete"
+          }
+        }
+      }
+    },
     "前の写真とくらべる（なくてもOK）": {
       "localizations": {
         "en": {
@@ -2447,6 +2657,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "times"
+          }
+        }
+      }
+    },
+    "回数を増やす": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "More times"
+          }
+        }
+      }
+    },
+    "回数を減らす": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fewer times"
           }
         }
       }
@@ -3221,6 +3451,16 @@
         }
       }
     },
+    "目安": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About"
+          }
+        }
+      }
+    },
     "目標": {
       "localizations": {
         "en": {
@@ -3251,12 +3491,42 @@
         }
       }
     },
+    "目標は同時に%lldつまで。どれかをおやすみか削除すると追加できます。": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Up to %lld goals at a time. Rest or delete one to add another."
+          }
+        }
+      }
+    },
+    "目標を決めて、きょうのクエストをもらう": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick a goal to get today's quests"
+          }
+        }
+      }
+    },
     "目標を追加": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Add goal"
+          }
+        }
+      }
+    },
+    "約%lld分": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About %lld min"
           }
         }
       }
@@ -3297,6 +3567,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Arrange things differently and you may see something new…"
+          }
+        }
+      }
+    },
+    "考えています…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thinking…"
           }
         }
       }

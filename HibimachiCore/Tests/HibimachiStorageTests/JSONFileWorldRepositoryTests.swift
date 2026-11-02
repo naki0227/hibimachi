@@ -215,6 +215,55 @@ struct JSONFileWorldRepositoryTests {
         #expect(loaded.progress.totalXP == saved.progress.totalXP)
     }
 
+    @Test func goalStepsRoundTripAndOlderSavesHaveNone() throws {
+        var saved = game(sampleWorld())
+        let date = Date(timeIntervalSince1970: 10)
+        let goal = try saved.progress.addGoal(title: "部屋", category: .tidy, at: date, makeID: UUID.init).get()
+        let steps = try saved.progress.applyPlan(PlanDraft.template(for: .tidy), to: goal.id, makeID: UUID.init).get()
+        let stepQuest = try #require(saved.progress.quests.first { $0.stepID == steps[0].id })
+        _ = try saved.progress.complete(
+            stepQuest.id, on: LocalDay(year: 2027, month: 1, day: 15), at: date, completionID: UUID(),
+            transactionID: UUID()
+        ).get()
+        try repository().save(saved)
+        let loaded = try #require(repository().peek())
+        #expect(loaded == saved)
+        #expect(loaded.progress.stepStatuses(of: goal.id).first?.done == 1)
+
+        // A v7 file (no steps, no stepID) loads with plain goals.
+        let text = try String(contentsOf: repository().fileURL, encoding: .utf8)
+        var object = try #require(try JSONSerialization.jsonObject(with: Data(text.utf8)) as? [String: Any])
+        var progress = try #require(object["progress"] as? [String: Any])
+        progress["steps"] = nil
+        progress["quests"] = (progress["quests"] as? [[String: Any]])?
+            .filter { $0["stepID"] == nil }
+        progress["completions"] = []
+        progress["transactions"] = (progress["transactions"] as? [[String: Any]])?
+            .filter { ($0["reason"] as? String) != "quest" }
+        object["progress"] = progress
+        object["schemaVersion"] = 7
+        try write(String(decoding: try JSONSerialization.data(withJSONObject: object), as: UTF8.self))
+        let old = try #require(repository().peek())
+        #expect(old.progress.steps.isEmpty)
+        #expect(old.progress.quests(of: goal.id).count == 3, "the everyday presets stay")
+    }
+
+    @Test func aDeletedGoalWithHistoryStaysHiddenAfterLoading() throws {
+        var saved = game(sampleWorld())
+        let date = Date(timeIntervalSince1970: 10)
+        let goal = try saved.progress.addGoal(title: "部屋", category: .tidy, at: date, makeID: UUID.init).get()
+        let quest = try #require(saved.progress.quests(of: goal.id).first)
+        _ = try saved.progress.complete(
+            quest.id, on: LocalDay(year: 2027, month: 1, day: 15), at: date, completionID: UUID(), transactionID: UUID()
+        ).get()
+        _ = try saved.progress.deleteGoal(goal.id).get()
+        try repository().save(saved)
+        let loaded = try #require(repository().peek())
+        #expect(loaded == saved)
+        #expect(loaded.progress.activeGoals.isEmpty && loaded.progress.restingGoals.isEmpty)
+        #expect(loaded.progress.goals.first?.isDeleted == true)
+    }
+
     @Test func peekReadsWithoutTouchingUnreadableFiles() throws {
         #expect(repository().peek() == nil)
         let saved = game(sampleWorld())
@@ -245,7 +294,7 @@ struct JSONFileWorldRepositoryTests {
         try repository().save(saved)
         #expect(repository().peek() == saved)
         let text = try String(contentsOf: repository().fileURL, encoding: .utf8)
-        #expect(text.contains("\"schemaVersion\":7"))
+        #expect(text.contains("\"schemaVersion\":8"))
 
         // A v2 file (no album key) loads with an empty album.
         var object = try #require(
