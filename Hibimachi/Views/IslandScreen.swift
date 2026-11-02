@@ -136,7 +136,11 @@ struct IslandScreen: View {
         }
         .onChange(of: scenePhase) { _, phase in
             // Leaving the app: the island is still on screen, so this is the moment to picture it for the widget.
-            if phase == .inactive { WidgetSync.exportIsland(scene.islandPicture()) }
+            if phase == .inactive {
+                WidgetSync.exportIsland(scene.islandPicture())
+                // The island's diary: today's picture, kept for the album's day cards.
+                AppComposition.islandPictures().save(scene.islandPicture(maxWidth: 720), day: store.today)
+            }
         }
         .sensoryFeedback(.success, trigger: store.objectsRevision) { _, _ in settings.haptics }
         .sensoryFeedback(.selection, trigger: store.terrainRevision) { _, _ in settings.haptics }

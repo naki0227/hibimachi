@@ -5,6 +5,7 @@ import SwiftUI
 /// "アルバム": optional memories and the island's history by day. Nothing here is required to play.
 struct AlbumPanel: View {
     let store: GameStore
+    var pictures = AppComposition.islandPictures()
     let close: () -> Void
 
     var body: some View {
@@ -24,7 +25,7 @@ struct AlbumPanel: View {
                         .gameCard()
                 }
                 ForEach(days) { day in
-                    AlbumDayCard(day: day, store: store)
+                    AlbumDayCard(day: day, store: store, islandPicture: pictures.image(for: day.day))
                 }
             }
         }
@@ -141,6 +142,8 @@ private struct MemoryComposer: View {
 struct AlbumDayCard: View {
     let day: AlbumDay
     let store: GameStore
+    /// The island as it looked that day, when a picture was kept (IslandDiary).
+    var islandPicture: UIImage?
     @State private var sharing = false
 
     var body: some View {
@@ -153,6 +156,14 @@ struct AlbumDayCard: View {
                         .font(GameFont.body(12, weight: .heavy))
                         .foregroundStyle(GameColor.wood)
                 }
+            }
+            if let islandPicture {
+                Image(uiImage: islandPicture).resizable().scaledToFit()
+                    .frame(maxWidth: .infinity, maxHeight: 150)
+                    .background(GameColor.cream, in: RoundedRectangle(cornerRadius: 12))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .accessibilityLabel("この日の島")
+                    .accessibilityIdentifier("album-island-picture")
             }
             ForEach(day.quests, id: \.completionID) { quest in
                 Label(quest.title, systemImage: "checkmark.circle.fill")

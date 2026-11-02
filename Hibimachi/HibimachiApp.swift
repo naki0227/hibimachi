@@ -60,6 +60,17 @@ enum AppComposition {
         return GameStore(repository: JSONFileWorldRepository(directory: directory), seed: seed, media: media)
     }
 
+    /// The island's daily pictures, next to the photos in the app's own folder (UI tests get their own).
+    static func islandPictures(environment: [String: String] = ProcessInfo.processInfo.environment) -> IslandPictures {
+        let folder = environment["HIBIMACHI_STORAGE_NAME"] ?? SharedContainer.saveFolder
+        let appSupport =
+            FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory
+        return IslandPictures(
+            directory: appSupport.appendingPathComponent(folder, isDirectory: true)
+                .appendingPathComponent("island-days", isDirectory: true))
+    }
+
     /// Saves made before the widget live in Application Support; they move into the group once, never over a
     /// newer save. If the move fails the game keeps using the old folder, so nothing looks lost.
     private static func saveDirectory(in group: URL, folder: String, legacy: URL) -> URL {

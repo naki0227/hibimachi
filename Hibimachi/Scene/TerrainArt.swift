@@ -47,6 +47,13 @@ enum TerrainArt {
         let noise = PixelNoise.value(tile.x, tile.y, 7)
         if nearLand {
             c.rect(P.shallowLight, Int(bx) - 4 + noise % 6, Int(by) + 6 + noise % 4, 3, 1)
+            if noise % 5 == 0 {
+                // Reeds at the water's edge.
+                let x = Int(bx) + 4 + noise % 5
+                c.rect(P.leafDark, x, Int(by) + 7, 1, 4)
+                c.rect(P.leaf, x + 2, Int(by) + 7, 1, 3)
+                c.pixel(P.woodLight, x, Int(by) + 11)
+            }
         } else if noise < 450 {
             c.rect(P.seaWave, Int(bx) - 6 + noise % 10, Int(by) + 5 + noise % 6, 4, 1)
         }
