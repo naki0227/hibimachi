@@ -107,7 +107,8 @@ final class IslandUITests: XCTestCase {
         screenshot(app, "05-moving-bench")
         XCTAssertTrue(app.buttons["confirm-edit"].isEnabled, "moving the bench one tile right is valid")
         app.buttons["confirm-edit"].tap()
-        XCTAssertTrue(app.staticTexts["selection-name"].waitForExistence(timeout: 10))
+        // A slow CI simulator took over 10 s per query here (2026-11-02); the move itself is instant.
+        XCTAssertTrue(app.staticTexts["selection-name"].waitForExistence(timeout: 30))
         XCTAssertEqual(app.staticTexts["selection-name"].label, "ベンチ")
 
         app.buttons["remove-selection"].tap()
