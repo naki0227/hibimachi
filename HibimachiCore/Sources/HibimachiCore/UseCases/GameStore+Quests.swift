@@ -67,6 +67,8 @@ extension GameStore {
     public func completeQuest(_ id: UUID) -> Bool {
         let completionID = makeIDForProgress()
         let transactionID = makeIDForProgress()
+        let goalID = quest(id)?.goalID
+        let finishedBefore = goalID.map { progress.stepStatuses(of: $0).filter(\.isFinished).count } ?? 0
         var reward: RewardTransaction?
         let ok = apply { progress in
             let result = progress.complete(
@@ -75,6 +77,7 @@ extension GameStore {
             return result
         }
         if ok, let reward { setLastCompletion((completionID, reward)) }
+        if ok, let goalID { announceFinishedStep(of: goalID, finishedBefore: finishedBefore) }
         return ok
     }
 
@@ -102,6 +105,21 @@ extension GameStore {
             setLastCompletion(nil)
         }
         return true
+    }
+
+    public func dismissStepFinished() {
+        if !pendingStepFinishes.isEmpty { pendingStepFinishes.removeFirst() }
+    }
+
+    /// The tower grows a level when a completion finishes a step (ADR-0017).
+    private func announceFinishedStep(of goalID: UUID, finishedBefore: Int) {
+        let statuses = progress.stepStatuses(of: goalID)
+        let finished = statuses.filter(\.isFinished)
+        guard finished.count > finishedBefore, let step = finished.last?.step,
+            let goal = progress.goals.first(where: { $0.id == goalID })
+        else { return }
+        pendingStepFinishes.append(
+            StepFinished(goalTitle: goal.title, stepTitle: step.title, completesGoal: finished.count == statuses.count))
     }
 
     public func dismissLastCompletion() {

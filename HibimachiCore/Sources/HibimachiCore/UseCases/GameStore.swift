@@ -33,6 +33,8 @@ public final class GameStore {
     public internal(set) var pendingArrivals: [Species] = []
     /// Island growths not yet announced ("島が広がった").
     public internal(set) var pendingGrowths = 0
+    /// Goal steps just finished ("塔が1段のびた", ADR-0017), oldest first.
+    public internal(set) var pendingStepFinishes: [StepFinished] = []
     /// Residents who just became closer ("なかよしになった"), oldest first.
     public internal(set) var pendingFriendships: [FriendshipNotice] = []
     public private(set) var saveErrorMessage: String?
@@ -250,6 +252,7 @@ public final class GameStore {
         pendingDiscoveries = []
         pendingArrivals = []
         pendingFriendships = []
+        pendingStepFinishes = []
         // Growth was earned by the player, not the island: a fresh island starts at the size already earned.
         growIslandIfDue()
         pendingGrowths = 0

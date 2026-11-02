@@ -34,6 +34,17 @@ public struct LocalDay: Hashable, Comparable, Sendable, CustomStringConvertible 
         UInt64(year) &* 10_000 &+ UInt64(month) &* 100 &+ UInt64(day)
     }
 
+    /// Whole days from `other` to this day (negative when `other` is later).
+    public func daysSince(_ other: LocalDay) -> Int {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? .current
+        guard
+            let start = calendar.date(from: DateComponents(year: other.year, month: other.month, day: other.day)),
+            let end = calendar.date(from: DateComponents(year: year, month: month, day: day))
+        else { return 0 }
+        return calendar.dateComponents([.day], from: start, to: end).day ?? 0
+    }
+
     public static func < (lhs: LocalDay, rhs: LocalDay) -> Bool {
         (lhs.year, lhs.month, lhs.day) < (rhs.year, rhs.month, rhs.day)
     }
