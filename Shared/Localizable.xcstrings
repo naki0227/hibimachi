@@ -331,6 +331,16 @@
         }
       }
     },
+    "「%@」の塔 %lld/%lld段（ステップ %lld/%lld）": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” tower, level %2$lld of %3$lld (steps %4$lld/%5$lld)"
+          }
+        }
+      }
+    },
     "「%@」の塔が1段のびた！": {
       "localizations": {
         "en": {
@@ -2471,6 +2481,16 @@
         }
       }
     },
+    "住人: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Residents: %lld"
+          }
+        }
+      }
+    },
     "住人のリボンと、目標の塔の旗がこの色になります。": {
       "localizations": {
         "en": {
@@ -3337,6 +3357,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Show the guide again"
+          }
+        }
+      }
+    },
+    "最近は「%@」が多めの島": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lately the island leans to “%@”"
           }
         }
       }

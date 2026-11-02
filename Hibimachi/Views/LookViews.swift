@@ -143,3 +143,25 @@ struct StepFinishedCard: View {
         }
     }
 }
+
+/// What VoiceOver reads for the island picture: who lives there, how much is placed, how each goal's tower has
+/// grown and the island's mood. The picture itself is one element, so this is the only way to hear it.
+@MainActor
+enum IslandSummary {
+    static func text(for store: GameStore) -> String {
+        let names = store.world.residents.map(\.species.displayName).joined(separator: "、")
+        var parts = [
+            String(localized: "住人: \(names)"),
+            String(localized: "置いたもの \(store.world.objects.count)こ"),
+        ]
+        for monument in GoalMonument.all(in: store.progress) {
+            let (title, stage, top) = (monument.title, monument.stage, GoalMonument.maxStage)
+            let (done, total) = (monument.finishedSteps, monument.totalSteps)
+            parts.append(String(localized: "「\(title)」の塔 \(stage)/\(top)段（ステップ \(done)/\(total)）"))
+        }
+        if let mood = IslandMood.leaning(in: store.progress, today: store.today) {
+            parts.append(String(localized: "最近は「\(mood.title)」が多めの島"))
+        }
+        return parts.joined(separator: "。")
+    }
+}
