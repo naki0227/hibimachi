@@ -159,14 +159,30 @@ review:          # App Review に関する情報
   contact_phone: ${ASC_REVIEW_PHONE}          # 例: +81 90-1234-5678
   contact_email: ${ASC_REVIEW_EMAIL}
   demo_account_required: false                # ログインがないのでデモアカウント不要
+  # Answers to App Review's Guideline 2.1 "Information Needed" (2026-11-02). The TODO line blocks plan/apply until
+  # the owner's screen recording link replaces it.
   notes: |
-    ログインや通信はありません。起動するとすぐに島が表示されます。
-    ・下のパレットから建物を選び、島をタップして「ここに置く」で配置できます。
-    ・右の ✓ ボタンから目標を選ぶと、今日の小さなクエストが表示されます（自己申告でタップするだけです）。
-    ・ホーム画面ウィジェット（小・中・大）から、今日のクエストを完了にできます。
-    ・アルバムの写真はシステムの写真ピッカーで選ぶため、写真ライブラリへのアクセス許可は求めません。
-    ・クエストの「はじめる」から写真を撮るときだけ、カメラの許可を求めます（撮らなくても完了できます）。
-    ・AI のひとこと・ステップの提案は Apple Intelligence（端末内）で作り、使えない端末では定型文・ひな形になります。通信はしません。
+    TODO: replace this line with "1. Screen recording (physical iPhone, latest iOS): <link>"
+
+    2. Purpose and audience
+    Hibimachi is a cozy pixel-art island game that turns small real-life habits into play. It is for teens and adults who want to keep small daily habits (tidying, study, rest, creating, exercise) without pressure. Each small quest the player does in real life and marks as done earns XP and "sparkles", which are spent on buildings for the island; residents react to what is placed. Nothing is lost on days the player cannot do anything.
+
+    3. How to use the main features (no login, no account, no setup)
+    - Launch: the island appears right away.
+    - Today's quests: on the island screen, tap "Pick a goal to get today's quests", choose a category and tap "Start". Three small quests appear on the island screen. Tap the circle to mark one done (XP and sparkles are shown, with Undo).
+    - Start now: tap "Start" on a quest, then "Done" and "Did it!". A photo, an amount or a note can be added but is optional.
+    - Steps: open the quests panel (checklist button, top right), open a goal card and tap "Break into steps", then "Start with this". The goal's tower grows on an islet as steps are finished.
+    - Building: choose a building in the palette at the bottom and confirm where to place it.
+    - Album, field guide and settings are in the buttons on the right and the menu. A Home Screen widget shows today's quests.
+
+    4. External services
+    None. The app makes no network requests and has no accounts, ads, analytics or payments. Optional features use on-device Apple frameworks only: Foundation Models (Apple Intelligence) for a short comment and a step suggestion, and Vision for photo labels. Both run on the device; when unavailable the app uses built-in templates. The camera is used only when the player takes a photo, photos are chosen with the system picker, and sharing uses the system share sheet.
+
+    5. Regional differences
+    The app works the same in all regions. The interface is in Japanese and English. Apple Intelligence features depend on the device, region and language; when they are unavailable, the same features use built-in templates.
+
+    6. Regulated industries and third-party material
+    Not applicable. All art and sound are generated in code by the developer; no third-party content is used.
 
 screenshots:     # スクリーンショット（フォルダ内の PNG をファイル名順に最大10枚）
   ja:
