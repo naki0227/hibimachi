@@ -5,6 +5,11 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, labeled]
   workflow_dispatch:
+    inputs:
+      test:
+        description: "Which recording: testRecordDemo (overview) or testRecordReviewWalkthrough (App Review flow)"
+        required: false
+        default: testRecordDemo
 
 concurrency:
   group: demo-video-${{ github.ref }}
@@ -38,6 +43,8 @@ jobs:
           xcodebuild build-for-testing -project Hibimachi.xcodeproj -scheme Hibimachi \
             -destination "id=$UDID" -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO
       - name: Record demo
+        env:
+          DEMO_TEST: ${{ inputs.test || 'testRecordDemo' }}
         run: |
           mkdir -p build/demo
           xcrun simctl io "$UDID" recordVideo --codec h264 --force build/demo/hibimachi-demo.mp4 &
@@ -46,7 +53,7 @@ jobs:
           set +e
           xcodebuild test-without-building -project Hibimachi.xcodeproj -scheme Hibimachi \
             -destination "id=$UDID" -derivedDataPath build/DerivedData \
-            -only-testing:HibimachiUITests/DemoUITests
+            -only-testing:"HibimachiUITests/DemoUITests/$DEMO_TEST"
           STATUS=$?
           kill -INT "$RECORDER"
           wait "$RECORDER"

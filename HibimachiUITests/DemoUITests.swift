@@ -130,6 +130,79 @@ final class DemoUITests: XCTestCase {
         pause(3)
     }
 
+    /// The flow App Review asked to see (Guideline 2.1, 2026-11-02), as a model for the owner's device recording:
+    /// launch, pick a goal, finish a quest, start and finish one with a record, break the goal into steps, place
+    /// something, open the album. Uses buttons only (no tile coordinates), so it does not depend on the camera.
+    @MainActor
+    func testRecordReviewWalkthrough() {
+        let app = XCUIApplication()
+        app.launchEnvironment["HIBIMACHI_STORAGE_NAME"] = "review-\(UUID().uuidString)"
+        app.launchEnvironment["HIBIMACHI_SEED"] = "2026"
+        app.launchEnvironment["HIBIMACHI_TUTORIAL"] = "off"
+        app.launchEnvironment["HIBIMACHI_DAY_PHASE"] = "day"
+        app.launchEnvironment["HIBIMACHI_AUDIO"] = "off"
+        app.launchArguments += ["-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
+        app.launch()
+        XCTAssertTrue(app.descendants(matching: .any)["island-view"].waitForExistence(timeout: 15))
+        pause(5)
+
+        // 1. Pick a goal from the island screen.
+        app.buttons["home-quests-setup"].tap()
+        pause(2)
+        app.buttons["goal-category-tidy"].tap()
+        pause(1.5)
+        app.buttons["create-goal"].tap()
+        pause(2)
+        app.buttons["panel-close"].tap()
+        pause(2)
+
+        // 2. Finish a quest with one tap; the reward appears right there.
+        app.buttons["home-quest-done-0"].tap()
+        pause(4)
+
+        // 3. Start a quest, finish it with a few words (photos are optional).
+        app.buttons["home-quest-start-0"].tap()
+        pause(2.5)
+        app.buttons["session-finish"].tap()
+        pause(1.5)
+        let note = app.descendants(matching: .any)["finish-note"].firstMatch
+        note.tap()
+        note.typeText("desk")
+        pause(1.5)
+        app.buttons["session-done"].tap()
+        pause(5)
+
+        // 4. Break the goal into steps.
+        app.buttons["goal-row"].firstMatch.tap()
+        pause(1.5)
+        app.scrollViews.firstMatch.swipeUp()
+        pause(1)
+        app.buttons["plan-goal"].tap()
+        _ = app.buttons["plan-apply"].waitForExistence(timeout: 30)
+        pause(3)
+        app.buttons["plan-apply"].tap()
+        pause(3)
+        app.buttons["panel-close"].tap()
+        pause(2)
+
+        // 5. Place a flower with the きらめき earned.
+        app.buttons["tab-nature"].tap()
+        pause(1)
+        app.buttons["palette-flower"].tap()
+        _ = app.buttons["confirm-edit"].waitForExistence(timeout: 10)
+        pause(2)
+        app.buttons["confirm-edit"].tap()
+        pause(2)
+        app.buttons["deselect"].tap()
+        pause(3)
+
+        // 6. The album keeps the day's record.
+        app.buttons["album"].tap()
+        pause(4)
+        app.buttons["閉じる"].tap()
+        pause(4)
+    }
+
     /// Screen point of a tile's center, in the starting 16x16 layout's coordinates (the map adds 2 tiles of sea on
     /// each side). Mirrors IslandScene.resetCamera + IsoGrid (64x32 tiles, 48pt base, camera margin 24, initial
     /// zoom 0.72): framed on the 16-tile land, centered on the 20x20 map.
